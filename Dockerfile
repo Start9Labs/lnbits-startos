@@ -1,8 +1,12 @@
-FROM --platform=linux/arm64/v8 python:3.9-slim
+FROM python:3.9-slim
+
+# arm64 or amd64
+ARG PLATFORM
+ARG ARCH
 
 RUN apt-get update && apt-get install -y curl wget bash tini pkg-config gcc make sqlite3
-RUN wget https://github.com/mikefarah/yq/releases/download/v4.12.2/yq_linux_arm.tar.gz -O - |\
-      tar xz && mv yq_linux_arm /usr/bin/yq
+RUN wget https://github.com/mikefarah/yq/releases/download/v4.6.3/yq_linux_${PLATFORM}.tar.gz -O - |\
+  tar xz && mv yq_linux_${PLATFORM} /usr/bin/yq
 RUN curl -sSL https://install.python-poetry.org | python3 -
 ENV PATH="/root/.local/bin:$PATH"
 

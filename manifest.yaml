@@ -1,7 +1,7 @@
 id: lnbits 
 title: "LNBits"
-version: 0.9.2
-release-notes: "Initial Release for EmbassyOS"
+version: 0.9.4
+release-notes: "Update to v0.9.4 and to run on x86_64 architecture"
 license: mit
 wrapper-repo: "https://github.com/Start9Labs/lnbits-wrapper"
 upstream-repo: "https://github.com/lnbits/lnbits-legend"
@@ -17,7 +17,6 @@ assets:
   license: LICENSE
   icon: icon.png
   instructions: instructions.md
-  docker-images: image.tar
 main:
   type: docker
   image: main
