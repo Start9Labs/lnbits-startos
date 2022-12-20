@@ -12,6 +12,15 @@ export const getConfig: T.ExpectedExports.getConfig = compat.getConfig({
     "target": "tor-address",
     "interface": "main",
   },
+  "lan-address": {
+    "name": "LAN Address",
+    "description": "The LAN address of the network interface",
+    "type": "pointer",
+    "subtype": "package",
+    "package-id": "lnbits",
+    "target": "lan-address",
+    "interface": "main",
+  },
   "service-fee": {
       "type": "string",
       "name": "LNBits Bitcoin Default Service Fee",

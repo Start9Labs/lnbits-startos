@@ -5,6 +5,7 @@ set -e
 export LND_PATH="/mnt/lnd/admin.macaroon"
 export CLN_PATH="/mnt/c-lightning/"
 export TOR_ADDRESS=$(yq e '.tor-address' /app/data/start9/config.yaml)
+export LAN_ADDRESS=$(yq e '.lan-address' /app/data/start9/config.yaml)
 export LNBITS_BACKEND_WALLET_CLASS=$(yq e '.wallet.type' /app/data/start9/config.yaml)
 export LNBITS_SERVICE_FEE=$(yq e '.service-fee' /app/data/start9/config.yaml)
 export FILE="/app/data/database.sqlite3"
@@ -53,8 +54,9 @@ while true; do {
         NUM=1
         for val in "${LNBITS_ACCOUNTS[@]}";
         do 
-            ACCOUNT_URL_PROP="http://$TOR_ADDRESS/wallet?usr=$val"
-            echo "  LNBits Account $NUM: " >> /app/data/start9/stats.yaml
+            ACCOUNT_URL_PROP="https://$LAN_ADDRESS/wallet?usr=$val"
+            if [ $NUM = 1 ] ; then { echo "  Superuser Account $NUM: " >> /app/data/start9/stats.yaml; }
+            else { echo "  LNBits Account $NUM: " >> /app/data/start9/stats.yaml; } fi 
                 echo '    type: string' >> /app/data/start9/stats.yaml
                 echo "    value: \"$ACCOUNT_URL_PROP\"" >> /app/data/start9/stats.yaml
                 echo '    description: LNBits Account' >> /app/data/start9/stats.yaml
