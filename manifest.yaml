@@ -1,7 +1,7 @@
 id: lnbits 
 title: "LNBits"
-version: 0.9.4
-release-notes: "Update to v0.9.4 and to run on x86_64 architecture"
+version: 0.9.5
+release-notes: "Initial Release for embassyOS"
 license: mit
 wrapper-repo: "https://github.com/Start9Labs/lnbits-wrapper"
 upstream-repo: "https://github.com/lnbits/lnbits-legend"
@@ -105,8 +105,8 @@ backup:
     args:
       - duplicity
       - restore
-      - /app/data/data
       - /mnt/backup
+      - /app/data/data
     mounts:
       BACKUP: "/mnt/backup"
       main: "/app/data/data"
