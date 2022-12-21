@@ -5,8 +5,7 @@ ARG PLATFORM
 ARG ARCH
 
 RUN apt-get update && apt-get install -y curl wget bash tini pkg-config gcc make sqlite3
-RUN wget https://github.com/mikefarah/yq/releases/download/v4.6.3/yq_linux_${PLATFORM}.tar.gz -O - |\
-  tar xz && mv yq_linux_${PLATFORM} /usr/bin/yq
+RUN wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_${PLATFORM} && chmod +x /usr/local/bin/yq
 RUN curl -sSL https://install.python-poetry.org | python3 -
 ENV PATH="/root/.local/bin:$PATH"
 

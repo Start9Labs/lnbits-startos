@@ -1,6 +1,6 @@
 id: lnbits 
 title: "LNBits"
-version: 0.9.5
+version: 0.9.5.1
 release-notes: "Initial Release for embassyOS"
 license: mit
 wrapper-repo: "https://github.com/Start9Labs/lnbits-wrapper"
