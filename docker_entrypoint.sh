@@ -47,16 +47,24 @@ fi
 while true; do {
     # Properties Page showing password to be used for login
     if [ -f $FILE ] ; then 
+        SUPERUSER_ACCOUNT=$(sqlite3 ./data/database.sqlite3 'select super_user from settings;')
+        SUPERUSER_ACCOUNT_URL_PROP="https://$LAN_ADDRESS/wallet?usr=$SUPERUSER_ACCOUNT"
         sqlite3 ./data/database.sqlite3 'select id from accounts;' > account.res
         mapfile -t LNBITS_ACCOUNTS <account.res
         echo 'version: 2' > /app/data/start9/stats.yaml
         echo 'data:' >> /app/data/start9/stats.yaml
+        echo "  Superuser Account: " >> /app/data/start9/stats.yaml
+            echo '    type: string' >> /app/data/start9/stats.yaml
+            echo "    value: \"$SUPERUSER_ACCOUNT_URL_PROP\"" >> /app/data/start9/stats.yaml
+            echo '    description: LNBits Superuser Account' >> /app/data/start9/stats.yaml
+            echo '    copyable: true' >> /app/data/start9/stats.yaml
+            echo '    masked: false' >> /app/data/start9/stats.yaml
+            echo '    qr: true' >> /app/data/start9/stats.yaml
         NUM=1
         for val in "${LNBITS_ACCOUNTS[@]}";
         do 
             ACCOUNT_URL_PROP="https://$LAN_ADDRESS/wallet?usr=$val"
-            if [ $NUM = 1 ] ; then { echo "  Superuser Account $NUM: " >> /app/data/start9/stats.yaml; }
-            else { echo "  LNBits Account $NUM: " >> /app/data/start9/stats.yaml; } fi 
+            echo "  LNBits Account $NUM: " >> /app/data/start9/stats.yaml
                 echo '    type: string' >> /app/data/start9/stats.yaml
                 echo "    value: \"$ACCOUNT_URL_PROP\"" >> /app/data/start9/stats.yaml
                 echo '    description: LNBits Account' >> /app/data/start9/stats.yaml
