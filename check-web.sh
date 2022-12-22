@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DURATION=$(</dev/stdin)
-if (($DURATION <= 9000)); then
+if (($DURATION <= 25000)); then
     exit 60
 else
     if ! curl --silent --fail lnbits.embassy:5000 &>/dev/null; then

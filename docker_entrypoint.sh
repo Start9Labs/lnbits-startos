@@ -7,12 +7,10 @@ export CLN_PATH="/mnt/c-lightning/"
 export TOR_ADDRESS=$(yq e '.tor-address' /app/data/start9/config.yaml)
 export LAN_ADDRESS=$(yq e '.lan-address' /app/data/start9/config.yaml)
 export LNBITS_BACKEND_WALLET_CLASS=$(yq e '.wallet.type' /app/data/start9/config.yaml)
-export LNBITS_SERVICE_FEE=$(yq e '.service-fee' /app/data/start9/config.yaml)
 export FILE="/app/data/database.sqlite3"
 
 sed -i 's|LNBITS_ADMIN_USERS.*|LNBITS_ADMIN_USERS="'$LNBITS_USERNAME'"|' /app/.env
 sed -i 's|LNBITS_BACKEND_WALLET_CLASS=.*|LNBITS_BACKEND_WALLET_CLASS='$LNBITS_BACKEND_WALLET_CLASS'|' /app/.env
-sed -i 's|LNBITS_SERVICE_FEE=.*|LNBITS_SERVICE_FEE="'$LNBITS_SERVICE_FEE'"|' /app/.env
 
 if [ -f $FILE ] ; then {
     echo "Looking for existing accounts and wallets..."
