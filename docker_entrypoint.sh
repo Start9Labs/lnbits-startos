@@ -60,18 +60,20 @@ while true; do {
             echo '    copyable: true' >> /app/data/start9/stats.yaml
             echo '    masked: false' >> /app/data/start9/stats.yaml
             echo '    qr: true' >> /app/data/start9/stats.yaml
-        NUM=1
-        for val in "${LNBITS_ACCOUNTS[@]}";
-        do 
+        # Iterate over the indices of the array in reverse order
+        for i in $(seq $((${#LNBITS_ACCOUNTS[@]} - 1)) -1 0); do
+            # Access the array element at the current index
+            val=${LNBITS_ACCOUNTS[$i]} 
             ACCOUNT_URL_PROP="https://$LAN_ADDRESS/wallet?usr=$val"
-            echo "  LNBits Account $NUM: " >> /app/data/start9/stats.yaml
-                echo '    type: string' >> /app/data/start9/stats.yaml
-                echo "    value: \"$ACCOUNT_URL_PROP\"" >> /app/data/start9/stats.yaml
-                echo '    description: LNBits Account' >> /app/data/start9/stats.yaml
-                echo '    copyable: true' >> /app/data/start9/stats.yaml
-                echo '    masked: false' >> /app/data/start9/stats.yaml
-                echo '    qr: true' >> /app/data/start9/stats.yaml
-            NUM=$((NUM+1))
+            if ! [ "$SUPERUSER_ACCOUNT" = "$val" ] ; then 
+                echo "  LNBits Account $val: " >> /app/data/start9/stats.yaml
+                    echo '    type: string' >> /app/data/start9/stats.yaml
+                    echo "    value: \"$ACCOUNT_URL_PROP\"" >> /app/data/start9/stats.yaml
+                    echo '    description: LNBits Account' >> /app/data/start9/stats.yaml
+                    echo '    copyable: true' >> /app/data/start9/stats.yaml
+                    echo '    masked: false' >> /app/data/start9/stats.yaml
+                    echo '    qr: true' >> /app/data/start9/stats.yaml
+            fi
         done
     else 
         echo 'No accounts to populate'

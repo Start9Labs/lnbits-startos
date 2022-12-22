@@ -21,17 +21,10 @@ export const getConfig: T.ExpectedExports.getConfig = compat.getConfig({
     "target": "lan-address",
     "interface": "main",
   },
-  "service-fee": {
-      "type": "string",
-      "name": "LNBits Bitcoin Default Service Fee",
-      "description": "Fee that is charged when using LNBits",
-      "default": "0.0",
-      "nullable": false
-  },
   "wallet": {
     "type": "union",
-    "name": "Connection Settings",
-    "description": "LNBits Connection Settings",
+    "name": "Lightning Implementation",
+    "description": "LNBits Lightning Implementation",
     "tag": {
         "id": "type",
         "name": "Select Lightning Node",

@@ -24,4 +24,5 @@ RUN mkdir -p ./data
 ADD .env.example ./.env
 RUN chmod a+x ./.env
 ADD docker_entrypoint.sh /usr/local/bin/docker_entrypoint.sh
+ADD check-web.sh /usr/local/bin/check-web.sh
 RUN chmod a+x /usr/local/bin/*.sh
