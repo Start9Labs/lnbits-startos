@@ -79,6 +79,6 @@ while true; do {
     sleep 10
 } done &
 
-echo "Starting LNBits v0.9.5.1"
+echo "Starting LNBits..."
 
 exec tini -p SIGTERM -- poetry run lnbits --port $LNBITS_PORT --host $LNBITS_HOST 
