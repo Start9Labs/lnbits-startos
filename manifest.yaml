@@ -2,7 +2,7 @@ id: lnbits
 title: "LNBits"
 version: 0.9.7
 release-notes: | 
-  * Fusion46 
+  * Update to new upstream version Fusion46 (v0.9.7)
     * [Release Notes](https://github.com/lnbits/lnbits/releases/tag/0.9.7)
     * [Full Changelog](https://github.com/lnbits/lnbits/releases/tag/0.9.6.1)
 license: mit
