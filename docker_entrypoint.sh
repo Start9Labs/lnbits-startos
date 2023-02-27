@@ -6,7 +6,7 @@ export LND_PATH="/mnt/lnd/admin.macaroon"
 export CLN_PATH="/mnt/c-lightning/"
 export TOR_ADDRESS=$(yq e '.tor-address' /app/data/start9/config.yaml)
 export LAN_ADDRESS=$(yq e '.lan-address' /app/data/start9/config.yaml)
-export LNBITS_BACKEND_WALLET_CLASS=$(yq e '.wallet.type' /app/data/start9/config.yaml)
+export LNBITS_BACKEND_WALLET_CLASS=$(yq e '.implementation' /app/data/start9/config.yaml)
 export FILE="/app/data/database.sqlite3"
 
 sed -i 's|LNBITS_ADMIN_USERS.*|LNBITS_ADMIN_USERS="'$LNBITS_USERNAME'"|' /app/.env
@@ -34,10 +34,10 @@ sleep 5
 if ! [ -f $LND_PATH ] && ! [ -d $CLN_PATH ]; then
     echo "ERROR: A Lightning Node must be running on your Embassy in order to use LNBits."
     exit 1
-elif ! [ -f $LND_PATH ] && [ $LNBITS_BACKEND_WALLET_CLASS == "LndRestWallet" ]; then
+elif ! [ -f $LND_PATH ] && [ $LNBITS_BACKEND_WALLET_CLASS == "lnd" ]; then
     echo "ERROR: Cannot find LND macaroon."
     exit 1
-elif ! [ -d $CLN_PATH ] && [ $LNBITS_BACKEND_WALLET_CLASS == "CLightningWallet" ]; then 
+elif ! [ -d $CLN_PATH ] && [ $LNBITS_BACKEND_WALLET_CLASS == "cln" ]; then 
     echo "ERROR: Cannot find Core Lightning path."
     exit 1 
 fi

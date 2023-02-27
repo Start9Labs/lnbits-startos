@@ -1,8 +1,7 @@
-# Welcome to LNBits!
+# Overview
 
-A free and open-source lightning-network wallet/accounts system.
-## Usage Instructions
+LNBits is very powerful with many features, a "one-stop-shop" for using the Lightning Network. Please visit https://lnbits.com/ for a complete list of features and guides.
 
-Open LNBits by using the `LAUNCH UI` button. You can create a new LNBits Account by just typing in a name for your wallet and clicking the `ADD A NEW WALLET` button.
+## Using LNBits
 
-**NOTE:** LNBits does not automatically save your wallet URLS, so you may be at risk of losing them when you close your browser window. However, LNBits on embassyOS saves your wallet accounts to the properties page of this service, so you are never in danger of losing a wallet URL.
+To use LNBits, simply click `LAUNCH UI` and create your first wallet. LNBits will present a warning, asking you to bookmark your wallet url. _You can ignore this_. embassyOS automatically saves your wallet URLs and displays them in the Properties page of your LNBits service dashboard.

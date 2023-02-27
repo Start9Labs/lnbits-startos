@@ -21,24 +21,15 @@ export const getConfig: T.ExpectedExports.getConfig = compat.getConfig({
     "target": "lan-address",
     "interface": "main",
   },
-  "wallet": {
-    "type": "union",
+  "implementation": {
+    "type": "enum",
     "name": "Lightning Implementation",
-    "description": "LNBits Lightning Implementation",
-    "tag": {
-        "id": "type",
-        "name": "Select Lightning Node",
-        "variant-names": {
-            "LndRestWallet": "Lightning Network Daemon",
-            "CLightningWallet": "Core Lightning",
-        },
-        "description":
-            "The LN node to connect to",
-        },
-    "default": "LndRestWallet",
-    "variants": {
-      "LndRestWallet": {},
-      "CLightningWallet":{},
-    }
+    "description": "The underlying Lightning implementation, currently LND or Core Lightning (CLN)",
+    "values": ["lnd", "cln"],
+    'value-names': {
+      "lnd": "LND",
+      "cln": "Core Lightning",
+    },
+    "default": "lnd",
   }
 });
