@@ -5,7 +5,7 @@ export const migration: T.ExpectedExports.migration = compat.migrations
     "0.9.7.1": {
         up: compat.migrations.updateConfig(
             (config) => {
-                const implementation = config.wallet.type === 'LndRestWallet' ? 'lnd' : 'cln'
+                const implementation = config?.wallet.type === 'CLightningWallet' ? 'cln' : 'lnd'
                 return { implementation }
             },
             true,
@@ -13,7 +13,7 @@ export const migration: T.ExpectedExports.migration = compat.migrations
         ),
         down: compat.migrations.updateConfig(
             (config) => {
-                const implementation = config.implementation === 'lnd' ? 'LndRestWallet' : 'CLightningWallet'
+                const implementation = config.implementation === 'cln' ? 'CLightningWallet' : 'LndRestWallet'
                 return { wallet: { type: implementation } };
             },
             true,
