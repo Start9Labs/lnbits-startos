@@ -34,10 +34,10 @@ sleep 5
 if ! [ -f $LND_PATH ] && ! [ -d $CLN_PATH ]; then
     echo "ERROR: A Lightning Node must be running on your Embassy in order to use LNBits."
     exit 1
-elif ! [ -f $LND_PATH ] && [ $LNBITS_BACKEND_WALLET_CLASS == "lnd" ]; then
+elif ! [ -f $LND_PATH ] && [ $LNBITS_BACKEND_WALLET_CLASS == "LndRestWallet" ]; then
     echo "ERROR: Cannot find LND macaroon."
     exit 1
-elif ! [ -d $CLN_PATH ] && [ $LNBITS_BACKEND_WALLET_CLASS == "cln" ]; then 
+elif ! [ -d $CLN_PATH ] && [ $LNBITS_BACKEND_WALLET_CLASS == "CLightningWallet" ]; then 
     echo "ERROR: Cannot find Core Lightning path."
     exit 1 
 fi

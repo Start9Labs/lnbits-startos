@@ -25,11 +25,11 @@ export const getConfig: T.ExpectedExports.getConfig = compat.getConfig({
     "type": "enum",
     "name": "Lightning Implementation",
     "description": "The underlying Lightning implementation, currently LND or Core Lightning (CLN)",
-    "values": ["lnd", "cln"],
+    "values": ["LndRestWallet", "CLightningWallet"],
     'value-names': {
-      "lnd": "LND",
-      "cln": "Core Lightning",
+      "LndRestWallet": "LND",
+      "CLightningWallet": "Core Lightning",
     },
-    "default": "lnd",
+    "default": "LndRestWallet",
   }
 });
