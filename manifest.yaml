@@ -1,10 +1,9 @@
 id: lnbits 
 title: "LNBits"
-version: 0.9.7.1
+version: "0.10"
 release-notes: | 
-  * Update to new upstream version Fusion46 (v0.9.7)
-    * [Release Notes](https://github.com/lnbits/lnbits/releases/tag/0.9.7)
-    * [Full Changelog](https://github.com/lnbits/lnbits/releases/tag/0.9.6.1)
+  * New upstream version Yvette (v0.10) [Release Notes](https://github.com/lnbits/lnbits/releases/tag/0.10)
+  * Update dependency versioning for LND and CLN
 license: mit
 wrapper-repo: "https://github.com/Start9Labs/lnbits-wrapper"
 upstream-repo: "https://github.com/lnbits/lnbits-legend"
@@ -79,14 +78,14 @@ interfaces:
       - http
 dependencies:
   lnd:
-    version: ">=0.14.3 <0.16.0"
+    version: ">=0.14.3 <0.17.0"
     description: Used to communicate with the Lightning Network.
     requirement:
       type: "opt-in"
       how: Use the LND instance by default
     config: ~
   c-lightning:
-    version: ">=0.10.1 <23.0.0"
+    version: ">=0.10.1 <24.0.0"
     description: Used to communicate with the Lightning Network.
     requirement:
       type: "opt-in"
