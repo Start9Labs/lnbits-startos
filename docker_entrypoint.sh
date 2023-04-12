@@ -11,7 +11,7 @@ export FILE="/app/data/database.sqlite3"
 
 sed -i 's|LNBITS_ADMIN_USERS.*|LNBITS_ADMIN_USERS="'$LNBITS_USERNAME'"|' /app/.env
 sed -i 's|LNBITS_BACKEND_WALLET_CLASS=.*|LNBITS_BACKEND_WALLET_CLASS='$LNBITS_BACKEND_WALLET_CLASS'|' /app/.env
-
+sleep 21
 if [ -f $FILE ] ; then {
     echo "Looking for existing accounts and wallets..."
     sqlite3 ./data/database.sqlite3 'select id from accounts;' >> account.res
