@@ -1,6 +1,6 @@
 id: lnbits 
 title: "LNBits"
-version: "0.10"
+version: 0.10.0.1
 release-notes: | 
   * New upstream version Yvette (v0.10) [Release Notes](https://github.com/lnbits/lnbits/releases/tag/0.10)
   * Update dependency versioning for LND and CLN
