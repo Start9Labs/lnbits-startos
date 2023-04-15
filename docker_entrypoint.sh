@@ -47,11 +47,19 @@ while true; do {
     if [ -f $FILE ] ; then 
         SUPERUSER_ACCOUNT=$(sqlite3 ./data/database.sqlite3 'select super_user from settings;')
         SUPERUSER_ACCOUNT_URL_PROP="https://$LAN_ADDRESS/wallet?usr=$SUPERUSER_ACCOUNT"
+        SUPERUSER_ACCOUNT_URL_TOR="http://$TOR_ADDRESS/wallet?usr=$SUPERUSER_ACCOUNT"
         echo 'version: 2' > /app/data/start9/stats.yaml
         echo 'data:' >> /app/data/start9/stats.yaml
         echo "  Superuser Account: " >> /app/data/start9/stats.yaml
             echo '    type: string' >> /app/data/start9/stats.yaml
             echo "    value: \"$SUPERUSER_ACCOUNT_URL_PROP\"" >> /app/data/start9/stats.yaml
+            echo '    description: LNBits Superuser Account' >> /app/data/start9/stats.yaml
+            echo '    copyable: true' >> /app/data/start9/stats.yaml
+            echo '    masked: false' >> /app/data/start9/stats.yaml
+            echo '    qr: true' >> /app/data/start9/stats.yaml
+        echo "  (Tor) Superuser Account: " >> /app/data/start9/stats.yaml
+            echo '    type: string' >> /app/data/start9/stats.yaml
+            echo "    value: \"$SUPERUSER_ACCOUNT_URL_TOR\"" >> /app/data/start9/stats.yaml
             echo '    description: LNBits Superuser Account' >> /app/data/start9/stats.yaml
             echo '    copyable: true' >> /app/data/start9/stats.yaml
             echo '    masked: false' >> /app/data/start9/stats.yaml
@@ -72,12 +80,20 @@ while true; do {
 
                 export val2=${LNBITS_WALLETS[$j]}
                 export ACCOUNT_URL_PROP="https://$LAN_ADDRESS/wallet?usr=$val&wal=$val2"
+                export ACCOUNT_URL_TOR="http://$TOR_ADDRESS/wallet?usr=$val&wal=$val2"
                 export LNBITS_WALLET_NAME=$(sqlite3 ./data/database.sqlite3 'select name from wallets where id="'$val2'";')
 
                 if ! [ "$SUPERUSER_ACCOUNT" = "$val" ] && ! [ "${val2:0:4}" = "del:" ] ; then
                     echo "  LNBits Account $val - Wallet $LNBITS_WALLET_NAME: " >> /app/data/start9/stats.yaml
                         echo '    type: string' >> /app/data/start9/stats.yaml
                         echo "    value: \"$ACCOUNT_URL_PROP\"" >> /app/data/start9/stats.yaml
+                        echo '    description: LNBits Account' >> /app/data/start9/stats.yaml
+                        echo '    copyable: true' >> /app/data/start9/stats.yaml
+                        echo '    masked: false' >> /app/data/start9/stats.yaml
+                        echo '    qr: true' >> /app/data/start9/stats.yaml
+                    echo "  (Tor) LNBits Account $val - Wallet $LNBITS_WALLET_NAME: " >> /app/data/start9/stats.yaml
+                        echo '    type: string' >> /app/data/start9/stats.yaml
+                        echo "    value: \"$ACCOUNT_URL_TOR\"" >> /app/data/start9/stats.yaml
                         echo '    description: LNBits Account' >> /app/data/start9/stats.yaml
                         echo '    copyable: true' >> /app/data/start9/stats.yaml
                         echo '    masked: false' >> /app/data/start9/stats.yaml
