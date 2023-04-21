@@ -1,9 +1,8 @@
 id: lnbits 
 title: "LNBits"
-version: 0.10.0.2
+version: 0.10.4
 release-notes: | 
-  * New upstream version Yvette (v0.10) [Release Notes](https://github.com/lnbits/lnbits/releases/tag/0.10)
-  * Update dependency versioning for LND and CLN
+  * New upstream version Yvette2 (v0.10.4) [Release Notes](https://github.com/lnbits/lnbits/releases/tag/0.10.4)
 license: mit
 wrapper-repo: "https://github.com/Start9Labs/lnbits-wrapper"
 upstream-repo: "https://github.com/lnbits/lnbits-legend"

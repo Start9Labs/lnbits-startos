@@ -17,7 +17,7 @@ ENV LNBITS_PORT 5000
 ENV LNBITS_HOST lnbits.embassy
 
 RUN poetry config virtualenvs.create false
-RUN poetry install --no-dev --no-root
+RUN poetry install --only main
 RUN poetry run python tools/build.py
 RUN pip install pyln-client
 
