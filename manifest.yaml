@@ -1,6 +1,6 @@
 id: lnbits 
 title: "LNBits"
-version: 0.10.5
+version: 0.10.5.1
 release-notes: | 
   * Critical Bugfix in new upstream version Yvette3 (v0.10.5) [Release Notes](https://github.com/lnbits/lnbits/releases/tag/0.10.5)
 license: mit
