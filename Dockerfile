@@ -15,7 +15,7 @@ RUN apt-get update
 RUN apt-get install -y postgresql-client-14
 
 WORKDIR /app/
-COPY lnbits-legend/ .
+COPY lnbits/ .
 
 ENV LNBITS_PORT 5000
 ENV LNBITS_HOST lnbits.embassy
