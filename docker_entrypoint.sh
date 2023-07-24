@@ -16,7 +16,7 @@ if [ -f $FILE ] ; then {
     echo "Looking for existing accounts and wallets..."
     sqlite3 ./data/database.sqlite3 'select id from accounts;' >> account.res
     mapfile -t LNBITS_ACCOUNTS <account.res
-    echo "Found ${#LNBITS_ACCOUNTS[*]} LNBits account(s) on Embassy."
+    echo "Found ${#LNBITS_ACCOUNTS[*]} existing LNBits account(s)."
     echo "Navigate to the following URLs to access these accounts:"
     # Properties Page showing password to be used for login
     echo 'version: 2' > /app/data/start9/stats.yaml
@@ -32,7 +32,7 @@ if [ -f $FILE ] ; then {
 fi
 sleep 5
 if ! [ -f $LND_PATH ] && ! [ -d $CLN_PATH ]; then
-    echo "ERROR: A Lightning Node must be running on your Embassy in order to use LNBits."
+    echo "ERROR: A Lightning Node must be running on your Start9 server in order to use LNBits."
     exit 1
 elif ! [ -f $LND_PATH ] && [ $LNBITS_BACKEND_WALLET_CLASS == "LndRestWallet" ]; then
     echo "ERROR: Cannot find LND macaroon."
