@@ -1,6 +1,6 @@
 id: lnbits 
 title: "LNBits"
-version: 0.10.9
+version: 0.10.9.1
 release-notes: | 
   New security features to harden your LNbits instance
   * Updates for Wallet UI
