@@ -1,13 +1,14 @@
 id: lnbits 
 title: "LNBits"
-version: 0.10.9.2
-release-notes: | 
-  New security features to harden your LNbits instance
-  * Updates for Wallet UI
-  * Improves Extension manager
-  * Improves testing on regtest
-  * Hides super_user ID to prevent leaks
-  * The list of all changes is available [here](https://github.com/lnbits/lnbits/compare/0.10.5...0.10.9).
+version: 0.10.10
+release-notes: |
+  * Code maintenance and dependency updates
+  * Enhanced favicon and admin notifications
+  * Improved lnurl handling and internal payment notifications
+  * Various testing and quality assurance enhancements
+  * Extended invoice expiry and wallet improvements
+  * Miscellaneous optimizations and version updates
+  * The list of all changes is available [here](https://github.com/lnbits/lnbits/compare/0.10.9...0.10.10).
 license: MIT
 wrapper-repo: "https://github.com/Start9Labs/lnbits-wrapper"
 upstream-repo: "https://github.com/lnbits/lnbits"
