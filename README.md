@@ -1,6 +1,6 @@
 # Wrapper for lnbits
 
-lnbits is a GUI for lnbits. You can run lnbits on EmbassyOS by installing an .s9pk file, or you can build your own .s9pk file by following the instuctions below.
+lnbits is a GUI for lnbits. You can run lnbits on StartOS by installing an .s9pk file, or you can build your own .s9pk file by following the instuctions below.
 
 ## Dependencies
 
@@ -9,10 +9,10 @@ lnbits is a GUI for lnbits. You can run lnbits on EmbassyOS by installing an .s9
 - [yq](https://mikefarah.gitbook.io/yq)
 - [deno](https://deno.land/)
 - [make](https://www.gnu.org/software/make/)
-- [embassy-sdk](https://github.com/Start9Labs/embassy-os/tree/master/backend)
+- [start-sdk](https://github.com/Start9Labs/start-os/tree/master/backend)
 
 ## Build enviroment
-Prepare your EmbassyOS build enviroment. In this example we are using Ubuntu 20.04.
+Prepare your StartOS build enviroment. In this example we are using Ubuntu 20.04.
 
 1. Install docker
 ```
@@ -47,12 +47,12 @@ curl https://sh.rustup.rs -sSf | sh
 # Choose nr 1 (default install)
 source $HOME/.cargo/env
 ```
-8. Build and install embassy-sdk
+8. Build and install start-sdk
 ```
-cd ~/ && git clone --recursive https://github.com/Start9Labs/embassy-os.git
-cd embassy-os/backend/
+cd ~/ && git clone --recursive https://github.com/Start9Labs/start-os.git --branch sdk
+cd start-os/backend/
 ./install-sdk.sh
-embassy-sdk init
+start-sdk init
 ```
 Now you are ready to build your **lnbits** service
 
@@ -73,19 +73,19 @@ To build the **lnbits** service, run the following command:
 make
 ```
 
-## Installing (on Embassy)
+## Installing (on StartOS)
 
 Run the following commands to determine successful install:
-> :information_source: Change embassy-q1w2e3r4.local to your Embassy address
+> :information_source: Change server-name.local to your Start9 server address
 
 ```
-embassy-cli auth login
-#Enter your embassy password
-embassy-cli --host https://embassy-q1w2e3r4.local package install lnbits.s9pk
+start-cli auth login
+#Enter your StartOS password
+start-cli --host https://server-name.local package install lnbits.s9pk
 ```
-**Tip:** You can also install the lnbits.s9pk using **Sideload Service** under the **Embassy > SETTINGS** section.
+**Tip:** You can also install the lnbits.s9pk using **Sideload Service** under the **StartOS > SETTINGS** section.
 ## Verify Install
 
-Go to your Embassy Services page, select **lnbits**, configure and start the service.
+Go to your StartOS Services page, select **lnbits**, configure and start the service.
 
 **Done!** 
