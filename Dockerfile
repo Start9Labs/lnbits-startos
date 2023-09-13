@@ -4,13 +4,13 @@ FROM lnbitsdocker/lnbits-legend:0.10.10 as builder
 ARG PLATFORM
 
 RUN apt-get update && apt-get install -y bash curl sqlite3 tini --no-install-recommends
-RUN curl -sL --insecure -o /usr/local/bin/yq https://github.com/mikefarah/yq/releases/v4.32.1/download/yq_linux_${PLATFORM} && chmod +x /usr/local/bin/yq
+RUN curl -sS https://webi.sh/yq | sh
 
 FROM lnbitsdocker/lnbits-legend:0.10.10 as final
 
 COPY --from=builder /usr/bin/tini /usr/bin/tini
 COPY --from=builder /usr/bin/sqlite3 /usr/bin/sqlite3
-COPY --from=builder /usr/local/bin/yq /usr/local/bin/yq
+COPY --from=builder /root/.local/bin/yq /usr/local/bin/yq
 
 ENV LNBITS_PORT 5000
 ENV LNBITS_HOST lnbits.embassy
