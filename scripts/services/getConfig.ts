@@ -25,6 +25,7 @@ export const getConfig: T.ExpectedExports.getConfig = compat.getConfig({
     "type": "enum",
     "name": "Lightning Implementation",
     "description": "The underlying Lightning implementation, currently LND or Core Lightning (CLN)",
+    "warning": "If you change the LN implementation after using LNBits this will delete all LNBits accounts and wallets related to the previously configured LN implementation! All LN funds will still be available on the underlying LN implementation.",
     "values": ["LndRestWallet", "CLightningWallet"],
     'value-names': {
       "LndRestWallet": "LND",

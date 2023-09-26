@@ -8,10 +8,25 @@ export TOR_ADDRESS=$(yq e '.tor-address' /app/data/start9/config.yaml)
 export LAN_ADDRESS=$(yq e '.lan-address' /app/data/start9/config.yaml)
 export LNBITS_BACKEND_WALLET_CLASS=$(yq e '.implementation' /app/data/start9/config.yaml)
 export FILE="/app/data/database.sqlite3"
+export CONFIG_LN_IMPLEMENTATION=$(yq e '.implementation' /app/data/start9/config.yaml)
 sleep 16
 sed -i 's|LNBITS_ADMIN_USERS.*|LNBITS_ADMIN_USERS="'$LNBITS_USERNAME'"|' /app/.env
 sed -i 's|LNBITS_BACKEND_WALLET_CLASS=.*|LNBITS_BACKEND_WALLET_CLASS='$LNBITS_BACKEND_WALLET_CLASS'|' /app/.env
 sleep 5
+
+if [ -f $FILE ] ; then
+    echo "Checking if underlying LN implementation has changed..."
+    LNBITS_SETTINGS=$(sqlite3 ./data/database.sqlite3 'select editable_settings from settings;')
+    EXISTING_CONFIG_LN_IMPLEMENTATION=$(echo "$LNBITS_SETTINGS" | sed -n 's/.*"lnbits_backend_wallet_class": "\([^"]*\)".*/\1/p')
+
+    if [ "$CONFIG_LN_IMPLEMENTATION" != "$EXISTING_CONFIG_LN_IMPLEMENTATION" ]; then
+        echo "Configured LN implementation is not the same as the existing LN implementation"
+        echo "Deleting previous LN implementation data"
+        rm $FILE
+        rm /app/data/start9/stats.yaml
+    fi
+fi
+
 if [ -f $FILE ] ; then {
     echo "Looking for existing accounts and wallets..."
     sqlite3 ./data/database.sqlite3 'select id from accounts;' >> account.res

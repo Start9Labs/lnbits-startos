@@ -2,13 +2,8 @@ id: lnbits
 title: "LNBits"
 version: 0.10.10
 release-notes: |
-  * Code maintenance and dependency updates
-  * Enhanced favicon and admin notifications
-  * Improved lnurl handling and internal payment notifications
-  * Various testing and quality assurance enhancements
-  * Extended invoice expiry and wallet improvements
-  * Miscellaneous optimizations and version updates
-  * The list of all changes is available [here](https://github.com/lnbits/lnbits/compare/0.10.9...0.10.10).
+  * Update upstream to 0.10.10. Release notes available [here](https://github.com/lnbits/lnbits/compare/0.10.9...0.10.10).
+  * Fix bug when switching between LN implementations.
 license: MIT
 wrapper-repo: "https://github.com/Start9Labs/lnbits-wrapper"
 upstream-repo: "https://github.com/lnbits/lnbits"
@@ -83,7 +78,7 @@ interfaces:
       - http
 dependencies:
   lnd:
-    version: ">=0.14.3 <0.17.0"
+    version: ">=0.14.3 <0.18.0"
     description: Used to communicate with the Lightning Network.
     requirement:
       type: "opt-in"
