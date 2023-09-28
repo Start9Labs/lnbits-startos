@@ -2,6 +2,12 @@
 
 set -e
 
+# Handle termination signals
+_term() {
+    echo "Received termination signal!"
+    kill -TERM "$lnbits_process" 2>/dev/null
+}
+
 export LND_PATH="/mnt/lnd/admin.macaroon"
 export CLN_PATH="/mnt/c-lightning/"
 export TOR_ADDRESS=$(yq e '.tor-address' /app/data/start9/config.yaml)
@@ -14,7 +20,7 @@ sed -i 's|LNBITS_ADMIN_USERS.*|LNBITS_ADMIN_USERS="'$LNBITS_USERNAME'"|' /app/.e
 sed -i 's|LNBITS_BACKEND_WALLET_CLASS=.*|LNBITS_BACKEND_WALLET_CLASS='$LNBITS_BACKEND_WALLET_CLASS'|' /app/.env
 sleep 5
 
-if [ -f $FILE ] ; then
+if [ -f $FILE ]; then
     echo "Checking if underlying LN implementation has changed..."
     LNBITS_SETTINGS=$(sqlite3 ./data/database.sqlite3 'select editable_settings from settings;')
     EXISTING_CONFIG_LN_IMPLEMENTATION=$(echo "$LNBITS_SETTINGS" | sed -n 's/.*"lnbits_backend_wallet_class": "\([^"]*\)".*/\1/p')
@@ -27,23 +33,23 @@ if [ -f $FILE ] ; then
     fi
 fi
 
-if [ -f $FILE ] ; then {
+if [ -f $FILE ]; then {
     echo "Looking for existing accounts and wallets..."
-    sqlite3 ./data/database.sqlite3 'select id from accounts;' >> account.res
+    sqlite3 ./data/database.sqlite3 'select id from accounts;' >>account.res
     mapfile -t LNBITS_ACCOUNTS <account.res
     echo "Found ${#LNBITS_ACCOUNTS[*]} existing LNBits account(s)."
     echo "Navigate to the following URLs to access these accounts:"
     # Properties Page showing password to be used for login
-    echo 'version: 2' > /app/data/start9/stats.yaml
-    echo 'data:' >> /app/data/start9/stats.yaml
-    for val in "${LNBITS_ACCOUNTS[@]}";
-    do
+    echo 'version: 2' >/app/data/start9/stats.yaml
+    echo 'data:' >>/app/data/start9/stats.yaml
+    for val in "${LNBITS_ACCOUNTS[@]}"; do
         ACCOUNT_URL="http://$TOR_ADDRESS/wallet?usr=$val"
         printf "$ACCOUNT_URL\n"
     done
-} else {
-    echo 'No LNBits accounts found.'
-} 
+}; else
+    {
+        echo 'No LNBits accounts found.'
+    }
 fi
 sleep 5
 if ! [ -f $LND_PATH ] && ! [ -d $CLN_PATH ]; then
@@ -52,76 +58,85 @@ if ! [ -f $LND_PATH ] && ! [ -d $CLN_PATH ]; then
 elif ! [ -f $LND_PATH ] && [ $LNBITS_BACKEND_WALLET_CLASS == "LndRestWallet" ]; then
     echo "ERROR: Cannot find LND macaroon."
     exit 1
-elif ! [ -d $CLN_PATH ] && [ $LNBITS_BACKEND_WALLET_CLASS == "CLightningWallet" ]; then 
+elif ! [ -d $CLN_PATH ] && [ $LNBITS_BACKEND_WALLET_CLASS == "CLightningWallet" ]; then
     echo "ERROR: Cannot find Core Lightning path."
-    exit 1 
+    exit 1
 fi
 
-while true; do {
-    # Properties Page showing password to be used for login
-    if [ -f $FILE ] ; then 
-        SUPERUSER_ACCOUNT=$(sqlite3 ./data/database.sqlite3 'select super_user from settings;')
-        SUPERUSER_ACCOUNT_URL_PROP="https://$LAN_ADDRESS/wallet?usr=$SUPERUSER_ACCOUNT"
-        SUPERUSER_ACCOUNT_URL_TOR="http://$TOR_ADDRESS/wallet?usr=$SUPERUSER_ACCOUNT"
-        echo 'version: 2' > /app/data/start9/stats.yaml
-        echo 'data:' >> /app/data/start9/stats.yaml
-        echo "  Superuser Account: " >> /app/data/start9/stats.yaml
-            echo '    type: string' >> /app/data/start9/stats.yaml
-            echo "    value: \"$SUPERUSER_ACCOUNT_URL_PROP\"" >> /app/data/start9/stats.yaml
-            echo '    description: LNBits Superuser Account' >> /app/data/start9/stats.yaml
-            echo '    copyable: true' >> /app/data/start9/stats.yaml
-            echo '    masked: false' >> /app/data/start9/stats.yaml
-            echo '    qr: true' >> /app/data/start9/stats.yaml
-        echo "  (Tor) Superuser Account: " >> /app/data/start9/stats.yaml
-            echo '    type: string' >> /app/data/start9/stats.yaml
-            echo "    value: \"$SUPERUSER_ACCOUNT_URL_TOR\"" >> /app/data/start9/stats.yaml
-            echo '    description: LNBits Superuser Account' >> /app/data/start9/stats.yaml
-            echo '    copyable: true' >> /app/data/start9/stats.yaml
-            echo '    masked: false' >> /app/data/start9/stats.yaml
-            echo '    qr: true' >> /app/data/start9/stats.yaml
-        
-        sqlite3 ./data/database.sqlite3 'select id from accounts;' > account.res
-        mapfile -t LNBITS_ACCOUNTS <account.res 
-        # Iterate over the indices of the array in reverse order
-        for i in $(seq $((${#LNBITS_ACCOUNTS[@]} - 1)) -1 0); do {
-            # Access the array element at the current index
-            val=${LNBITS_ACCOUNTS[$i]} 
-            # get wallets for this user account
-            sqlite3 ./data/database.sqlite3 'select id from wallets where user="'$val'";' > wallet.res
-            mapfile -t LNBITS_WALLETS <wallet.res 
+configurator() {
+    while true; do {
+        # Properties Page showing password to be used for login
+        if [ -f $FILE ]; then
+            SUPERUSER_ACCOUNT=$(sqlite3 ./data/database.sqlite3 'select super_user from settings;')
+            SUPERUSER_ACCOUNT_URL_PROP="https://$LAN_ADDRESS/wallet?usr=$SUPERUSER_ACCOUNT"
+            SUPERUSER_ACCOUNT_URL_TOR="http://$TOR_ADDRESS/wallet?usr=$SUPERUSER_ACCOUNT"
+            echo 'version: 2' >/app/data/start9/stats.yaml
+            echo 'data:' >>/app/data/start9/stats.yaml
+            echo "  Superuser Account: " >>/app/data/start9/stats.yaml
+            echo '    type: string' >>/app/data/start9/stats.yaml
+            echo "    value: \"$SUPERUSER_ACCOUNT_URL_PROP\"" >>/app/data/start9/stats.yaml
+            echo '    description: LNBits Superuser Account' >>/app/data/start9/stats.yaml
+            echo '    copyable: true' >>/app/data/start9/stats.yaml
+            echo '    masked: false' >>/app/data/start9/stats.yaml
+            echo '    qr: true' >>/app/data/start9/stats.yaml
+            echo "  (Tor) Superuser Account: " >>/app/data/start9/stats.yaml
+            echo '    type: string' >>/app/data/start9/stats.yaml
+            echo "    value: \"$SUPERUSER_ACCOUNT_URL_TOR\"" >>/app/data/start9/stats.yaml
+            echo '    description: LNBits Superuser Account' >>/app/data/start9/stats.yaml
+            echo '    copyable: true' >>/app/data/start9/stats.yaml
+            echo '    masked: false' >>/app/data/start9/stats.yaml
+            echo '    qr: true' >>/app/data/start9/stats.yaml
+
+            sqlite3 ./data/database.sqlite3 'select id from accounts;' >account.res
+            mapfile -t LNBITS_ACCOUNTS <account.res
             # Iterate over the indices of the array in reverse order
-            for j in $(seq $((${#LNBITS_WALLETS[@]} - 1)) -1 0); do {
+            for i in $(seq $((${#LNBITS_ACCOUNTS[@]} - 1)) -1 0); do {
                 # Access the array element at the current index
+                val=${LNBITS_ACCOUNTS[$i]}
+                # get wallets for this user account
+                sqlite3 ./data/database.sqlite3 'select id from wallets where user="'$val'";' >wallet.res
+                mapfile -t LNBITS_WALLETS <wallet.res
+                # Iterate over the indices of the array in reverse order
+                for j in $(seq $((${#LNBITS_WALLETS[@]} - 1)) -1 0); do {
+                    # Access the array element at the current index
 
-                export val2=${LNBITS_WALLETS[$j]}
-                export ACCOUNT_URL_PROP="https://$LAN_ADDRESS/wallet?usr=$val&wal=$val2"
-                export ACCOUNT_URL_TOR="http://$TOR_ADDRESS/wallet?usr=$val&wal=$val2"
-                export LNBITS_WALLET_NAME=$(sqlite3 ./data/database.sqlite3 'select name from wallets where id="'$val2'";')
+                    export val2=${LNBITS_WALLETS[$j]}
+                    export ACCOUNT_URL_PROP="https://$LAN_ADDRESS/wallet?usr=$val&wal=$val2"
+                    export ACCOUNT_URL_TOR="http://$TOR_ADDRESS/wallet?usr=$val&wal=$val2"
+                    export LNBITS_WALLET_NAME=$(sqlite3 ./data/database.sqlite3 'select name from wallets where id="'$val2'";')
 
-                if ! [ "$SUPERUSER_ACCOUNT" = "$val" ] && ! [ "${val2:0:4}" = "del:" ] ; then
-                    echo "  LNBits Account $val - Wallet $LNBITS_WALLET_NAME: " >> /app/data/start9/stats.yaml
-                        echo '    type: string' >> /app/data/start9/stats.yaml
-                        echo "    value: \"$ACCOUNT_URL_PROP\"" >> /app/data/start9/stats.yaml
-                        echo '    description: LNBits Account' >> /app/data/start9/stats.yaml
-                        echo '    copyable: true' >> /app/data/start9/stats.yaml
-                        echo '    masked: false' >> /app/data/start9/stats.yaml
-                        echo '    qr: true' >> /app/data/start9/stats.yaml
-                    echo "  (Tor) LNBits Account $val - Wallet $LNBITS_WALLET_NAME: " >> /app/data/start9/stats.yaml
-                        echo '    type: string' >> /app/data/start9/stats.yaml
-                        echo "    value: \"$ACCOUNT_URL_TOR\"" >> /app/data/start9/stats.yaml
-                        echo '    description: LNBits Account' >> /app/data/start9/stats.yaml
-                        echo '    copyable: true' >> /app/data/start9/stats.yaml
-                        echo '    masked: false' >> /app/data/start9/stats.yaml
-                        echo '    qr: true' >> /app/data/start9/stats.yaml
-                fi
-            }   done 
-        }   done
-    else 
-        echo 'No accounts to populate'
-    fi
-    sleep 10
-} done &
+                    if ! [ "$SUPERUSER_ACCOUNT" = "$val" ] && ! [ "${val2:0:4}" = "del:" ]; then
+                        echo "  LNBits Account $val - Wallet $LNBITS_WALLET_NAME: " >>/app/data/start9/stats.yaml
+                        echo '    type: string' >>/app/data/start9/stats.yaml
+                        echo "    value: \"$ACCOUNT_URL_PROP\"" >>/app/data/start9/stats.yaml
+                        echo '    description: LNBits Account' >>/app/data/start9/stats.yaml
+                        echo '    copyable: true' >>/app/data/start9/stats.yaml
+                        echo '    masked: false' >>/app/data/start9/stats.yaml
+                        echo '    qr: true' >>/app/data/start9/stats.yaml
+                        echo "  (Tor) LNBits Account $val - Wallet $LNBITS_WALLET_NAME: " >>/app/data/start9/stats.yaml
+                        echo '    type: string' >>/app/data/start9/stats.yaml
+                        echo "    value: \"$ACCOUNT_URL_TOR\"" >>/app/data/start9/stats.yaml
+                        echo '    description: LNBits Account' >>/app/data/start9/stats.yaml
+                        echo '    copyable: true' >>/app/data/start9/stats.yaml
+                        echo '    masked: false' >>/app/data/start9/stats.yaml
+                        echo '    qr: true' >>/app/data/start9/stats.yaml
+                    fi
+                }; done
+            }; done
+        else
+            echo 'No accounts to populate'
+        fi
+        sleep 10
+    }; done
+}
 
-echo "Starting LNBits..."
+printf "\n\n [i] Starting LNBits...\n\n"
 
-exec tini -p SIGTERM -- poetry run lnbits --port $LNBITS_PORT --host $LNBITS_HOST 
+configurator &
+
+poetry run lnbits --port $LNBITS_PORT --host $LNBITS_HOST &
+lnbits_process=$!
+
+# Set up a signal trap and wait for processes to finish
+trap _term TERM
+wait $lnbits_process
