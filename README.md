@@ -1,60 +1,9 @@
 # Wrapper for lnbits
 
-lnbits is a GUI for lnbits. You can run lnbits on StartOS by installing an .s9pk file, or you can build your own .s9pk file by following the instuctions below.
+lnbits-startos contains the [lnbits](https://github.com/lnbits/lnbits) software packaged to run on StartOS. You can run lnbits on StartOS by installing a .s9pk file, or you can build your own .s9pk file by following the instuctions below.
 
-## Dependencies
-
-- [docker](https://docs.docker.com/get-docker)
-- [docker-buildx](https://docs.docker.com/buildx/working-with-buildx/)
-- [yq](https://mikefarah.gitbook.io/yq)
-- [deno](https://deno.land/)
-- [make](https://www.gnu.org/software/make/)
-- [start-sdk](https://github.com/Start9Labs/start-os/tree/master/backend)
-
-## Build enviroment
-Prepare your StartOS build enviroment. In this example we are using Ubuntu 20.04.
-
-1. Install docker
-```
-curl -fsSL https://get.docker.com -o- | bash
-sudo usermod -aG docker "$USER"
-exec sudo su -l $USER
-```
-2. Set buildx as the default builder
-```
-docker buildx install
-docker buildx create --use
-```
-3. Enable cross-arch emulated builds in docker
-```
-docker run --privileged --rm linuxkit/binfmt:v0.8
-```
-4. Install yq
-```
-sudo snap install yq
-```
-5. Install deno
-```
-sudo snap install deno
-```
-6. Install essentials build packages
-```
-sudo apt-get install -y build-essential openssl libssl-dev libc6-dev clang libclang-dev ca-certificates
-```
-7. Install Rust
-```
-curl https://sh.rustup.rs -sSf | sh
-# Choose nr 1 (default install)
-source $HOME/.cargo/env
-```
-8. Build and install start-sdk
-```
-cd ~/ && git clone --recursive https://github.com/Start9Labs/start-os.git --branch sdk
-cd start-os/backend/
-./install-sdk.sh
-start-sdk init
-```
-Now you are ready to build your **lnbits** service
+## Build environment
+Before building the lnbits package, your build environment must be setup for building StartOS services. Instructions for setting up the proper build environment can be found in the [Developer Docs](https://docs.start9.com/latest/developer-docs/packaging).
 
 ## Cloning
 
@@ -67,10 +16,22 @@ cd lnbits-wrapper
 
 ## Building
 
-To build the **lnbits** service, run the following command:
+To build the **lnbits** service as a universal package, run the following command:
 
 ```
 make
+```
+
+Alternatively the package can be built for individual architectures by specifying the architecture as follows:
+
+```
+make x86
+```
+
+or
+
+```
+make arm
 ```
 
 ## Installing (on StartOS)
