@@ -2,7 +2,17 @@
 
 lnbits-startos contains the [lnbits](https://github.com/lnbits/lnbits) software packaged to run on StartOS. You can run lnbits on StartOS by installing a .s9pk file, or you can build your own .s9pk file by following the instuctions below.
 
+## Dependencies
+
+- [docker](https://docs.docker.com/get-docker)
+- [docker-buildx](https://docs.docker.com/buildx/working-with-buildx/)
+- [yq](https://mikefarah.gitbook.io/yq)
+- [deno](https://deno.land/)
+- [make](https://www.gnu.org/software/make/)
+- [start-sdk](https://github.com/Start9Labs/start-os/tree/master/backend)
+
 ## Build environment
+
 Before building the lnbits package, your build environment must be setup for building StartOS services. Instructions for setting up the proper build environment can be found in the [Developer Docs](https://docs.start9.com/latest/developer-docs/packaging).
 
 ## Cloning
@@ -45,6 +55,7 @@ start-cli auth login
 start-cli --host https://server-name.local package install lnbits.s9pk
 ```
 **Tip:** You can also install the lnbits.s9pk using **Sideload Service** under the **StartOS > SETTINGS** section.
+
 ## Verify Install
 
 Go to your StartOS Services page, select **lnbits**, configure and start the service.
