@@ -1,10 +1,8 @@
 id: lnbits 
 title: "LNBits"
-version: 0.10.10.1
+version: 0.11.0
 release-notes: |
-  * Update upstream to 0.10.10. Release notes available [here](https://github.com/lnbits/lnbits/compare/0.10.9...0.10.10).
-  * Fix bug when switching between LN implementations.
-  * Update instructions
+  * Update upstream to 0.11.0 - including the new Node Manager! Full release notes available [here](https://github.com/lnbits/lnbits/releases/tag/0.11.0).
 license: MIT
 wrapper-repo: "https://github.com/Start9Labs/lnbits-wrapper"
 upstream-repo: "https://github.com/lnbits/lnbits"
