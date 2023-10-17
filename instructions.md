@@ -1,6 +1,6 @@
 # Overview
 
-LNBits is very powerful with many features, a "one-stop-shop" for using the Lightning Network. Please visit https://lnbits.com/ for a complete list of features and guides.
+LNBits is a robust and versatile platform, serving as a comprehensive hub for Lightning Network functionality. For a complete list of its extensive features and detailed guides, please visit [lnbits.com](https://lnbits.com/).
 
 ## Using LNBits
 
