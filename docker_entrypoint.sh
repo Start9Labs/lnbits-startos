@@ -104,8 +104,9 @@ configurator() {
                     export ACCOUNT_URL_PROP="https://$LAN_ADDRESS/wallet?usr=$val&wal=$val2"
                     export ACCOUNT_URL_TOR="http://$TOR_ADDRESS/wallet?usr=$val&wal=$val2"
                     export LNBITS_WALLET_NAME=$(sqlite3 ./data/database.sqlite3 'select name from wallets where id="'$val2'";')
+                    export LNBITS_WALLET_DELETED=$(sqlite3 ./data/database.sqlite3 'select deleted from wallets where id="'$val2'";')
 
-                    if ! [ "$SUPERUSER_ACCOUNT" = "$val" ] && ! [ "${val2:0:4}" = "del:" ]; then
+                    if ! [ "$SUPERUSER_ACCOUNT" = "$val" ] && [ $LNBITS_WALLET_DELETED = 0 ]; then
                         echo "  LNBits Account $val - Wallet $LNBITS_WALLET_NAME: " >>/app/data/start9/stats.yaml
                         echo '    type: string' >>/app/data/start9/stats.yaml
                         echo "    value: \"$ACCOUNT_URL_PROP\"" >>/app/data/start9/stats.yaml
@@ -121,6 +122,12 @@ configurator() {
                         echo '    masked: false' >>/app/data/start9/stats.yaml
                         echo '    qr: true' >>/app/data/start9/stats.yaml
                     fi
+
+                    if [ $LNBITS_WALLET_DELETED = 1 ]; then
+                        yq eval -i "del(.data | with_entries(select(.value.value | contains(\"usr=$val\"))))" "/app/data/start9/stats.yaml"
+                        echo "Deleted account $val from Properties"
+                    fi
+
                 }; done
             }; done
         else
