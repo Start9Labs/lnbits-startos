@@ -12,6 +12,11 @@ COPY --from=builder /usr/bin/tini /usr/bin/tini
 COPY --from=builder /usr/bin/sqlite3 /usr/bin/sqlite3
 COPY --from=builder /root/.local/bin/yq /usr/local/bin/yq
 
+RUN apt-get update && \
+  apt-get install -y \
+  xxd \
+  curl
+
 ENV LNBITS_PORT 5000
 ENV LNBITS_HOST lnbits.embassy
 

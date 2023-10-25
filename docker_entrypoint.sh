@@ -15,6 +15,8 @@ export LAN_ADDRESS=$(yq e '.lan-address' /app/data/start9/config.yaml)
 export LNBITS_BACKEND_WALLET_CLASS=$(yq e '.implementation' /app/data/start9/config.yaml)
 export FILE="/app/data/database.sqlite3"
 export CONFIG_LN_IMPLEMENTATION=$(yq e '.implementation' /app/data/start9/config.yaml)
+MACAROON_HEADER="Grpc-Metadata-macaroon: $(xxd -ps -u -c 1000 /mnt/lnd/admin.macaroon)"
+
 sleep 16
 sed -i 's|LNBITS_ADMIN_USERS.*|LNBITS_ADMIN_USERS="'$LNBITS_USERNAME'"|' /app/.env
 sed -i 's|LNBITS_BACKEND_WALLET_CLASS=.*|LNBITS_BACKEND_WALLET_CLASS='$LNBITS_BACKEND_WALLET_CLASS'|' /app/.env
@@ -140,6 +142,14 @@ configurator() {
 printf "\n\n [i] Starting LNBits...\n\n"
 
 configurator &
+
+if [ $CONFIG_LN_IMPLEMENTATION = "LndRestWallet" ]; then
+    until curl --silent --fail --cacert /mnt/lnd/tls.cert --header "$MACAROON_HEADER" https://lnd.embassy:8080/v1/getinfo &>/dev/null
+    do
+        echo "LND Server is unreachable. Are you sure the LND service is running?" 
+        sleep 5
+    done
+fi
 
 poetry run lnbits --port $LNBITS_PORT --host $LNBITS_HOST &
 lnbits_process=$!
