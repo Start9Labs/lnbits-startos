@@ -17,10 +17,7 @@ export FILE="/app/data/database.sqlite3"
 export CONFIG_LN_IMPLEMENTATION=$(yq e '.implementation' /app/data/start9/config.yaml)
 MACAROON_HEADER="Grpc-Metadata-macaroon: $(xxd -ps -u -c 1000 /mnt/lnd/admin.macaroon)"
 
-sleep 16
-sed -i 's|LNBITS_ADMIN_USERS.*|LNBITS_ADMIN_USERS="'$LNBITS_USERNAME'"|' /app/.env
 sed -i 's|LNBITS_BACKEND_WALLET_CLASS=.*|LNBITS_BACKEND_WALLET_CLASS='$LNBITS_BACKEND_WALLET_CLASS'|' /app/.env
-sleep 5
 
 if [ -f $FILE ]; then
     echo "Checking if underlying LN implementation has changed..."
@@ -53,7 +50,7 @@ if [ -f $FILE ]; then {
         echo 'No LNBits accounts found.'
     }
 fi
-sleep 5
+
 if ! [ -f $LND_PATH ] && ! [ -d $CLN_PATH ]; then
     echo "ERROR: A Lightning Node must be running on your Start9 server in order to use LNBits."
     exit 1
