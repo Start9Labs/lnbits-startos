@@ -15,10 +15,9 @@ export LAN_ADDRESS=$(yq e '.lan-address' /app/data/start9/config.yaml)
 export LNBITS_BACKEND_WALLET_CLASS=$(yq e '.implementation' /app/data/start9/config.yaml)
 export FILE="/app/data/database.sqlite3"
 export CONFIG_LN_IMPLEMENTATION=$(yq e '.implementation' /app/data/start9/config.yaml)
-sleep 16
-sed -i 's|LNBITS_ADMIN_USERS.*|LNBITS_ADMIN_USERS="'$LNBITS_USERNAME'"|' /app/.env
+MACAROON_HEADER="Grpc-Metadata-macaroon: $(xxd -ps -u -c 1000 /mnt/lnd/admin.macaroon)"
+
 sed -i 's|LNBITS_BACKEND_WALLET_CLASS=.*|LNBITS_BACKEND_WALLET_CLASS='$LNBITS_BACKEND_WALLET_CLASS'|' /app/.env
-sleep 5
 
 if [ -f $FILE ]; then
     echo "Checking if underlying LN implementation has changed..."
@@ -42,8 +41,8 @@ if [ -f $FILE ]; then {
     # Properties Page showing password to be used for login
     echo 'version: 2' >/app/data/start9/stats.yaml
     echo 'data:' >>/app/data/start9/stats.yaml
-    for val in "${LNBITS_ACCOUNTS[@]}"; do
-        ACCOUNT_URL="http://$TOR_ADDRESS/wallet?usr=$val"
+    for USER_ID in "${LNBITS_ACCOUNTS[@]}"; do
+        ACCOUNT_URL="http://$TOR_ADDRESS/wallet?usr=$USER_ID"
         printf "$ACCOUNT_URL\n"
     done
 }; else
@@ -51,7 +50,7 @@ if [ -f $FILE ]; then {
         echo 'No LNBits accounts found.'
     }
 fi
-sleep 5
+
 if ! [ -f $LND_PATH ] && ! [ -d $CLN_PATH ]; then
     echo "ERROR: A Lightning Node must be running on your Start9 server in order to use LNBits."
     exit 1
@@ -92,28 +91,29 @@ configurator() {
             # Iterate over the indices of the array in reverse order
             for i in $(seq $((${#LNBITS_ACCOUNTS[@]} - 1)) -1 0); do {
                 # Access the array element at the current index
-                val=${LNBITS_ACCOUNTS[$i]}
+                USER_ID=${LNBITS_ACCOUNTS[$i]}
                 # get wallets for this user account
-                sqlite3 ./data/database.sqlite3 'select id from wallets where user="'$val'";' >wallet.res
+                sqlite3 ./data/database.sqlite3 'select id from wallets where user="'$USER_ID'";' >wallet.res
                 mapfile -t LNBITS_WALLETS <wallet.res
                 # Iterate over the indices of the array in reverse order
                 for j in $(seq $((${#LNBITS_WALLETS[@]} - 1)) -1 0); do {
                     # Access the array element at the current index
 
-                    export val2=${LNBITS_WALLETS[$j]}
-                    export ACCOUNT_URL_PROP="https://$LAN_ADDRESS/wallet?usr=$val&wal=$val2"
-                    export ACCOUNT_URL_TOR="http://$TOR_ADDRESS/wallet?usr=$val&wal=$val2"
-                    export LNBITS_WALLET_NAME=$(sqlite3 ./data/database.sqlite3 'select name from wallets where id="'$val2'";')
+                    export WALLET_ID=${LNBITS_WALLETS[$j]}
+                    export ACCOUNT_URL_PROP="https://$LAN_ADDRESS/wallet?usr=$USER_ID&wal=$WALLET_ID"
+                    export ACCOUNT_URL_TOR="http://$TOR_ADDRESS/wallet?usr=$USER_ID&wal=$WALLET_ID"
+                    export LNBITS_WALLET_NAME=$(sqlite3 ./data/database.sqlite3 'select name from wallets where id="'$WALLET_ID'";')
+                    export LNBITS_WALLET_DELETED=$(sqlite3 ./data/database.sqlite3 'select deleted from wallets where id="'$WALLET_ID'";')
 
-                    if ! [ "$SUPERUSER_ACCOUNT" = "$val" ] && ! [ "${val2:0:4}" = "del:" ]; then
-                        echo "  LNBits Account $val - Wallet $LNBITS_WALLET_NAME: " >>/app/data/start9/stats.yaml
+                    if ! [ "$SUPERUSER_ACCOUNT" = "$USER_ID" ] && [ $LNBITS_WALLET_DELETED = 0 ]; then
+                        echo "  LNBits Account $USER_ID - Wallet $LNBITS_WALLET_NAME: " >>/app/data/start9/stats.yaml
                         echo '    type: string' >>/app/data/start9/stats.yaml
                         echo "    value: \"$ACCOUNT_URL_PROP\"" >>/app/data/start9/stats.yaml
                         echo '    description: LNBits Account' >>/app/data/start9/stats.yaml
                         echo '    copyable: true' >>/app/data/start9/stats.yaml
                         echo '    masked: false' >>/app/data/start9/stats.yaml
                         echo '    qr: true' >>/app/data/start9/stats.yaml
-                        echo "  (Tor) LNBits Account $val - Wallet $LNBITS_WALLET_NAME: " >>/app/data/start9/stats.yaml
+                        echo "  (Tor) LNBits Account $USER_ID - Wallet $LNBITS_WALLET_NAME: " >>/app/data/start9/stats.yaml
                         echo '    type: string' >>/app/data/start9/stats.yaml
                         echo "    value: \"$ACCOUNT_URL_TOR\"" >>/app/data/start9/stats.yaml
                         echo '    description: LNBits Account' >>/app/data/start9/stats.yaml
@@ -133,6 +133,14 @@ configurator() {
 printf "\n\n [i] Starting LNBits...\n\n"
 
 configurator &
+
+if [ $CONFIG_LN_IMPLEMENTATION = "LndRestWallet" ]; then
+    until curl --silent --fail --cacert /mnt/lnd/tls.cert --header "$MACAROON_HEADER" https://lnd.embassy:8080/v1/getinfo &>/dev/null
+    do
+        echo "LND Server is unreachable. Are you sure the LND service is running?" 
+        sleep 5
+    done
+fi
 
 poetry run lnbits --port $LNBITS_PORT --host $LNBITS_HOST &
 lnbits_process=$!
