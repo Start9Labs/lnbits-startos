@@ -15,7 +15,7 @@ export LAN_ADDRESS=$(yq e '.lan-address' /app/data/start9/config.yaml)
 export LNBITS_BACKEND_WALLET_CLASS=$(yq e '.implementation' /app/data/start9/config.yaml)
 export FILE="/app/data/database.sqlite3"
 export CONFIG_LN_IMPLEMENTATION=$(yq e '.implementation' /app/data/start9/config.yaml)
-MACAROON_HEADER="Grpc-Metadata-macaroon: $(xxd -ps -u -c 1000 /mnt/lnd/admin.macaroon)"
+MACAROON_HEADER=""
 
 sed -i 's|LNBITS_BACKEND_WALLET_CLASS=.*|LNBITS_BACKEND_WALLET_CLASS='$LNBITS_BACKEND_WALLET_CLASS'|' /app/.env
 
@@ -51,17 +51,17 @@ if [ -f $FILE ]; then {
     }
 fi
 
-if ! [ -d $CLN_PATH ]; then
+if [ $LNBITS_BACKEND_WALLET_CLASS == "LndRestWallet" ]; then
+    MACAROON_HEADER="Grpc-Metadata-macaroon: $(xxd -ps -u -c 1000 /mnt/lnd/admin.macaroon)"
     if ! [ -f $LND_PATH ]; then
-        echo "ERROR: A Lightning Node must be running on your Start9 server in order to use LNBits."
+        echo "ERROR: Cannot find LND macaroon."
         exit 1
     fi
-elif ! [ -f $LND_PATH ] && [ $LNBITS_BACKEND_WALLET_CLASS == "LndRestWallet" ]; then
-    echo "ERROR: Cannot find LND macaroon."
-    exit 1
-elif ! [ -d $CLN_PATH ] && [ $LNBITS_BACKEND_WALLET_CLASS == "CLightningWallet" ]; then
-    echo "ERROR: Cannot find Core Lightning path."
-    exit 1
+elif [ $LNBITS_BACKEND_WALLET_CLASS == "CLightningWallet" ]; then
+    if ! [ -d $CLN_PATH ]; then
+        echo "ERROR: Cannot find Core Lightning path."
+        exit 1
+    fi
 fi
 
 configurator() {
