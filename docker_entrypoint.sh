@@ -51,9 +51,11 @@ if [ -f $FILE ]; then {
     }
 fi
 
-if ! [ -f $LND_PATH ] && ! [ -d $CLN_PATH ]; then
-    echo "ERROR: A Lightning Node must be running on your Start9 server in order to use LNBits."
-    exit 1
+if ! [ -d $CLN_PATH ]; then
+    if ! [ -f $LND_PATH ]; then
+        echo "ERROR: A Lightning Node must be running on your Start9 server in order to use LNBits."
+        exit 1
+    fi
 elif ! [ -f $LND_PATH ] && [ $LNBITS_BACKEND_WALLET_CLASS == "LndRestWallet" ]; then
     echo "ERROR: Cannot find LND macaroon."
     exit 1
