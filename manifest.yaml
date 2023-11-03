@@ -2,6 +2,8 @@ id: lnbits
 title: "LNBits"
 version: 0.11.1.1
 release-notes: |
+  * Update upstream to 0.11.1 - including the new Node Manager! Full release notes available [here](https://github.com/lnbits/lnbits/releases/tag/0.11.1).
+  * Bug fixes and refactoring.
   * Fix configuration bug.
   * Expose Public Node UI in Properties if enabled.
 license: MIT
