@@ -15,7 +15,8 @@ COPY --from=builder /root/.local/bin/yq /usr/local/bin/yq
 RUN apt-get update && \
   apt-get install -y \
   xxd \
-  curl
+  curl \
+  jq
 
 ENV LNBITS_PORT 5000
 ENV LNBITS_HOST lnbits.embassy
