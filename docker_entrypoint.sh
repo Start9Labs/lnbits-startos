@@ -15,7 +15,6 @@ export LAN_ADDRESS=$(yq e '.lan-address' /app/data/start9/config.yaml)
 export LNBITS_BACKEND_WALLET_CLASS=$(yq e '.implementation' /app/data/start9/config.yaml)
 export FILE="/app/data/database.sqlite3"
 MACAROON_HEADER=""
-PUBLIC_UI=''
 
 sed -i 's|LNBITS_BACKEND_WALLET_CLASS=.*|LNBITS_BACKEND_WALLET_CLASS='$LNBITS_BACKEND_WALLET_CLASS'|' /app/.env
 
@@ -23,7 +22,6 @@ if [ -f $FILE ]; then
     echo "Checking if underlying LN implementation has changed..."
     LNBITS_SETTINGS=$(sqlite3 ./data/database.sqlite3 'select editable_settings from settings;')
     EXISTING_CONFIG_LN_IMPLEMENTATION=$(echo "$LNBITS_SETTINGS" | sed -n 's/.*"lnbits_backend_wallet_class": "\([^"]*\)".*/\1/p')
-    PUBLIC_UI=$(echo "$LNBITS_SETTINGS" | jq ".lnbits_public_node_ui")
 
     if [ "$LNBITS_BACKEND_WALLET_CLASS" != "$EXISTING_CONFIG_LN_IMPLEMENTATION" ]; then
         echo "Configured LN implementation is not the same as the existing LN implementation"
@@ -72,6 +70,8 @@ configurator() {
             SUPERUSER_ACCOUNT=$(sqlite3 ./data/database.sqlite3 'select super_user from settings;')
             SUPERUSER_ACCOUNT_URL_PROP="https://$LAN_ADDRESS/wallet?usr=$SUPERUSER_ACCOUNT"
             SUPERUSER_ACCOUNT_URL_TOR="http://$TOR_ADDRESS/wallet?usr=$SUPERUSER_ACCOUNT"
+            LNBITS_SETTINGS=$(sqlite3 ./data/database.sqlite3 'select editable_settings from settings;')
+            PUBLIC_UI=$(echo "$LNBITS_SETTINGS" | jq ".lnbits_public_node_ui")
 
             echo 'version: 2' >/app/data/start9/stats.yaml
             echo 'data:' >>/app/data/start9/stats.yaml
