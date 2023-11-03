@@ -14,7 +14,6 @@ export TOR_ADDRESS=$(yq e '.tor-address' /app/data/start9/config.yaml)
 export LAN_ADDRESS=$(yq e '.lan-address' /app/data/start9/config.yaml)
 export LNBITS_BACKEND_WALLET_CLASS=$(yq e '.implementation' /app/data/start9/config.yaml)
 export FILE="/app/data/database.sqlite3"
-export CONFIG_LN_IMPLEMENTATION=$(yq e '.implementation' /app/data/start9/config.yaml)
 MACAROON_HEADER=""
 PUBLIC_UI=''
 
@@ -26,7 +25,7 @@ if [ -f $FILE ]; then
     EXISTING_CONFIG_LN_IMPLEMENTATION=$(echo "$LNBITS_SETTINGS" | sed -n 's/.*"lnbits_backend_wallet_class": "\([^"]*\)".*/\1/p')
     PUBLIC_UI=$(echo "$LNBITS_SETTINGS" | jq ".lnbits_public_node_ui")
 
-    if [ "$CONFIG_LN_IMPLEMENTATION" != "$EXISTING_CONFIG_LN_IMPLEMENTATION" ]; then
+    if [ "$LNBITS_BACKEND_WALLET_CLASS" != "$EXISTING_CONFIG_LN_IMPLEMENTATION" ]; then
         echo "Configured LN implementation is not the same as the existing LN implementation"
         echo "Deleting previous LN implementation data"
         rm $FILE
@@ -74,11 +73,12 @@ configurator() {
             SUPERUSER_ACCOUNT_URL_PROP="https://$LAN_ADDRESS/wallet?usr=$SUPERUSER_ACCOUNT"
             SUPERUSER_ACCOUNT_URL_TOR="http://$TOR_ADDRESS/wallet?usr=$SUPERUSER_ACCOUNT"
 
+            echo 'version: 2' >/app/data/start9/stats.yaml
+            echo 'data:' >>/app/data/start9/stats.yaml
+
             # Node UI
-            if [ "$PUBLIC_UI" = "true" ]; then
-                echo 'version: 2' >>/app/data/start9/stats.yaml
-                echo 'data:' >>/app/data/start9/stats.yaml
-                echo "  Public UI" >>/app/data/start9/stats.yaml
+            if [ "$PUBLIC_UI" == "true" ]; then
+                echo "  Public Node UI:" >>/app/data/start9/stats.yaml
                 echo '    type: string' >>/app/data/start9/stats.yaml
                 echo "    value: \"http://$TOR_ADDRESS/node/public\"" >>/app/data/start9/stats.yaml
                 echo '    description: The URL of your LNbits Public Node UI. Share this URL with others so they can see basic information about your LN node.' >>/app/data/start9/stats.yaml
@@ -86,6 +86,7 @@ configurator() {
                 echo '    masked: false' >>/app/data/start9/stats.yaml
                 echo '    qr: true' >>/app/data/start9/stats.yaml
             fi
+            
             echo "  Superuser Account: " >>/app/data/start9/stats.yaml
             echo '    type: string' >>/app/data/start9/stats.yaml
             echo "    value: \"$SUPERUSER_ACCOUNT_URL_PROP\"" >>/app/data/start9/stats.yaml
@@ -149,7 +150,7 @@ printf "\n\n [i] Starting LNBits...\n\n"
 
 configurator &
 
-if [ $CONFIG_LN_IMPLEMENTATION = "LndRestWallet" ]; then
+if [ "$CONFIG_LN_IMPLEMENTATION" = "LndRestWallet" ]; then
     until curl --silent --fail --cacert /mnt/lnd/tls.cert --header "$MACAROON_HEADER" https://lnd.embassy:8080/v1/getinfo &>/dev/null
     do
         echo "LND Server is unreachable. Are you sure the LND service is running?" 
