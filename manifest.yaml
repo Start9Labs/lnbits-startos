@@ -2,7 +2,8 @@ id: lnbits
 title: "LNBits"
 version: 0.11.1.1
 release-notes: |
-  * Fix configuration bug
+  * Fix configuration bug.
+  * Expose Public Node UI in Properties if enabled.
 license: MIT
 wrapper-repo: "https://github.com/Start9Labs/lnbits-wrapper"
 upstream-repo: "https://github.com/lnbits/lnbits"
