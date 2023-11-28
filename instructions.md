@@ -8,4 +8,4 @@ To use LNbits, simply click `LAUNCH UI` and create your first wallet. LNbits wil
 
 LNbits includes a `Superuser Account` which can also be found in `Properties`. This account can be used to manage the server, allowing the user to add extensions, topup wallets, etc.
 
-Documentation for using LNbits can be found [here](https://docs.start9.com/latest/guides/service-guides/lightning/connecting-LNbits)
+Documentation for using LNbits can be found [here](https://docs.start9.com/0.3.5.x/service-guides/lightning/connecting-lnbits#connecting-lnbits)
