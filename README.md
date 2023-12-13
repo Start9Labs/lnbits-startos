@@ -1,4 +1,8 @@
-# Wrapper for lnbits
+<p align="center">
+  <img src="icon_readme.png" alt="Project Logo" width="21%">
+</p>
+
+# LNbits for StartOS
 
 lnbits-startos contains the [lnbits](https://github.com/lnbits/lnbits) software packaged to run on StartOS. You can run lnbits on StartOS by installing a .s9pk file, or you can build your own .s9pk file by following the instuctions below.
 
@@ -20,8 +24,8 @@ Before building the lnbits package, your build environment must be setup for bui
 Clone the project locally. 
 
 ```
-git clone https://github.com/Start9Labs/lnbits-wrapper.git
-cd lnbits-wrapper
+git clone https://github.com/Start9Labs/lnbits-startos.git
+cd lnbits-startos
 ```
 
 ## Building
