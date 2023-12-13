@@ -13,7 +13,7 @@ lnbits-startos contains the [lnbits](https://github.com/lnbits/lnbits) software 
 - [yq](https://mikefarah.gitbook.io/yq)
 - [deno](https://deno.land/)
 - [make](https://www.gnu.org/software/make/)
-- [start-sdk](https://github.com/Start9Labs/start-os/tree/sdk/backend)
+- [start-sdk](https://github.com/Start9Labs/start-os/tree/sdk)
 
 ## Build environment
 
