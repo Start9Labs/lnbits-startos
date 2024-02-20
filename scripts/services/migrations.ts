@@ -19,5 +19,5 @@ export const migration: T.ExpectedExports.migration = compat.migrations
         ),
   },
 },
-"0.12.1",
+"0.12.1.1",
 );
