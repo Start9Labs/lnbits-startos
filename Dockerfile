@@ -18,6 +18,8 @@ RUN apt-get update && \
   curl \
   jq
 
+RUN pip3 install bcrypt
+
 ENV LNBITS_PORT 5000
 ENV LNBITS_HOST lnbits.embassy
 
