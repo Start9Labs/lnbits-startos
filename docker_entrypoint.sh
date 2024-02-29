@@ -29,6 +29,10 @@ if [ -f $FILE ]; then
         rm $FILE
         rm /app/data/start9/stats.yaml
     fi
+    # Create flag for Auth Initilization
+    if ! [ -f '/app/data/start9/auth_initialized' ]; then
+      touch /app/data/start9/auth_initialized
+    fi
 fi
 
 if [ -f $FILE ]; then {
@@ -177,6 +181,25 @@ while ! [ -f $FILE ]; do {
   sleep 10
 }; done
 
+while true; do {
+  ACCOUNTS_COLUMNS=$(sqlite3 ./data/database.sqlite3 'PRAGMA table_info(accounts);')
+  if echo "$ACCOUNTS_COLUMNS" | grep -q "username"; then
+    break
+  fi
+  echo "Waiting for migrations to complete..."
+  sleep 10
+}; done
+
+# Set Auth to username-password for fresh installs
+if ! [ -f '/app/data/start9/auth_initialized' ]; then
+  EDITABLE_SETTINGS=$(sqlite3 ./data/database.sqlite3 'select editable_settings from settings;')
+  UPDATED_SETTINGS=$(echo "$EDITABLE_SETTINGS" | jq '.auth_allowed_methods = ["username-password"]')
+  sqlite3 ./data/database.sqlite3 <<EOF
+  update settings
+  set editable_settings = '$UPDATED_SETTINGS';
+EOF
+fi
+
 SUPERUSER_ACCOUNT_ID=$(sqlite3 ./data/database.sqlite3 'select super_user from settings;')
 SUPERUSER_NAME=$(sqlite3 ./data/database.sqlite3 "select username from accounts where id = '$SUPERUSER_ACCOUNT_ID'")
 
@@ -197,7 +220,8 @@ if [ "$SUPERUSER_NAME" == "" ]; then
       updated_at = '$CURRENT_DATETIME'
   WHERE id = "$SUPERUSER_ACCOUNT_ID";
 EOF
-  tini -s
+  echo "Restarting LNbits to save Admin username and password"
+  tini -s 2>/dev/null
 fi
 
 ADMIN_PASS=$(cat /app/data/start9/admin_password.txt)
