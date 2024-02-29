@@ -26,6 +26,7 @@ ENV LNBITS_HOST lnbits.embassy
 WORKDIR /app/
 RUN mkdir -p ./data
 ADD .env.example ./.env
+ADD actions/*.sh /usr/local/bin/
 RUN chmod a+x ./.env
 ADD docker_entrypoint.sh /usr/local/bin/docker_entrypoint.sh
 ADD check-web.sh /usr/local/bin/check-web.sh
