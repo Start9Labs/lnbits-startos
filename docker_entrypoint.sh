@@ -35,7 +35,7 @@ if [ -f $FILE ]; then
     fi
 fi
 
-if [ -f $FILE ]; then {
+if [ -f $FILE ]; then
     echo "Looking for existing accounts and wallets..."
     sqlite3 ./data/database.sqlite3 'select id from accounts;' >>account.res
     mapfile -t LNBITS_ACCOUNTS <account.res
@@ -45,10 +45,8 @@ if [ -f $FILE ]; then {
         ACCOUNT_URL="http://$TOR_ADDRESS/wallet?usr=$USER_ID"
         printf "$ACCOUNT_URL\n"
     done
-}; else
-    {
-        echo 'No LNBits accounts found.'
-    }
+else
+    echo 'No LNBits accounts found.'
 fi
 
 if [ $LNBITS_BACKEND_WALLET_CLASS == "LndRestWallet" ]; then
@@ -176,19 +174,19 @@ fi
 poetry run lnbits --port $LNBITS_PORT --host $LNBITS_HOST &
 lnbits_process=$!
 
-while ! [ -f $FILE ]; do {
+while ! [ -f $FILE ]; do
   echo "Waiting for DB to be created..."
   sleep 10
-}; done
+done
 
-while true; do {
+while true; do
   ACCOUNTS_COLUMNS=$(sqlite3 ./data/database.sqlite3 'PRAGMA table_info(accounts);')
   if echo "$ACCOUNTS_COLUMNS" | grep -q "username"; then
     break
   fi
   echo "Waiting for migrations to complete..."
   sleep 10
-}; done
+done
 
 # Set Auth to username-password for fresh installs
 if ! [ -f '/app/data/start9/auth_initialized' ]; then
