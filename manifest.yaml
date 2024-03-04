@@ -1,11 +1,14 @@
 id: lnbits 
 title: "LNBits"
-version: 0.12.1.1
+version: 0.12.2
 release-notes: |
-  * Update upstream to 0.12.1 - Full release notes available [here](https://github.com/lnbits/lnbits/releases/tag/0.12.1).
+  * Update upstream to 0.12.2 - Full release notes available [here](https://github.com/lnbits/lnbits/releases/tag/0.12.2).
+  * Create and save default Superuser username and password in Properties
+  * Add action to reset Superuser password
+  * Default username-password as sole Auth method for fresh installations
   * Update instructions
 license: MIT
-wrapper-repo: "https://github.com/Start9Labs/lnbits-wrapper"
+wrapper-repo: "https://github.com/Start9Labs/lnbits-startos"
 upstream-repo: "https://github.com/lnbits/lnbits"
 support-site: "https://github.com/lnbits/lnbits/issues"
 marketing-site: "https://lnbits.com/"
@@ -127,3 +130,18 @@ migrations:
    "*":
      type: script
      args: ["to"]
+actions:
+  reset-pass:
+    name: "Restore Default Superuser Password"
+    description: "Resets the Superuser password to the default password in Properties."
+    warning: ~
+    allowed-statuses:
+      - running
+    implementation:
+      type: docker
+      image: main
+      system: false
+      entrypoint: reset-pass.sh
+      inject: true
+      args: []
+      io-format: json

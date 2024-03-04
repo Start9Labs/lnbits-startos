@@ -29,25 +29,24 @@ if [ -f $FILE ]; then
         rm $FILE
         rm /app/data/start9/stats.yaml
     fi
+    # Create flag for Auth Initilization
+    if ! [ -f '/app/data/start9/auth_initialized' ]; then
+      touch /app/data/start9/auth_initialized
+    fi
 fi
 
-if [ -f $FILE ]; then {
+if [ -f $FILE ]; then
     echo "Looking for existing accounts and wallets..."
     sqlite3 ./data/database.sqlite3 'select id from accounts;' >>account.res
     mapfile -t LNBITS_ACCOUNTS <account.res
     echo "Found ${#LNBITS_ACCOUNTS[*]} existing LNBits account(s)."
     echo "Navigate to the following URLs to access these accounts:"
-    # Properties Page showing password to be used for login
-    echo 'version: 2' >/app/data/start9/stats.yaml
-    echo 'data:' >>/app/data/start9/stats.yaml
     for USER_ID in "${LNBITS_ACCOUNTS[@]}"; do
         ACCOUNT_URL="http://$TOR_ADDRESS/wallet?usr=$USER_ID"
         printf "$ACCOUNT_URL\n"
     done
-}; else
-    {
-        echo 'No LNBits accounts found.'
-    }
+else
+    echo 'No LNBits accounts found.'
 fi
 
 if [ $LNBITS_BACKEND_WALLET_CLASS == "LndRestWallet" ]; then
@@ -75,6 +74,22 @@ configurator() {
 
             echo 'version: 2' >/app/data/start9/stats.yaml
             echo 'data:' >>/app/data/start9/stats.yaml
+
+            # Admin Credentials
+            echo "  Superuser Username: " >>/app/data/start9/stats.yaml
+            echo '    type: string' >>/app/data/start9/stats.yaml
+            echo '    value: admin' >>/app/data/start9/stats.yaml
+            echo '    description: LNBits Superuser Account Username' >>/app/data/start9/stats.yaml
+            echo '    copyable: true' >>/app/data/start9/stats.yaml
+            echo '    masked: false' >>/app/data/start9/stats.yaml
+            echo '    qr: false' >>/app/data/start9/stats.yaml
+            echo "  Superuser Default Password: " >>/app/data/start9/stats.yaml
+            echo '    type: string' >>/app/data/start9/stats.yaml
+            echo "    value: $ADMIN_PASS" >>/app/data/start9/stats.yaml
+            echo '    description: LNBits Superuser Account Password' >>/app/data/start9/stats.yaml
+            echo '    copyable: true' >>/app/data/start9/stats.yaml
+            echo '    masked: true' >>/app/data/start9/stats.yaml
+            echo '    qr: false' >>/app/data/start9/stats.yaml
 
             # Node UI
             if [ "$PUBLIC_UI" == "true" ]; then
@@ -148,8 +163,6 @@ configurator() {
 
 printf "\n\n [i] Starting LNBits...\n\n"
 
-configurator &
-
 if [ "$CONFIG_LN_IMPLEMENTATION" = "LndRestWallet" ]; then
     until curl --silent --fail --cacert /mnt/lnd/tls.cert --header "$MACAROON_HEADER" https://lnd.embassy:8080/v1/getinfo &>/dev/null
     do
@@ -160,6 +173,58 @@ fi
 
 poetry run lnbits --port $LNBITS_PORT --host $LNBITS_HOST &
 lnbits_process=$!
+
+while ! [ -f $FILE ]; do
+  echo "Waiting for DB to be created..."
+  sleep 10
+done
+
+while true; do
+  ACCOUNTS_COLUMNS=$(sqlite3 ./data/database.sqlite3 'PRAGMA table_info(accounts);')
+  if echo "$ACCOUNTS_COLUMNS" | grep -q "username"; then
+    break
+  fi
+  echo "Waiting for migrations to complete..."
+  sleep 10
+done
+
+# Set Auth to username-password for fresh installs
+if ! [ -f '/app/data/start9/auth_initialized' ]; then
+  EDITABLE_SETTINGS=$(sqlite3 ./data/database.sqlite3 'select editable_settings from settings;')
+  UPDATED_SETTINGS=$(echo "$EDITABLE_SETTINGS" | jq '.auth_allowed_methods = ["username-password"]')
+  sqlite3 ./data/database.sqlite3 <<EOF
+  update settings
+  set editable_settings = '$UPDATED_SETTINGS';
+EOF
+fi
+
+SUPERUSER_ACCOUNT_ID=$(sqlite3 ./data/database.sqlite3 'select super_user from settings;')
+SUPERUSER_NAME=$(sqlite3 ./data/database.sqlite3 "select username from accounts where id = '$SUPERUSER_ACCOUNT_ID'")
+
+# Initialize Admin Auth
+if [ "$SUPERUSER_NAME" == "" ]; then
+  OLD_SUPERUSER_EXTRA=$(sqlite3 ./data/database.sqlite3 "select extra from accounts where id = '$SUPERUSER_ACCOUNT_ID'")
+  CURRENT_DATETIME=$(date +%s)
+  ADMIN_PASS=$(cat /dev/urandom | base64 | head -c 24)
+  touch /app/data/start9/admin_password.txt
+  echo "$ADMIN_PASS" > /app/data/start9/admin_password.txt
+  PASS_HASH=$(python3 -c "import bcrypt; print(bcrypt.hashpw('$ADMIN_PASS'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8'))")
+  NEW_SUPERUSER_EXTRA=$(echo "$OLD_SUPERUSER_EXTRA" | jq -c '.provider = "lnbits"')
+  sqlite3 ./data/database.sqlite3 <<EOF
+  UPDATE accounts
+  SET pass = "$PASS_HASH",
+      username = 'admin',
+      extra = '$NEW_SUPERUSER_EXTRA',
+      updated_at = '$CURRENT_DATETIME'
+  WHERE id = "$SUPERUSER_ACCOUNT_ID";
+EOF
+  echo "Restarting LNbits to save Admin username and password"
+  tini -s 2>/dev/null
+fi
+
+ADMIN_PASS=$(cat /app/data/start9/admin_password.txt)
+
+configurator &
 
 # Set up a signal trap and wait for processes to finish
 trap _term TERM
