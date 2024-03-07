@@ -69,6 +69,7 @@ configurator() {
             SUPERUSER_ACCOUNT=$(sqlite3 ./data/database.sqlite3 'select super_user from settings;')
             SUPERUSER_ACCOUNT_URL_PROP="https://$LAN_ADDRESS/wallet?usr=$SUPERUSER_ACCOUNT"
             SUPERUSER_ACCOUNT_URL_TOR="http://$TOR_ADDRESS/wallet?usr=$SUPERUSER_ACCOUNT"
+            ADMIN_PASS=$(cat /app/data/start9/admin_password.txt)
             LNBITS_SETTINGS=$(sqlite3 ./data/database.sqlite3 'select editable_settings from settings;')
             PUBLIC_UI=$(echo "$LNBITS_SETTINGS" | jq ".lnbits_public_node_ui")
 
@@ -221,8 +222,6 @@ EOF
   echo "Restarting LNbits to save Admin username and password"
   tini -s 2>/dev/null
 fi
-
-ADMIN_PASS=$(cat /app/data/start9/admin_password.txt)
 
 configurator &
 

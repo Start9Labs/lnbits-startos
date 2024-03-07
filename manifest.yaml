@@ -1,6 +1,6 @@
 id: lnbits 
 title: "LNBits"
-version: 0.12.2
+version: 0.12.2.1
 release-notes: |
   * Update upstream to 0.12.2 - Full release notes available [here](https://github.com/lnbits/lnbits/releases/tag/0.12.2).
   * Create and save default Superuser username and password in Properties
@@ -132,8 +132,8 @@ migrations:
      args: ["to"]
 actions:
   reset-pass:
-    name: "Restore Default Superuser Password"
-    description: "Resets the Superuser password to the default password in Properties."
+    name: "Reset Superuser Password"
+    description: "Resets a forgotten or compromised Superuser password to a freshly generated random password available in Properties."
     warning: ~
     allowed-statuses:
       - running
