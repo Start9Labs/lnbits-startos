@@ -1,12 +1,8 @@
 id: lnbits 
 title: "LNBits"
-version: 0.12.2.1
+version: 0.12.4
 release-notes: |
-  * Update upstream to 0.12.2 - Full release notes available [here](https://github.com/lnbits/lnbits/releases/tag/0.12.2).
-  * Create and save default Superuser username and password in Properties
-  * Add action to reset Superuser password
-  * Default username-password as sole Auth method for fresh installations
-  * Update instructions
+  * Update upstream to 0.12.4 - Full release notes available [here](https://github.com/lnbits/lnbits/releases/tag/0.12.4).
 license: MIT
 wrapper-repo: "https://github.com/Start9Labs/lnbits-startos"
 upstream-repo: "https://github.com/lnbits/lnbits"
