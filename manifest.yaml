@@ -3,6 +3,8 @@ title: "LNBits"
 version: 0.12.5
 release-notes: |
   * Update LNbits to 0.12.5 - Full release notes available [here](https://github.com/lnbits/lnbits/releases/tag/0.12.5).
+  * Update icon
+  * Minor fixes and optimizations
 license: MIT
 wrapper-repo: "https://github.com/Start9Labs/lnbits-startos"
 upstream-repo: "https://github.com/lnbits/lnbits"
