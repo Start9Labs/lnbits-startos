@@ -1,10 +1,8 @@
-id: lnbits 
+id: lnbits
 title: "LNBits"
-version: 0.12.5
+version: 0.12.8
 release-notes: |
-  * Update LNbits to 0.12.5 - Full release notes available [here](https://github.com/lnbits/lnbits/releases/tag/0.12.5).
-  * Update icon
-  * Minor fixes and optimizations
+  * Update LNbits to 0.12.8 - Full release notes available [here](https://github.com/lnbits/lnbits/releases/tag/0.12.8).
 license: MIT
 wrapper-repo: "https://github.com/Start9Labs/lnbits-startos"
 upstream-repo: "https://github.com/lnbits/lnbits"
@@ -40,7 +38,7 @@ health-checks:
     inject: true
     system: false
     io-format: json
-config: 
+config:
   get:
     type: script
   set:
@@ -96,15 +94,15 @@ backup:
   create:
     type: docker
     image: compat
-    system: true 
-    entrypoint: compat 
-    args: 
+    system: true
+    entrypoint: compat
+    args:
       - duplicity
       - create
       - /mnt/backup
       - /app/data/data
     mounts:
-      BACKUP: "/mnt/backup" 
+      BACKUP: "/mnt/backup"
       main: "/app/data/data"
   restore:
     type: docker
@@ -120,14 +118,14 @@ backup:
       BACKUP: "/mnt/backup"
       main: "/app/data/data"
 migrations:
- from:
-   "*":
-     type: script
-     args: ["from"]
- to:
-   "*":
-     type: script
-     args: ["to"]
+  from:
+    "*":
+      type: script
+      args: ["from"]
+  to:
+    "*":
+      type: script
+      args: ["to"]
 actions:
   reset-pass:
     name: "Reset Superuser Password"
