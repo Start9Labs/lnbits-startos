@@ -1,10 +1,10 @@
-FROM lnbits/lnbits:0.12.8 as builder
+FROM lnbits/lnbits:0.12.8 AS builder
 
 RUN apt-get update && apt-get install -y bash curl sqlite3 tini jq xxd --no-install-recommends
 RUN curl -sS https://webi.sh/yq | sh
 RUN pip3 install bcrypt
 
-FROM python:3.10-slim-bookworm as final
+FROM python:3.10-slim-bookworm AS final
 
 # Install necessary runtime dependencies with missing libraries
 RUN apt-get update && \
@@ -25,8 +25,8 @@ COPY --from=builder /root/.cache/pypoetry/virtualenvs /root/.cache/pypoetry/virt
 # Ensure Poetry and virtual environment are in PATH
 ENV PATH="/root/.local/bin:/root/.cache/pypoetry/virtualenvs/lnbits-*-py3.10/bin:$PATH"
 
-ENV LNBITS_PORT 5000
-ENV LNBITS_HOST lnbits.embassy
+ENV LNBITS_PORT=5000
+ENV LNBITS_HOST=lnbits.embassy
 
 WORKDIR /app/
 
