@@ -32,7 +32,8 @@ WORKDIR /app/
 
 RUN mkdir -p ./data
 ADD actions/*.sh /usr/local/bin/
-RUN cp .env.example .env && chmod a+x ./.env
+ADD .env ./.env
+RUN chmod a+x ./.env
 ADD docker_entrypoint.sh /usr/local/bin/docker_entrypoint.sh
 ADD check-web.sh /usr/local/bin/check-web.sh
 RUN chmod a+x /usr/local/bin/*.sh
