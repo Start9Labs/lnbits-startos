@@ -18,6 +18,7 @@ COPY --from=builder /root/.local /root/.local
 COPY --from=builder /app /app
 COPY --from=builder /usr/bin/tini /usr/bin/tini
 COPY --from=builder /usr/bin/sqlite3 /usr/bin/sqlite3
+COPY --from=builder /usr/local/lib/python3.10/site-packages/ /usr/local/lib/python3.10/site-packages/
 COPY --from=builder /root/.local/bin/yq /usr/local/bin/yq
 COPY --from=builder /usr/bin/xxd /usr/local/bin/xxd
 COPY --from=builder /root/.cache/pypoetry/virtualenvs /root/.cache/pypoetry/virtualenvs
