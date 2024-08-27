@@ -1,4 +1,4 @@
-FROM lnbits/lnbits:0.12.8 as builder
+FROM lnbits/lnbits:0.12.10 as builder
 
 # arm64 or amd64
 ARG PLATFORM
@@ -6,7 +6,7 @@ ARG PLATFORM
 RUN apt-get update && apt-get install -y bash curl sqlite3 tini --no-install-recommends
 RUN curl -sS https://webi.sh/yq | sh
 
-FROM lnbits/lnbits:0.12.8 as final
+FROM lnbits/lnbits:0.12.10 as final
 
 COPY --from=builder /usr/bin/tini /usr/bin/tini
 COPY --from=builder /usr/bin/sqlite3 /usr/bin/sqlite3
