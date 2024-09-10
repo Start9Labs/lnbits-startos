@@ -17,6 +17,7 @@ export FILE="/app/data/database.sqlite3"
 MACAROON_HEADER=""
 
 sed -i 's|LNBITS_BACKEND_WALLET_CLASS=.*|LNBITS_BACKEND_WALLET_CLASS='$LNBITS_BACKEND_WALLET_CLASS'|' /app/.env
+sed -i 's|LNBITS_ALLOWED_FUNDING_SOURCES=.*|LNBITS_ALLOWED_FUNDING_SOURCES="'$LNBITS_BACKEND_WALLET_CLASS'"|' /app/.env
 
 if [ -f $FILE ]; then
     echo "Checking if underlying LN implementation has changed..."
@@ -24,9 +25,23 @@ if [ -f $FILE ]; then
     EXISTING_CONFIG_LN_IMPLEMENTATION=$(echo "$LNBITS_SETTINGS" | sed -n 's/.*"lnbits_backend_wallet_class": "\([^"]*\)".*/\1/p')
 
     if [ "$LNBITS_BACKEND_WALLET_CLASS" != "$EXISTING_CONFIG_LN_IMPLEMENTATION" ]; then
+        BACKUPFILE="$FILE.$EXISTING_CONFIG_LN_IMPLEMENTATION"
         echo "Configured LN implementation is not the same as the existing LN implementation"
-        echo "Deleting previous LN implementation data"
-        rm $FILE
+
+        if [ -f $BACKUPFILE ]; then
+            echo "Deleting previous backup: $BACKUPFILE"
+            rm -f $BACKUPFILE
+        fi
+
+        echo "Backup LN implementation data to: $BACKUPFILE"
+        mv $FILE $BACKUPFILE
+
+        PREVBACKUP="$FILE.$LNBITS_BACKEND_WALLET_CLASS"
+        if [ -f $PREVBACKUP ]; then
+            echo "Move previous LN implementation data from $PREVBACKUP to $FILE"
+            mv $PREVBACKUP $FILE
+        fi
+
         rm /app/data/start9/stats.yaml
     fi
     # Create flag for Auth Initilization
