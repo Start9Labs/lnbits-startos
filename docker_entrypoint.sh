@@ -17,6 +17,7 @@ export FILE="/app/data/database.sqlite3"
 MACAROON_HEADER=""
 
 sed -i 's|LNBITS_BACKEND_WALLET_CLASS=.*|LNBITS_BACKEND_WALLET_CLASS='$LNBITS_BACKEND_WALLET_CLASS'|' /app/.env
+sed -i 's|LNBITS_ALLOWED_FUNDING_SOURCES=.*|LNBITS_ALLOWED_FUNDING_SOURCES="'$LNBITS_BACKEND_WALLET_CLASS'"|' /app/.env
 
 if [ -f $FILE ]; then
     echo "Checking if underlying LN implementation has changed..."
