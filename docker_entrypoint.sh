@@ -66,6 +66,7 @@ configurator() {
             ADMIN_PASS=$(cat /app/data/start9/admin_password.txt)
             LNBITS_SETTINGS=$(sqlite3 ./data/database.sqlite3 'select editable_settings from settings;')
             PUBLIC_UI=$(echo "$LNBITS_SETTINGS" | jq ".lnbits_public_node_ui")
+            USER_ID_ONLY=$(sqlite3 ./data/database.sqlite3 'select editable_settings from settings;' | jq '.auth_allowed_methods | any(index("user-id-only"))')
 
             echo 'version: 2' >/app/data/start9/stats.yaml
             echo 'data:' >>/app/data/start9/stats.yaml
@@ -97,60 +98,62 @@ configurator() {
                 echo '    qr: true' >>/app/data/start9/stats.yaml
             fi
             
-            echo "  Superuser Account: " >>/app/data/start9/stats.yaml
-            echo '    type: string' >>/app/data/start9/stats.yaml
-            echo "    value: \"$SUPERUSER_ACCOUNT_URL_PROP\"" >>/app/data/start9/stats.yaml
-            echo '    description: LNBits Superuser Account' >>/app/data/start9/stats.yaml
-            echo '    copyable: true' >>/app/data/start9/stats.yaml
-            echo '    masked: true' >>/app/data/start9/stats.yaml
-            echo '    qr: true' >>/app/data/start9/stats.yaml
-            echo "  (Tor) Superuser Account: " >>/app/data/start9/stats.yaml
-            echo '    type: string' >>/app/data/start9/stats.yaml
-            echo "    value: \"$SUPERUSER_ACCOUNT_URL_TOR\"" >>/app/data/start9/stats.yaml
-            echo '    description: LNBits Superuser Account' >>/app/data/start9/stats.yaml
-            echo '    copyable: true' >>/app/data/start9/stats.yaml
-            echo '    masked: true' >>/app/data/start9/stats.yaml
-            echo '    qr: true' >>/app/data/start9/stats.yaml
+            if [ "$USER_ID_ONLY" == "true" ]; then
+              echo "  Superuser Account: " >>/app/data/start9/stats.yaml
+              echo '    type: string' >>/app/data/start9/stats.yaml
+              echo "    value: \"$SUPERUSER_ACCOUNT_URL_PROP\"" >>/app/data/start9/stats.yaml
+              echo '    description: LNBits Superuser Account' >>/app/data/start9/stats.yaml
+              echo '    copyable: true' >>/app/data/start9/stats.yaml
+              echo '    masked: true' >>/app/data/start9/stats.yaml
+              echo '    qr: true' >>/app/data/start9/stats.yaml
+              echo "  (Tor) Superuser Account: " >>/app/data/start9/stats.yaml
+              echo '    type: string' >>/app/data/start9/stats.yaml
+              echo "    value: \"$SUPERUSER_ACCOUNT_URL_TOR\"" >>/app/data/start9/stats.yaml
+              echo '    description: LNBits Superuser Account' >>/app/data/start9/stats.yaml
+              echo '    copyable: true' >>/app/data/start9/stats.yaml
+              echo '    masked: true' >>/app/data/start9/stats.yaml
+              echo '    qr: true' >>/app/data/start9/stats.yaml
 
-            sqlite3 ./data/database.sqlite3 'select id from accounts;' >account.res
-            mapfile -t LNBITS_ACCOUNTS <account.res
-            # Iterate over the indices of the array in reverse order
-            for i in $(seq $((${#LNBITS_ACCOUNTS[@]} - 1)) -1 0); do {
-                # Access the array element at the current index
-                USER_ID=${LNBITS_ACCOUNTS[$i]}
-                # get wallets for this user account
-                sqlite3 ./data/database.sqlite3 'select id from wallets where user="'$USER_ID'";' >wallet.res
-                mapfile -t LNBITS_WALLETS <wallet.res
-                # Iterate over the indices of the array in reverse order
-                for j in $(seq $((${#LNBITS_WALLETS[@]} - 1)) -1 0); do {
-                    # Access the array element at the current index
+              sqlite3 ./data/database.sqlite3 'select id from accounts;' >account.res
+              mapfile -t LNBITS_ACCOUNTS <account.res
+              # Iterate over the indices of the array in reverse order
+              for i in $(seq $((${#LNBITS_ACCOUNTS[@]} - 1)) -1 0); do {
+                  # Access the array element at the current index
+                  USER_ID=${LNBITS_ACCOUNTS[$i]}
+                  # get wallets for this user account
+                  sqlite3 ./data/database.sqlite3 'select id from wallets where user="'$USER_ID'";' >wallet.res
+                  mapfile -t LNBITS_WALLETS <wallet.res
+                  # Iterate over the indices of the array in reverse order
+                  for j in $(seq $((${#LNBITS_WALLETS[@]} - 1)) -1 0); do {
+                      # Access the array element at the current index
 
-                    export WALLET_ID=${LNBITS_WALLETS[$j]}
-                    export ACCOUNT_URL_PROP="https://$LAN_ADDRESS/wallet?usr=$USER_ID&wal=$WALLET_ID"
-                    export ACCOUNT_URL_TOR="http://$TOR_ADDRESS/wallet?usr=$USER_ID&wal=$WALLET_ID"
-                    export LNBITS_WALLET_NAME=$(sqlite3 ./data/database.sqlite3 'select name from wallets where id="'$WALLET_ID'";')
-                    export LNBITS_WALLET_DELETED=$(sqlite3 ./data/database.sqlite3 'select deleted from wallets where id="'$WALLET_ID'";')
+                      export WALLET_ID=${LNBITS_WALLETS[$j]}
+                      export ACCOUNT_URL_PROP="https://$LAN_ADDRESS/wallet?usr=$USER_ID&wal=$WALLET_ID"
+                      export ACCOUNT_URL_TOR="http://$TOR_ADDRESS/wallet?usr=$USER_ID&wal=$WALLET_ID"
+                      export LNBITS_WALLET_NAME=$(sqlite3 ./data/database.sqlite3 'select name from wallets where id="'$WALLET_ID'";')
+                      export LNBITS_WALLET_DELETED=$(sqlite3 ./data/database.sqlite3 'select deleted from wallets where id="'$WALLET_ID'";')
 
-                    if ! [ "$SUPERUSER_ACCOUNT" = "$USER_ID" ] && [ $LNBITS_WALLET_DELETED = 0 ]; then
-                        echo "  LNBits Account $USER_ID - Wallet $LNBITS_WALLET_NAME: " >>/app/data/start9/stats.yaml
-                        echo '    type: string' >>/app/data/start9/stats.yaml
-                        echo "    value: \"$ACCOUNT_URL_PROP\"" >>/app/data/start9/stats.yaml
-                        echo '    description: LNBits Account' >>/app/data/start9/stats.yaml
-                        echo '    copyable: true' >>/app/data/start9/stats.yaml
-                        echo '    masked: true' >>/app/data/start9/stats.yaml
-                        echo '    qr: true' >>/app/data/start9/stats.yaml
-                        echo "  (Tor) LNBits Account $USER_ID - Wallet $LNBITS_WALLET_NAME: " >>/app/data/start9/stats.yaml
-                        echo '    type: string' >>/app/data/start9/stats.yaml
-                        echo "    value: \"$ACCOUNT_URL_TOR\"" >>/app/data/start9/stats.yaml
-                        echo '    description: LNBits Account' >>/app/data/start9/stats.yaml
-                        echo '    copyable: true' >>/app/data/start9/stats.yaml
-                        echo '    masked: true' >>/app/data/start9/stats.yaml
-                        echo '    qr: true' >>/app/data/start9/stats.yaml
-                    fi
-                }; done
-            }; done
+                      if ! [ "$SUPERUSER_ACCOUNT" = "$USER_ID" ] && [ $LNBITS_WALLET_DELETED = 0 ]; then
+                          echo "  LNBits Account $USER_ID - Wallet $LNBITS_WALLET_NAME: " >>/app/data/start9/stats.yaml
+                          echo '    type: string' >>/app/data/start9/stats.yaml
+                          echo "    value: \"$ACCOUNT_URL_PROP\"" >>/app/data/start9/stats.yaml
+                          echo '    description: LNBits Account' >>/app/data/start9/stats.yaml
+                          echo '    copyable: true' >>/app/data/start9/stats.yaml
+                          echo '    masked: true' >>/app/data/start9/stats.yaml
+                          echo '    qr: true' >>/app/data/start9/stats.yaml
+                          echo "  (Tor) LNBits Account $USER_ID - Wallet $LNBITS_WALLET_NAME: " >>/app/data/start9/stats.yaml
+                          echo '    type: string' >>/app/data/start9/stats.yaml
+                          echo "    value: \"$ACCOUNT_URL_TOR\"" >>/app/data/start9/stats.yaml
+                          echo '    description: LNBits Account' >>/app/data/start9/stats.yaml
+                          echo '    copyable: true' >>/app/data/start9/stats.yaml
+                          echo '    masked: true' >>/app/data/start9/stats.yaml
+                          echo '    qr: true' >>/app/data/start9/stats.yaml
+                      fi
+                  }; done
+              }; done
+            fi
         else
-            echo 'No accounts to populate'
+            echo 'No existing database found.'
         fi
         sleep 10
     }; done
