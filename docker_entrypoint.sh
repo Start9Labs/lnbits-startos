@@ -41,11 +41,6 @@ if [ -f $FILE ]; then
     sqlite3 ./data/database.sqlite3 'select id from accounts;' >>account.res
     mapfile -t LNBITS_ACCOUNTS <account.res
     echo "Found ${#LNBITS_ACCOUNTS[*]} existing LNBits account(s)."
-    echo "Navigate to the following URLs to access these accounts:"
-    for USER_ID in "${LNBITS_ACCOUNTS[@]}"; do
-        ACCOUNT_URL="http://$TOR_ADDRESS/wallet?usr=$USER_ID"
-        printf "$ACCOUNT_URL\n"
-    done
 else
     echo 'No LNBits accounts found.'
 fi
