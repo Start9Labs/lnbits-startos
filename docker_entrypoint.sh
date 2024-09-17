@@ -29,20 +29,18 @@ if [ -f $FILE ]; then
         echo "Deleting previous LN implementation data"
         rm $FILE
         rm /app/data/start9/stats.yaml
+    else
+        echo "Looking for existing accounts and wallets..."
+        sqlite3 ./data/database.sqlite3 'select id from accounts;' >>account.res
+        mapfile -t LNBITS_ACCOUNTS <account.res
+        echo "Found ${#LNBITS_ACCOUNTS[*]} existing LNBits account(s)."
     fi
     # Create flag for Auth Initilization
     if ! [ -f '/app/data/start9/auth_initialized' ]; then
       touch /app/data/start9/auth_initialized
     fi
-fi
-
-if [ -f $FILE ]; then
-    echo "Looking for existing accounts and wallets..."
-    sqlite3 ./data/database.sqlite3 'select id from accounts;' >>account.res
-    mapfile -t LNBITS_ACCOUNTS <account.res
-    echo "Found ${#LNBITS_ACCOUNTS[*]} existing LNBits account(s)."
 else
-    echo 'No LNBits accounts found.'
+    echo "No existing database found. Starting LNbits with a new database using $LNBITS_BACKEND_WALLET_CLASS"
 fi
 
 if [ $LNBITS_BACKEND_WALLET_CLASS == "LndRestWallet" ]; then
