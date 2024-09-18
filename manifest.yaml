@@ -1,8 +1,10 @@
 id: lnbits
 title: "LNBits"
-version: 0.12.10
+version: 0.12.11
 release-notes: |
-  * Update LNbits to 0.12.10 - Full release notes available [here](https://github.com/lnbits/lnbits/releases/tag/0.12.10).
+  * Update LNbits to 0.12.11 - Full release notes available [here](https://github.com/lnbits/lnbits/releases/tag/v0.12.11).
+  * Optimizations and refactoring
+  * Update README and Instructions
 license: MIT
 wrapper-repo: "https://github.com/Start9Labs/lnbits-startos"
 upstream-repo: "https://github.com/lnbits/lnbits"
