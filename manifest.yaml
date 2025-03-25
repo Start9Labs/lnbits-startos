@@ -1,6 +1,6 @@
 id: lnbits
 title: "LNBits"
-version: 0.12.12
+version: 0.12.12.1
 release-notes: |
   * Bump CLN max version
 license: MIT
