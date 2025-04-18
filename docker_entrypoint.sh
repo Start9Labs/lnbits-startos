@@ -19,30 +19,6 @@ MACAROON_HEADER=""
 sed -i 's|LNBITS_BACKEND_WALLET_CLASS=.*|LNBITS_BACKEND_WALLET_CLASS='$LNBITS_BACKEND_WALLET_CLASS'|' /app/.env
 sed -i 's|LNBITS_ALLOWED_FUNDING_SOURCES=.*|LNBITS_ALLOWED_FUNDING_SOURCES="'$LNBITS_BACKEND_WALLET_CLASS'"|' /app/.env
 
-if [ -f $FILE ]; then
-    echo "Checking if underlying LN implementation has changed..."
-    LNBITS_SETTINGS=$(sqlite3 ./data/database.sqlite3 'select editable_settings from settings;')
-    EXISTING_CONFIG_LN_IMPLEMENTATION=$(echo "$LNBITS_SETTINGS" | sed -n 's/.*"lnbits_backend_wallet_class": "\([^"]*\)".*/\1/p')
-
-    if [ "$LNBITS_BACKEND_WALLET_CLASS" != "$EXISTING_CONFIG_LN_IMPLEMENTATION" ]; then
-        echo "Configured LN implementation is not the same as the existing LN implementation"
-        echo "Deleting previous LN implementation data"
-        rm $FILE
-        rm /app/data/start9/stats.yaml
-    else
-        echo "Looking for existing accounts and wallets..."
-        sqlite3 ./data/database.sqlite3 'select id from accounts;' >>account.res
-        mapfile -t LNBITS_ACCOUNTS <account.res
-        echo "Found ${#LNBITS_ACCOUNTS[*]} existing LNBits account(s)."
-    fi
-    # Create flag for Auth Initilization
-    if ! [ -f '/app/data/start9/auth_initialized' ]; then
-      touch /app/data/start9/auth_initialized
-    fi
-else
-    echo "No existing database found. Starting LNbits with a new database using $LNBITS_BACKEND_WALLET_CLASS"
-fi
-
 if [ $LNBITS_BACKEND_WALLET_CLASS == "LndRestWallet" ]; then
     MACAROON_HEADER="Grpc-Metadata-macaroon: $(xxd -ps -u -c 1000 /mnt/lnd/admin.macaroon)"
     if ! [ -f $LND_PATH ]; then
@@ -60,13 +36,12 @@ configurator() {
     while true; do {
         # Properties Page showing password to be used for login
         if [ -f $FILE ]; then
-            SUPERUSER_ACCOUNT=$(sqlite3 ./data/database.sqlite3 'select super_user from settings;')
+            SUPERUSER_ACCOUNT=$(sqlite3 ./data/database.sqlite3 "select value from system_settings where id = 'super_user';")
             SUPERUSER_ACCOUNT_URL_PROP="https://$LAN_ADDRESS/wallet?usr=$SUPERUSER_ACCOUNT"
             SUPERUSER_ACCOUNT_URL_TOR="http://$TOR_ADDRESS/wallet?usr=$SUPERUSER_ACCOUNT"
             ADMIN_PASS=$(cat /app/data/start9/admin_password.txt)
-            LNBITS_SETTINGS=$(sqlite3 ./data/database.sqlite3 'select editable_settings from settings;')
-            PUBLIC_UI=$(echo "$LNBITS_SETTINGS" | jq ".lnbits_public_node_ui")
-            USER_ID_ONLY=$(sqlite3 ./data/database.sqlite3 'select editable_settings from settings;' | jq '.auth_allowed_methods | any(index("user-id-only"))')
+            PUBLIC_UI=$(sqlite3 ./data/database.sqlite3 "select value from system_settings where id = 'lnbits_public_node_ui';")
+            USER_ID_ONLY=$(sqlite3 ./data/database.sqlite3 "select value from system_settings where id = 'auth_allowed_methods';" | jq 'any(index("user-id-only"))')
 
             echo 'version: 2' >/app/data/start9/stats.yaml
             echo 'data:' >>/app/data/start9/stats.yaml
@@ -172,49 +147,66 @@ fi
 poetry run lnbits --port $LNBITS_PORT --host $LNBITS_HOST &
 lnbits_process=$!
 
-while ! [ -f $FILE ]; do
-  echo "Waiting for DB to be created..."
-  sleep 10
-done
-
-while true; do
-  ACCOUNTS_COLUMNS=$(sqlite3 ./data/database.sqlite3 'PRAGMA table_info(accounts);')
-  if echo "$ACCOUNTS_COLUMNS" | grep -q "username"; then
-    break
-  fi
+until (
+  sqlite3 ./data/database.sqlite3 'PRAGMA table_info(system_settings);' 2>/dev/null | grep -q "value"
+); do
   echo "Waiting for migrations to complete..."
   sleep 10
 done
 
+if [ -f $FILE ]; then
+    echo "Checking if underlying LN implementation has changed..."
+    EXISTING_CONFIG_LN_IMPLEMENTATION=$(sqlite3 ./data/database.sqlite3 "select value from system_settings where id = 'lnbits_backend_wallet_class';")
+    echo "LNBITS_BACKEND_WALLET_CLASS: $LNBITS_BACKEND_WALLET_CLASS"
+    echo "EXISTING_CONFIG_LN_IMPLEMENTATION: $EXISTING_CONFIG_LN_IMPLEMENTATION"
+
+    if [ "\"$LNBITS_BACKEND_WALLET_CLASS\"" != "$EXISTING_CONFIG_LN_IMPLEMENTATION" ]; then
+        echo "Configured LN implementation is not the same as the existing LN implementation"
+        echo "Deleting previous LN implementation data"
+        rm $FILE
+        rm /app/data/start9/stats.yaml
+    else
+        echo "Looking for existing accounts and wallets..."
+        sqlite3 ./data/database.sqlite3 'select id from accounts;' >>account.res
+        mapfile -t LNBITS_ACCOUNTS <account.res
+        echo "Found ${#LNBITS_ACCOUNTS[*]} existing LNBits account(s)."
+    fi
+    # Create flag for Auth Initilization
+    if ! [ -f '/app/data/start9/auth_initialized' ]; then
+      touch /app/data/start9/auth_initialized
+    fi
+else
+    echo "No existing database found. Starting LNbits with a new database using $LNBITS_BACKEND_WALLET_CLASS"
+fi
+
 # Set Auth to username-password for fresh installs
 if ! [ -f '/app/data/start9/auth_initialized' ]; then
-  EDITABLE_SETTINGS=$(sqlite3 ./data/database.sqlite3 'select editable_settings from settings;')
-  UPDATED_SETTINGS=$(echo "$EDITABLE_SETTINGS" | jq '.auth_allowed_methods = ["username-password"]')
   sqlite3 ./data/database.sqlite3 <<EOF
-  update settings
-  set editable_settings = '$UPDATED_SETTINGS';
+  update system_settings
+  set value = '["username-password"]'
+  where id = 'auth_allowed_methods';
 EOF
 fi
 
-SUPERUSER_ACCOUNT_ID=$(sqlite3 ./data/database.sqlite3 'select super_user from settings;')
-SUPERUSER_NAME=$(sqlite3 ./data/database.sqlite3 "select username from accounts where id = '$SUPERUSER_ACCOUNT_ID'")
+SUPERUSER_ACCOUNT_ID=$(sqlite3 ./data/database.sqlite3 "select value from system_settings where id = 'super_user';")
+SUPERUSER_NAME=$(sqlite3 ./data/database.sqlite3 "select username from accounts where id = $SUPERUSER_ACCOUNT_ID;")
 
 # Initialize Admin Auth
 if [ "$SUPERUSER_NAME" == "" ]; then
-  OLD_SUPERUSER_EXTRA=$(sqlite3 ./data/database.sqlite3 "select extra from accounts where id = '$SUPERUSER_ACCOUNT_ID'")
+  OLD_SUPERUSER_EXTRA=$(sqlite3 ./data/database.sqlite3 "select extra from accounts where id = $SUPERUSER_ACCOUNT_ID;")
   CURRENT_DATETIME=$(date +%s)
   ADMIN_PASS=$(cat /dev/urandom | base64 | head -c 24)
   touch /app/data/start9/admin_password.txt
   echo "$ADMIN_PASS" > /app/data/start9/admin_password.txt
   PASS_HASH=$(python3 -c "import bcrypt; print(bcrypt.hashpw('$ADMIN_PASS'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8'))")
-  NEW_SUPERUSER_EXTRA=$(echo "$OLD_SUPERUSER_EXTRA" | jq -c '.provider = "lnbits"')
+  NEW_SUPERUSER_EXTRA=$(echo $OLD_SUPERUSER_EXTRA | jq -c '.provider = "lnbits"')
   sqlite3 ./data/database.sqlite3 <<EOF
   UPDATE accounts
-  SET pass = "$PASS_HASH",
+  SET password_hash = "$PASS_HASH",
       username = 'admin',
       extra = '$NEW_SUPERUSER_EXTRA',
-      updated_at = '$CURRENT_DATETIME'
-  WHERE id = "$SUPERUSER_ACCOUNT_ID";
+      updated_at = $CURRENT_DATETIME
+  WHERE id = $SUPERUSER_ACCOUNT_ID;
 EOF
   echo "Restarting LNbits to save Admin username and password"
   tini -s 2>/dev/null
