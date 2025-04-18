@@ -186,6 +186,7 @@ if ! [ -f '/app/data/start9/auth_initialized' ]; then
   set value = '["username-password"]'
   where id = 'auth_allowed_methods';
 EOF
+  touch /app/data/start9/auth_initialized
 fi
 
 SUPERUSER_ACCOUNT_ID=$(sqlite3 ./data/database.sqlite3 "select value from system_settings where id = 'super_user';")
