@@ -171,10 +171,6 @@ if [ -f $FILE ]; then
         mapfile -t LNBITS_ACCOUNTS <account.res
         echo "Found ${#LNBITS_ACCOUNTS[*]} existing LNBits account(s)."
     fi
-    # Create flag for Auth Initilization
-    if ! [ -f '/app/data/start9/auth_initialized' ]; then
-      touch /app/data/start9/auth_initialized
-    fi
 else
     echo "No existing database found. Starting LNbits with a new database using $LNBITS_BACKEND_WALLET_CLASS"
 fi
