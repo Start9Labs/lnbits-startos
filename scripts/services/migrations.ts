@@ -22,7 +22,9 @@ export const migration: T.ExpectedExports.migration =
         ),
       },
       "1.0.0": {
-        up: compat.migrations.updateConfig((config: any) => {}, true, {
+        up: compat.migrations.updateConfig((config: any) => {
+          return config
+        }, true, {
           version: "1.0.0",
           type: "up",
         }),
