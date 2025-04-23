@@ -36,7 +36,7 @@ configurator() {
     while true; do {
         # Properties Page showing password to be used for login
         if [ -f $FILE ]; then
-            SUPERUSER_ACCOUNT=$(sqlite3 ./data/database.sqlite3 "select value from system_settings where id = 'super_user';")
+            SUPERUSER_ACCOUNT=$(sqlite3 ./data/database.sqlite3 "select value from system_settings where id = 'super_user';" | sed 's/^"\(.*\)"$/\1/')
             SUPERUSER_ACCOUNT_URL_PROP="https://$LAN_ADDRESS/wallet?usr=$SUPERUSER_ACCOUNT"
             SUPERUSER_ACCOUNT_URL_TOR="http://$TOR_ADDRESS/wallet?usr=$SUPERUSER_ACCOUNT"
             ADMIN_PASS=$(cat /app/data/start9/admin_password.txt)
