@@ -33,5 +33,5 @@ export const migration: T.ExpectedExports.migration =
         },
       },
     },
-    "1.0.0"
+    "1.1.0"
   );
