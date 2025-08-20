@@ -21,7 +21,6 @@ export const resetPassword = sdk.Action.withoutInput(
   // the execution function
   async ({ effects }) => {
     const newPassword = utils.getDefaultString(randomPassword)
-    console.log('newPassword', newPassword)
 
     await sdk.SubContainer.withTemp(
       effects,
@@ -35,24 +34,13 @@ export const resetPassword = sdk.Action.withoutInput(
           "select value from system_settings where id = 'super_user';",
         ])
 
-        console.log(
-          'superuserAccountId',
-          superuserAccountId.stdout.toString().trimEnd(),
-        )
-
         const newPasswordHash = await subc.execFail([
           'python3',
           '-c',
           `import bcrypt; print(bcrypt.hashpw('${newPassword}'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8'))`,
         ])
 
-        console.log(
-          'newPasswordHash',
-          newPasswordHash.stdout.toString().trimEnd(),
-        )
-
         const currentTime = await subc.execFail(['date', '+%s'])
-        console.log('currentTime', currentTime.stdout.toString().trimEnd())
 
         const res = await subc.execFail([
           'sqlite3',
@@ -60,7 +48,6 @@ export const resetPassword = sdk.Action.withoutInput(
           `update accounts set password_hash = \"${newPasswordHash.stdout.toString().trimEnd()}\", updated_at = ${currentTime.stdout.toString().trimEnd()} where id = ${superuserAccountId.stdout.toString().trimEnd()};`,
         ])
 
-        console.log('res', res)
       },
     )
     return {
