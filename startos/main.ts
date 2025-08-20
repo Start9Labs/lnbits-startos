@@ -1,4 +1,3 @@
-import { cwd } from 'process'
 import { envFile } from './fileModels/env'
 import { sdk } from './sdk'
 import { mainMounts, uiPort } from './utils'
