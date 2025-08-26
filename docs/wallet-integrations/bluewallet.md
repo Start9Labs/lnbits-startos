@@ -8,7 +8,7 @@
 **WARNING:** This will not work with CLN as your underlying LN implementation!
 
 
-1. Zeus requires that we use the LndHub extension in order to connect to LNbits. To install this, click **Extensions**, in the **ALL** tab find LndHub, click **MANAGE**, find the latest version and click **INSTALL**. Once installed, click **ENABLE**
+1. BlueWallet requires that we use the LndHub extension in order to connect to LNbits. To install this, click **Extensions**, in the **ALL** tab find LndHub, click **MANAGE**, find the latest version and click **INSTALL**. Once installed, click **ENABLE**
 
 1. Click **OPEN** *or* **LndHub** under *Extensions*
 
