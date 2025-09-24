@@ -11,7 +11,7 @@ export const setDependencies = sdk.setupDependencies(async ({ effects }) => {
       lnd: {
         healthChecks: ['primary'],
         kind: 'running',
-        versionRange: '>=0.19.2-beta:1-beta.1',
+        versionRange: '>=0.19.3-beta:1-beta.0',
       },
     }
   } else if (configuredLnImplementation === 'CoreLightningWallet') {
@@ -19,7 +19,7 @@ export const setDependencies = sdk.setupDependencies(async ({ effects }) => {
       'c-lightning': {
         healthChecks: ['lightningd'],
         kind: 'running',
-        versionRange: '>=25.5.0:1-alpha.1',
+        versionRange: '>=v25.09.0.1-beta.0',
       },
     }
   }
