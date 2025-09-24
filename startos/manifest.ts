@@ -11,7 +11,7 @@ export const manifest = setupManifest({
   title: 'LNbits',
   license: 'mit',
   wrapperRepo: 'https://github.com/Start9Labs/lnbits-startos',
-  upstreamRepo: 'https://github.com/Start9Labs/lnbits',
+  upstreamRepo: 'https://github.com/lnbits/lnbits',
   supportSite: 'https://github.com/lnbits/lnbits/issues',
   marketingSite: 'https://lnbits.com/',
   donationUrl: 'https://demo.lnbits.com/tipjar/DwaUiE4kBX6mUW6pj3X5Kg',
