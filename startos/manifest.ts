@@ -51,7 +51,7 @@ export const manifest = setupManifest({
     lnd: {
       description: 'Optionally connect RTL to your LND node.',
       optional: true,
-      s9pk: 'https://github.com/Start9Labs/lnd-startos/releases/download/v0.19.2-beta.1-beta.2/lnd.s9pk',
+      s9pk: 'https://github.com/Start9Labs/lnd-startos/releases/download/v0.19.3-beta.1-beta.0/lnd.s9pk',
     },
   },
 })
