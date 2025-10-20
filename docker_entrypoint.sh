@@ -144,7 +144,7 @@ if [ "$CONFIG_LN_IMPLEMENTATION" = "LndRestWallet" ]; then
     done
 fi
 
-poetry run lnbits --port $LNBITS_PORT --host $LNBITS_HOST &
+uv run lnbits --port $LNBITS_PORT --host $LNBITS_HOST --forwarded-allow-ips='*' &
 lnbits_process=$!
 
 until (

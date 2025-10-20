@@ -1,6 +1,6 @@
 id: lnbits
 title: "LNBits"
-version: 1.3.0
+version: 1.3.0.1
 release-notes: |
   * Update to v1.3.0 [release notes](https://github.com/lnbits/lnbits/releases/tag/v1.3.0)
 license: MIT
