@@ -42,7 +42,7 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
    */
   return sdk.Daemons.of(effects, started).addDaemon('primary', {
     subcontainer: lnbitsSub,
-    exec: { command: ['poetry', 'run', 'lnbits'], env: env || {} },
+    exec: { command: ['uv', 'run', 'lnbits'], env: env || {} },
     ready: {
       display: 'Web Interface',
       gracePeriod: 75_000,
