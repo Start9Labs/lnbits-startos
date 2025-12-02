@@ -107,6 +107,7 @@ const shape = object({
   // Choose from LNPayWallet, OpenNodeWallet, LntxbotWallet, ClicheWallet, LnTipsWallet
   //             LndRestWallet, CoreLightningWallet, LNbitsWallet, SparkWallet, FakeWallet, EclairWallet
   LNBITS_BACKEND_WALLET_CLASS: literals(
+    'VoidWallet',
     'LndRestWallet',
     'CoreLightningWallet',
   ).onMismatch(LNBITS_BACKEND_WALLET_CLASS),

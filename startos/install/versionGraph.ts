@@ -7,10 +7,9 @@ export const versionGraph = VersionGraph.of({
   current,
   other,
   preInstall: async (effects) => {
-    const existingEnv = await envFile.read().once()
-
-    if (!existingEnv) {
-      await envFile.write(effects, envDefaults)
-    }
+    await envFile.write(effects, {
+      ...envDefaults,
+      LNBITS_BACKEND_WALLET_CLASS: 'VoidWallet',
+    })
   },
 })

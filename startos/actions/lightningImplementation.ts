@@ -13,7 +13,7 @@ export const inputSpec = InputSpec.of({
       LndRestWallet: 'LND',
       CoreLightningWallet: 'Core Lightning',
     },
-    default: 'LndRestWallet',
+    default: undefined as any,
   }),
 })
 
@@ -37,14 +37,14 @@ export const setLnImplementation = sdk.Action.withInput(
 
   // optionally pre-fill the input form
   async ({ effects }) => {
-    const configuredLnImplementation = await envFile
+    const imp = await envFile
       .read((e) => e.LNBITS_BACKEND_WALLET_CLASS)
       .const(effects)
 
-    if (!configuredLnImplementation) return
+    if (!imp || imp === 'VoidWallet') return
 
     return {
-      implementation: configuredLnImplementation,
+      implementation: imp,
     }
   },
 
