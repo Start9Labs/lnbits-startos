@@ -5,7 +5,7 @@ import { load } from 'js-yaml'
 import { readFile, rm } from 'fs/promises'
 
 export const v1_3_1_1 = VersionInfo.of({
-  version: '1.2.1:1-beta.0',
+  version: '1.2.1:1-beta.3',
   releaseNotes: 'Revamped for StartOS 0.4.0',
   migrations: {
     up: async ({ effects }) => {
