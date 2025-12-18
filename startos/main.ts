@@ -2,7 +2,7 @@ import { envFile } from './fileModels/env'
 import { sdk } from './sdk'
 import { mainMounts, uiPort } from './utils'
 
-export const main = sdk.setupMain(async ({ effects, started }) => {
+export const main = sdk.setupMain(async ({ effects }) => {
   /**
    * ======================== Setup (optional) ========================
    *
@@ -40,7 +40,7 @@ export const main = sdk.setupMain(async ({ effects, started }) => {
    *
    * Each daemon defines its own health check, which can optionally be exposed to the user.
    */
-  return sdk.Daemons.of(effects, started).addDaemon('primary', {
+  return sdk.Daemons.of(effects).addDaemon('primary', {
     subcontainer: lnbitsSub,
     exec: { command: ['uv', 'run', 'lnbits'], env: env || {} },
     ready: {
