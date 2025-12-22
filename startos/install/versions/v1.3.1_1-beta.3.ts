@@ -9,33 +9,31 @@ export const v1_3_1_1 = VersionInfo.of({
   releaseNotes: 'Revamped for StartOS 0.4.0',
   migrations: {
     up: async ({ effects }) => {
-      await envFile.write(effects, envDefaults)
-      try {
-        const configYaml = load(
-          await readFile(
-            '/media/startos/volumes/main/start9/config.yaml',
-            'utf8',
-          ),
-        ) as { implementation: 'LndRestWallet' | 'CLightningWallet' }
+      const raw = await readFile(
+        '/media/startos/volumes/main/start9/config.yaml',
+        'utf8',
+      ).catch(console.log)
+
+      if (raw) {
+        const configYaml = load(raw) as {
+          implementation: 'LndRestWallet' | 'CLightningWallet'
+        }
 
         const configuredImplementation =
           configYaml.implementation === 'CLightningWallet'
             ? 'CoreLightningWallet'
             : 'LndRestWallet'
 
-        console.log('configuredImplementation', configuredImplementation)
-
-        await envFile.merge(effects, {
+        await envFile.write(effects, {
+          ...envDefaults,
           LNBITS_BACKEND_WALLET_CLASS: configuredImplementation,
           LNBITS_ALLOWED_FUNDING_SOURCES: configuredImplementation,
         })
-
-        rm('/media/startos/volumes/main/start9', {
-          recursive: true,
-        }).catch(console.error)
-      } catch {
-        console.log('config.yaml not found')
       }
+
+      rm('/media/startos/volumes/main/start9', {
+        recursive: true,
+      }).catch(console.error)
     },
     down: IMPOSSIBLE,
   },
