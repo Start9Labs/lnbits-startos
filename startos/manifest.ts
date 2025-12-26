@@ -27,12 +27,12 @@ export const manifest = setupManifest({
     'c-lightning': {
       description: 'Optionally connect RTL to your CLN node.',
       optional: true,
-      s9pk: 'https://github.com/Start9Labs/cln-startos/releases/download/v25.12.0.1-beta.0/c-lightning.s9pk',
+      s9pk: 'https://github.com/Start9Labs/cln-startos/releases/download/v25.12.0_1-beta.1/c-lightning.s9pk',
     },
     lnd: {
       description: 'Optionally connect RTL to your LND node.',
       optional: true,
-      s9pk: 'https://github.com/Start9Labs/lnd-startos/releases/download/v0.20.0-beta.1-beta.1/lnd.s9pk',
+      s9pk: 'https://github.com/Start9Labs/lnd-startos/releases/download/v0.20.0-beta.1-beta.2/lnd.s9pk',
     },
   },
 })
