@@ -1,17 +1,19 @@
 import { access, rm } from 'fs/promises'
 import { envFile } from '../fileModels/env'
+import { i18n } from '../i18n'
 import { sdk } from '../sdk'
 
 const { InputSpec, Value } = sdk
 
 export const inputSpec = InputSpec.of({
   implementation: Value.select({
-    name: 'Lightning Implementation',
-    description:
+    name: i18n('Lightning Implementation'),
+    description: i18n(
       'The underlying Lightning implementation, currently LND or Core Lightning (CLN)',
+    ),
     values: {
-      LndRestWallet: 'LND',
-      CoreLightningWallet: 'Core Lightning',
+      LndRestWallet: i18n('LND'),
+      CoreLightningWallet: i18n('Core Lightning'),
     },
     default: undefined as any,
   }),
@@ -23,10 +25,13 @@ export const setLnImplementation = sdk.Action.withInput(
 
   // metadata
   async ({ effects }) => ({
-    name: 'Lightning Implementation',
-    description: 'Select the Lightning Implementation for LNbits to utilize',
-    warning:
+    name: i18n('Lightning Implementation'),
+    description: i18n(
+      'Select the Lightning Implementation for LNbits to utilize',
+    ),
+    warning: i18n(
       'If the LN implementation is changed after using LNBits this will delete all LNBits accounts and wallets related to the previously configured LN implementation! All LN funds will still be available on the underlying LN implementation.',
+    ),
     allowedStatuses: 'any',
     group: null,
     visibility: 'enabled',
@@ -58,12 +63,12 @@ export const setLnImplementation = sdk.Action.withInput(
       await access('/media/startos/volumes/main/database.sqlite3')
       if (configuredLnImplementation !== input.implementation) {
         console.log(
-          'existing LN implementation does not match input. Resetting DB...',
+          i18n('Existing LN implementation does not match input. Resetting DB...'),
         )
         await rm('/media/startos/volumes/main/database.sqlite3')
       }
     } catch (error) {
-      console.log('DB has not been initialized')
+      console.log(i18n('DB has not been initialized'))
     }
 
     await envFile.merge(effects, {

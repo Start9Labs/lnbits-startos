@@ -1,4 +1,5 @@
 import { envFile } from './fileModels/env'
+import { i18n } from './i18n'
 import { sdk } from './sdk'
 import { mainMounts, uiPort } from './utils'
 
@@ -8,7 +9,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
    *
    * In this section, we fetch any resources or run any desired preliminary commands.
    */
-  console.info('Starting LNbits!')
+  console.info(i18n('Starting LNbits!'))
 
   const configuredLnImplementation = await envFile
     .read((e) => e.LNBITS_BACKEND_WALLET_CLASS)
@@ -44,12 +45,12 @@ export const main = sdk.setupMain(async ({ effects }) => {
     subcontainer: lnbitsSub,
     exec: { command: ['uv', 'run', 'lnbits'], env: env || {} },
     ready: {
-      display: 'Web Interface',
+      display: i18n('Web Interface'),
       gracePeriod: 75_000,
       fn: () =>
         sdk.healthCheck.checkPortListening(effects, uiPort, {
-          successMessage: 'The web interface is ready',
-          errorMessage: 'The web interface is not ready',
+          successMessage: i18n('The web interface is ready'),
+          errorMessage: i18n('The web interface is not ready'),
         }),
     },
     requires: [],

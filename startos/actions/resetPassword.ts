@@ -1,3 +1,4 @@
+import { i18n } from '../i18n'
 import { sdk } from '../sdk'
 import { db, mainMounts, randomPassword } from '../utils'
 import { utils } from '@start9labs/start-sdk'
@@ -8,9 +9,10 @@ export const resetPassword = sdk.Action.withoutInput(
 
   // metadata
   async ({ effects }) => ({
-    name: 'Reset Password',
-    description:
+    name: i18n('Reset Password'),
+    description: i18n(
       'Reset Password for the super_user in the event of a lost or forgotten password',
+    ),
     warning: null,
     allowedStatuses: 'only-running',
     group: null,
@@ -55,8 +57,8 @@ export const resetPassword = sdk.Action.withoutInput(
     )
     return {
       version: '1',
-      title: 'Success',
-      message: `The new Super User password for '${res.stdout}' is below`,
+      title: i18n('Success'),
+      message: i18n('The new Super User password is below'),
       result: {
         type: 'single',
         value: newPassword,
