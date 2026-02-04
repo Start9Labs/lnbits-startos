@@ -3,8 +3,8 @@ import { envFile } from '../../fileModels/env'
 import { envDefaults } from '../../utils'
 import { readFile, rm } from 'fs/promises'
 
-export const v1_4_0_1 = VersionInfo.of({
-  version: '1.4.0:1-beta.0',
+export const v1_4_2_1 = VersionInfo.of({
+  version: '1.4.2:1-beta.0',
   releaseNotes: 'Revamped for StartOS 0.4.0',
   migrations: {
     up: async ({ effects }) => {
