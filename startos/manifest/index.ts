@@ -1,4 +1,5 @@
 import { setupManifest } from '@start9labs/start-sdk'
+import { short, long, depClnTitle, depLndTitle } from './i18n'
 
 export const manifest = setupManifest({
   id: 'lnbits',
@@ -11,28 +12,33 @@ export const manifest = setupManifest({
   donationUrl: 'https://demo.lnbits.com/tipjar/DwaUiE4kBX6mUW6pj3X5Kg',
   docsUrl:
     'https://github.com/Start9Labs/lnbits-startos/blob/master/instructions.md',
-  description: {
-    short: 'Free and open-source lightning-network wallet/accounts system.',
-    long: 'A very simple Python server that sits on top of any funding source, and can be used as an accounts system, extendable platform, development stack, fallback wallet or even instant wallet for LN demonstrations',
-  },
+  description: { short, long },
   volumes: ['main'],
   images: {
     lnbits: {
       source: {
         dockerBuild: {},
       },
+      arch: ['aarch64', 'x86_64'],
+      emulateMissingAs: 'aarch64'
     },
   },
   dependencies: {
     'c-lightning': {
       description: 'Optionally connect RTL to your CLN node.',
       optional: true,
-      s9pk: 'https://github.com/Start9Labs/cln-startos/releases/download/v25.12.0_1-beta.1/c-lightning.s9pk',
+      metadata: {
+        title: depClnTitle,
+        icon: 'https://github.com/Start9Labs/cln-startos/blob/master/icon.png?raw=true',
+      },
     },
     lnd: {
       description: 'Optionally connect RTL to your LND node.',
       optional: true,
-      s9pk: 'https://github.com/Start9Labs/lnd-startos/releases/download/v0.20.0-beta.1-beta.2/lnd.s9pk',
+      metadata: {
+        title: depLndTitle,
+        icon: 'https://github.com/Start9Labs/lnd-startos/blob/master/icon.png?raw=true',
+      },
     },
   },
 })
