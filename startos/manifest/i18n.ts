@@ -11,6 +11,22 @@ export const short = {
     'Système de portefeuille/comptes du réseau Lightning gratuit et open-source.',
 }
 
+export const depClnTitle = {
+  en_US: 'Core Lightning',
+  es_ES: 'Core Lightning',
+  de_DE: 'Core Lightning',
+  pl_PL: 'Core Lightning',
+  fr_FR: 'Core Lightning',
+}
+
+export const depLndTitle = {
+  en_US: 'LND',
+  es_ES: 'LND',
+  de_DE: 'LND',
+  pl_PL: 'LND',
+  fr_FR: 'LND',
+}
+
 export const long = {
   en_US:
     'A very simple Python server that sits on top of any funding source, and can be used as an accounts system, extendable platform, development stack, fallback wallet or even instant wallet for LN demonstrations',

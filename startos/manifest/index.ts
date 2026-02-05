@@ -1,5 +1,5 @@
 import { setupManifest } from '@start9labs/start-sdk'
-import { short, long } from './i18n'
+import { short, long, depClnTitle, depLndTitle } from './i18n'
 
 export const manifest = setupManifest({
   id: 'lnbits',
@@ -23,14 +23,20 @@ export const manifest = setupManifest({
   },
   dependencies: {
     'c-lightning': {
-      description: 'Optionally connect LNbits to your CLN node.',
+      description: 'Optionally connect RTL to your CLN node.',
       optional: true,
-      s9pk: 'https://github.com/Start9Labs/cln-startos/releases/download/v25.12.0_1-beta.1/c-lightning.s9pk',
+      metadata: {
+        title: depClnTitle,
+        icon: 'https://github.com/Start9Labs/cln-startos/blob/master/icon.png',
+      },
     },
     lnd: {
-      description: 'Optionally connect LNbits to your LND node.',
+      description: 'Optionally connect RTL to your LND node.',
       optional: true,
-      s9pk: 'https://github.com/Start9Labs/lnd-startos/releases/download/v0.20.0-beta.1-beta.2/lnd.s9pk',
+      metadata: {
+        title: depLndTitle,
+        icon: 'https://github.com/Start9Labs/lnd-startos/blob/master/icon.png',
+      },
     },
   },
 })
