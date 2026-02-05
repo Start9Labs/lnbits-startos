@@ -19,6 +19,8 @@ export const manifest = setupManifest({
       source: {
         dockerBuild: {},
       },
+      arch: ['aarch64', 'x86_64'],
+      emulateMissingAs: 'aarch64'
     },
   },
   dependencies: {
@@ -27,7 +29,7 @@ export const manifest = setupManifest({
       optional: true,
       metadata: {
         title: depClnTitle,
-        icon: 'https://github.com/Start9Labs/cln-startos/blob/master/icon.png',
+        icon: 'https://github.com/Start9Labs/cln-startos/blob/master/icon.png?raw=true',
       },
     },
     lnd: {
@@ -35,7 +37,7 @@ export const manifest = setupManifest({
       optional: true,
       metadata: {
         title: depLndTitle,
-        icon: 'https://github.com/Start9Labs/lnd-startos/blob/master/icon.png',
+        icon: 'https://github.com/Start9Labs/lnd-startos/blob/master/icon.png?raw=true',
       },
     },
   },
