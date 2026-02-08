@@ -11,7 +11,7 @@ export const manifest = setupManifest({
   marketingSite: 'https://lnbits.com/',
   donationUrl: 'https://demo.lnbits.com/tipjar/DwaUiE4kBX6mUW6pj3X5Kg',
   docsUrl:
-    'https://github.com/Start9Labs/lnbits-startos/blob/master/instructions.md',
+    'https://docs.lnbits.org/',
   description: { short, long },
   volumes: ['main'],
   images: {
