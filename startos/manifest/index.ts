@@ -1,18 +1,11 @@
 import { setupManifest } from '@start9labs/start-sdk'
-import {
-  short,
-  long,
-  depClnTitle,
-  depClnDescription,
-  depLndTitle,
-  depLndDescription,
-} from './i18n'
+import { depClnDescription, depLndDescription, long, short } from './i18n'
 
 export const manifest = setupManifest({
   id: 'lnbits',
   title: 'LNbits',
   license: 'mit',
-  packageRepo: 'https://github.com/Start9Labs/lnbits-startos',
+  packageRepo: 'https://github.com/Start9Labs/lnbits-startos/tree/update/040',
   upstreamRepo: 'https://github.com/lnbits/lnbits',
   marketingUrl: 'https://lnbits.com/',
   donationUrl: 'https://demo.lnbits.com/tipjar/DwaUiE4kBX6mUW6pj3X5Kg',
@@ -25,7 +18,6 @@ export const manifest = setupManifest({
         dockerBuild: {},
       },
       arch: ['aarch64', 'x86_64'],
-      emulateMissingAs: 'aarch64',
     },
   },
   dependencies: {
@@ -33,7 +25,7 @@ export const manifest = setupManifest({
       description: depClnDescription,
       optional: true,
       metadata: {
-        title: depClnTitle,
+        title: 'Core Lightning',
         icon: 'https://raw.githubusercontent.com/Start9Labs/cln-startos/refs/heads/update/040/icon.svg',
       },
     },
@@ -41,7 +33,7 @@ export const manifest = setupManifest({
       description: depLndDescription,
       optional: true,
       metadata: {
-        title: depLndTitle,
+        title: 'LND',
         icon: 'https://raw.githubusercontent.com/Start9Labs/lnd-startos/refs/heads/update/040/icon.svg',
       },
     },

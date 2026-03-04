@@ -1,7 +1,7 @@
+import { utils } from '@start9labs/start-sdk'
 import { i18n } from '../i18n'
 import { sdk } from '../sdk'
-import { db, mainMounts, randomPassword } from '../utils'
-import { utils } from '@start9labs/start-sdk'
+import { db, mainMounts } from '../utils'
 
 export const resetPassword = sdk.Action.withoutInput(
   // id
@@ -21,8 +21,11 @@ export const resetPassword = sdk.Action.withoutInput(
 
   // the execution function
   async ({ effects }) => {
-    const newPassword = utils.getDefaultString(randomPassword)
-    const res = await sdk.SubContainer.withTemp(
+    const newPassword = utils.getDefaultString({
+      charset: 'a-z,A-Z,1-9,+,/',
+      len: 22,
+    })
+    await sdk.SubContainer.withTemp(
       effects,
       { imageId: 'lnbits' },
       mainMounts,

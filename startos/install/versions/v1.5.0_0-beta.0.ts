@@ -1,6 +1,6 @@
-import { VersionInfo, IMPOSSIBLE, YAML } from '@start9labs/start-sdk'
+import { IMPOSSIBLE, VersionInfo, YAML } from '@start9labs/start-sdk'
+import { rm } from 'fs/promises'
 import { envFile } from '../../fileModels/env'
-import { readFile, rm } from 'fs/promises'
 import { sdk } from '../../sdk'
 
 export const v1_5_0_0 = VersionInfo.of({

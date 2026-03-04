@@ -1,54 +1,28 @@
 export const short = {
-  en_US:
-    'Free and open-source lightning-network wallet/accounts system.',
+  en_US: 'Free and open-source lightning-network wallet/accounts system.',
   es_ES:
     'Sistema de billetera/cuentas de red Lightning gratuito y de código abierto.',
   de_DE:
     'Kostenloses und quelloffenes Lightning-Netzwerk-Wallet-/Kontensystem.',
-  pl_PL:
-    'Darmowy i otwartoźródłowy system portfela/kont sieci Lightning.',
+  pl_PL: 'Darmowy i otwartoźródłowy system portfela/kont sieci Lightning.',
   fr_FR:
     'Système de portefeuille/comptes du réseau Lightning gratuit et open-source.',
 }
 
-export const depClnTitle = {
-  en_US: 'Core Lightning',
-  es_ES: 'Core Lightning',
-  de_DE: 'Core Lightning',
-  pl_PL: 'Core Lightning',
-  fr_FR: 'Core Lightning',
-}
-
 export const depClnDescription = {
   en_US: 'Optionally connect LNbits to your CLN node.',
-  es_ES:
-    'Opcionalmente conecte LNbits a su nodo CLN.',
-  de_DE:
-    'Optional LNbits mit Ihrem CLN-Knoten verbinden.',
-  pl_PL:
-    'Opcjonalnie połącz LNbits ze swoim węzłem CLN.',
-  fr_FR:
-    'Connectez optionnellement LNbits à votre nœud CLN.',
-}
-
-export const depLndTitle = {
-  en_US: 'LND',
-  es_ES: 'LND',
-  de_DE: 'LND',
-  pl_PL: 'LND',
-  fr_FR: 'LND',
+  es_ES: 'Opcionalmente conecte LNbits a su nodo CLN.',
+  de_DE: 'Optional LNbits mit Ihrem CLN-Knoten verbinden.',
+  pl_PL: 'Opcjonalnie połącz LNbits ze swoim węzłem CLN.',
+  fr_FR: 'Connectez optionnellement LNbits à votre nœud CLN.',
 }
 
 export const depLndDescription = {
   en_US: 'Optionally connect LNbits to your LND node.',
-  es_ES:
-    'Opcionalmente conecte LNbits a su nodo LND.',
-  de_DE:
-    'Optional LNbits mit Ihrem LND-Knoten verbinden.',
-  pl_PL:
-    'Opcjonalnie połącz LNbits ze swoim węzłem LND.',
-  fr_FR:
-    'Connectez optionnellement LNbits à votre nœud LND.',
+  es_ES: 'Opcionalmente conecte LNbits a su nodo LND.',
+  de_DE: 'Optional LNbits mit Ihrem LND-Knoten verbinden.',
+  pl_PL: 'Opcjonalnie połącz LNbits ze swoim węzłem LND.',
+  fr_FR: 'Connectez optionnellement LNbits à votre nœud LND.',
 }
 
 export const long = {
