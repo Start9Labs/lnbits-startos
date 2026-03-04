@@ -1,7 +1,7 @@
 import { envFile } from './fileModels/env'
 import { i18n } from './i18n'
 import { sdk } from './sdk'
-import { mainMounts, uiPort } from './utils'
+import { clnMountpoint, lndMountpoint, mainMounts, uiPort } from './utils'
 
 export const main = sdk.setupMain(async ({ effects }) => {
   /**
@@ -23,8 +23,8 @@ export const main = sdk.setupMain(async ({ effects }) => {
         configuredLnImplementation === 'LndRestWallet' ? 'lnd' : 'c-lightning',
       mountpoint:
         configuredLnImplementation === 'LndRestWallet'
-          ? '/mnt/lnd'
-          : '/mnt/cln',
+          ? lndMountpoint
+          : clnMountpoint,
       readonly: true,
       subpath: null,
       volumeId: 'main',

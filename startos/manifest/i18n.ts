@@ -19,12 +19,36 @@ export const depClnTitle = {
   fr_FR: 'Core Lightning',
 }
 
+export const depClnDescription = {
+  en_US: 'Optionally connect LNbits to your CLN node.',
+  es_ES:
+    'Opcionalmente conecte LNbits a su nodo CLN.',
+  de_DE:
+    'Optional LNbits mit Ihrem CLN-Knoten verbinden.',
+  pl_PL:
+    'Opcjonalnie połącz LNbits ze swoim węzłem CLN.',
+  fr_FR:
+    'Connectez optionnellement LNbits à votre nœud CLN.',
+}
+
 export const depLndTitle = {
   en_US: 'LND',
   es_ES: 'LND',
   de_DE: 'LND',
   pl_PL: 'LND',
   fr_FR: 'LND',
+}
+
+export const depLndDescription = {
+  en_US: 'Optionally connect LNbits to your LND node.',
+  es_ES:
+    'Opcionalmente conecte LNbits a su nodo LND.',
+  de_DE:
+    'Optional LNbits mit Ihrem LND-Knoten verbinden.',
+  pl_PL:
+    'Opcjonalnie połącz LNbits ze swoim węzłem LND.',
+  fr_FR:
+    'Connectez optionnellement LNbits à votre nœud LND.',
 }
 
 export const long = {

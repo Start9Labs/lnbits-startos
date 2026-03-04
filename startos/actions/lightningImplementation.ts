@@ -24,7 +24,7 @@ export const setLnImplementation = sdk.Action.withInput(
   'set-lightning-implementation',
 
   // metadata
-  async ({ effects }) => ({
+  {
     name: i18n('Lightning Implementation'),
     description: i18n(
       'Select the Lightning Implementation for LNbits to utilize',
@@ -35,7 +35,7 @@ export const setLnImplementation = sdk.Action.withInput(
     allowedStatuses: 'any',
     group: null,
     visibility: 'enabled',
-  }),
+  },
 
   // form input specification
   inputSpec,
@@ -60,10 +60,12 @@ export const setLnImplementation = sdk.Action.withInput(
       .const(effects)
 
     try {
-      await access('/media/startos/volumes/main/database.sqlite3')
+      await access(sdk.volumes.main.subpath('database.sqlite3'))
       if (configuredLnImplementation !== input.implementation) {
         console.log(
-          i18n('Existing LN implementation does not match input. Resetting DB...'),
+          i18n(
+            'Existing LN implementation does not match input. Resetting DB...',
+          ),
         )
         await rm('/media/startos/volumes/main/database.sqlite3')
       }

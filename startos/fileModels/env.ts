@@ -1,131 +1,59 @@
-import { matches, FileHelper } from '@start9labs/start-sdk'
-const { object, string } = matches
+import { FileHelper, z } from '@start9labs/start-sdk'
+import { sdk } from '../sdk'
+import { clnMountpoint, lndMountpoint } from '../utils'
 
-import { envDefaults } from '../utils'
-import { literal, literals } from 'ts-matches'
-
-const {
-  HOST,
-  PORT,
-  FORWARDED_ALLOW_IPS,
-  DEBUG,
-  AUTH_ALLOWED_METHODS,
-  LNBITS_ALLOWED_USERS,
-  LNBITS_ADMIN_USERS,
-  LNBITS_ADMIN_EXTENSIONS,
-  LNBITS_ADMIN_UI,
-  LNBITS_DEFAULT_WALLET_NAME,
-  LNBITS_HIDE_API,
-  LNBITS_DISABLED_EXTENSIONS,
-  LNBITS_DATA_FOLDER,
-  LNBITS_FORCE_HTTPS,
-  LNBITS_RESERVE_FEE_MIN,
-  LNBITS_RESERVE_FEE_PERCENT,
-  LNBITS_SITE_TITLE,
-  LNBITS_SITE_TAGLINE,
-  LNBITS_SITE_DESCRIPTION,
-  LNBITS_THEME_OPTIONS,
-  LNBITS_CUSTOM_LOGO,
-  LNBITS_BACKEND_WALLET_CLASS,
-  LNBITS_ALLOWED_FUNDING_SOURCES,
-  CLIGHTNING_RPC,
-  LND_REST_ENDPOINT,
-  LND_REST_CERT,
-  LND_REST_MACAROON,
-} = envDefaults
-
-const shape = object({
-  HOST: literal(HOST).onMismatch(HOST),
-  PORT: literal(PORT).onMismatch(PORT),
-
-  // uvicorn variable, allow https behind a proxy
-  FORWARDED_ALLOW_IPS:
-    literal(FORWARDED_ALLOW_IPS).onMismatch(FORWARDED_ALLOW_IPS),
-
-  DEBUG: literals('true', 'false').optional().onMismatch(DEBUG),
-
-  AUTH_ALLOWED_METHODS: string.onMismatch(AUTH_ALLOWED_METHODS),
-
-  LNBITS_ALLOWED_USERS: string.optional().onMismatch(LNBITS_ALLOWED_USERS),
-  LNBITS_ADMIN_USERS: string.optional().onMismatch(LNBITS_ADMIN_USERS),
-  // Extensions only admin can access
-  LNBITS_ADMIN_EXTENSIONS: string
+export const shape = z.object({
+  HOST: z.literal('lnbits.startos').catch('lnbits.startos'),
+  PORT: z.literal('5000').catch('5000'),
+  FORWARDED_ALLOW_IPS: z.literal('*').catch('*'),
+  DEBUG: z.enum(['true', 'false']).optional().catch('false'),
+  AUTH_ALLOWED_METHODS: z.string().catch('username-password'),
+  LNBITS_ALLOWED_USERS: z.string().optional().catch(''),
+  LNBITS_ADMIN_USERS: z.string().optional().catch(''),
+  LNBITS_ADMIN_EXTENSIONS: z.string().optional().catch('ngrok, admin'),
+  LNBITS_ADMIN_UI: z.enum(['true', 'false']).optional().catch('true'),
+  LNBITS_DEFAULT_WALLET_NAME: z.string().optional().catch('LNbits wallet'),
+  LNBITS_HIDE_API: z.enum(['true', 'false']).optional().catch('false'),
+  LNBITS_DISABLED_EXTENSIONS: z.string().optional().catch('amilk'),
+  LNBITS_DATA_FOLDER: z.literal('./data').catch('./data'),
+  LNBITS_FORCE_HTTPS: z.enum(['true', 'false']).optional().catch('false'),
+  LNBITS_RESERVE_FEE_MIN: z.string().optional().catch('2000'),
+  LNBITS_RESERVE_FEE_PERCENT: z.string().optional().catch('1.0'),
+  LNBITS_SITE_TITLE: z.string().optional().catch('LNbits'),
+  LNBITS_SITE_TAGLINE: z
+    .string()
     .optional()
-    .onMismatch(LNBITS_ADMIN_EXTENSIONS),
-  // Enable Admin GUI, available for the first user in LNBITS_ADMIN_USERS if available
-  LNBITS_ADMIN_UI: literals('true', 'false')
+    .catch('free and open-source self-hosted lightning wallet'),
+  LNBITS_SITE_DESCRIPTION: z
+    .string()
     .optional()
-    .onMismatch(LNBITS_ADMIN_UI),
-
-  LNBITS_DEFAULT_WALLET_NAME: string
+    .catch('Made for you, hosted by you.'),
+  LNBITS_THEME_OPTIONS: z
+    .string()
     .optional()
-    .onMismatch(LNBITS_DEFAULT_WALLET_NAME),
-
-  // Ad space description
-  // LNBITS_AD_SPACE_TITLE="Supported by"
-  // csv ad space, format "<url>;<img-light>;<img-dark>, <url>;<img-light>;<img-dark>", extensions can choose to honor
-  // LNBITS_AD_SPACE="" # csv ad image filepaths or urls, extensions can choose to honor
-  LNBITS_HIDE_API: literals('true', 'false')
-    .optional()
-    .onMismatch(LNBITS_HIDE_API), // Hides wallet api, extensions can choose to honor
-
-  // Disable extensions for all users, use "all" to disable all extensions
-  LNBITS_DISABLED_EXTENSIONS: string
-    .optional()
-    .onMismatch(LNBITS_DISABLED_EXTENSIONS),
-
-  // Database: to use SQLite, specify LNBITS_DATA_FOLDER
-  //           to use PostgreSQL, specify LNBITS_DATABASE_URL=postgres://...
-  //           to use CockroachDB, specify LNBITS_DATABASE_URL=cockroachdb://...
-  // for both PostgreSQL and CockroachDB, you'll need to install
-  //   psycopg2 as an additional dependency
-  LNBITS_DATA_FOLDER:
-    literal(LNBITS_DATA_FOLDER).onMismatch(LNBITS_DATA_FOLDER),
-  // LNBITS_DATABASE_URL="postgres://user:password@host:port/databasename"
-
-  LNBITS_FORCE_HTTPS: literals('true', 'false')
-    .optional()
-    .onMismatch(LNBITS_FORCE_HTTPS),
-  // LNBITS_SERVICE_FEE="0.0"
-  // value in millisats
-  LNBITS_RESERVE_FEE_MIN: string.optional().onMismatch(LNBITS_RESERVE_FEE_MIN),
-  // value in percent
-  LNBITS_RESERVE_FEE_PERCENT: string
-    .optional()
-    .onMismatch(LNBITS_RESERVE_FEE_PERCENT),
-
-  // Change theme
-  LNBITS_SITE_TITLE: string.optional().onMismatch(LNBITS_SITE_TITLE),
-  LNBITS_SITE_TAGLINE: string.optional().onMismatch(LNBITS_SITE_TAGLINE),
-  LNBITS_SITE_DESCRIPTION: string
-    .optional()
-    .onMismatch(LNBITS_SITE_DESCRIPTION),
-  // Choose from mint, flamingo, freedom, salvador, autumn, monochrome, classic
-  LNBITS_THEME_OPTIONS: string.optional().onMismatch(LNBITS_THEME_OPTIONS),
-  LNBITS_CUSTOM_LOGO: string.optional().onMismatch(LNBITS_CUSTOM_LOGO),
-
-  // Choose from LNPayWallet, OpenNodeWallet, LntxbotWallet, ClicheWallet, LnTipsWallet
-  //             LndRestWallet, CoreLightningWallet, LNbitsWallet, SparkWallet, FakeWallet, EclairWallet
-  LNBITS_BACKEND_WALLET_CLASS: literals(
-    'VoidWallet',
-    'LndRestWallet',
-    'CoreLightningWallet',
-  ).onMismatch(LNBITS_BACKEND_WALLET_CLASS),
-  // VoidWallet is just a fallback that works without any actual Lightning capabilities,
-  // just so you can see the UI before dealing with this file.
-
-  LNBITS_ALLOWED_FUNDING_SOURCES: literals(
-    'LndRestWallet',
-    'CoreLightningWallet',
-  ).onMismatch(LNBITS_ALLOWED_FUNDING_SOURCES),
-
-  // CLightningWallet
-  CLIGHTNING_RPC: literal(CLIGHTNING_RPC).onMismatch(CLIGHTNING_RPC),
-
-  // LndRestWallet
-  LND_REST_ENDPOINT: literal(LND_REST_ENDPOINT).onMismatch(LND_REST_ENDPOINT),
-  LND_REST_CERT: literal(LND_REST_CERT).onMismatch(LND_REST_CERT),
-  LND_REST_MACAROON: literal(LND_REST_MACAROON).onMismatch(LND_REST_MACAROON),
+    .catch('classic, bitcoin, freedom, mint, autumn, monochrome, salvador'),
+  LNBITS_CUSTOM_LOGO: z.string().optional().catch(''),
+  LNBITS_BACKEND_WALLET_CLASS: z
+    .enum(['VoidWallet', 'LndRestWallet', 'CoreLightningWallet'])
+    .catch('LndRestWallet'),
+  LNBITS_ALLOWED_FUNDING_SOURCES: z
+    .enum(['LndRestWallet', 'CoreLightningWallet'])
+    .catch('LndRestWallet'),
+  CLIGHTNING_RPC: z
+    .literal(`${clnMountpoint}/bitcoin/lightning-rpc`)
+    .catch(`${clnMountpoint}/bitcoin/lightning-rpc`),
+  LND_REST_ENDPOINT: z
+    .literal('https://lnd.startos:8080/')
+    .catch('https://lnd.startos:8080/'),
+  LND_REST_CERT: z
+    .literal(`${lndMountpoint}/tls.cert`)
+    .catch(`${lndMountpoint}/tls.cert`),
+  LND_REST_MACAROON: z
+    .literal(`${lndMountpoint}/data/chain/bitcoin/mainnet/admin.macaroon`)
+    .catch(`${lndMountpoint}/data/chain/bitcoin/mainnet/admin.macaroon`),
 })
 
-export const envFile = FileHelper.env('/media/startos/volumes/main/.env', shape)
+export const envFile = FileHelper.env(
+  { base: sdk.volumes.main, subpath: '/.env' },
+  shape,
+)

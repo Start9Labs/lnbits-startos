@@ -1,4 +1,4 @@
-FROM lnbits/lnbits:v1.4.2 AS builder
+FROM lnbits/lnbits:v1.5.0 AS builder
 
 # arm64 or amd64
 ARG PLATFORM

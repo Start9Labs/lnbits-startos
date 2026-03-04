@@ -9,9 +9,9 @@ export const setDependencies = sdk.setupDependencies(async ({ effects }) => {
   if (configuredLnImplementation === 'LndRestWallet') {
     return {
       lnd: {
-        healthChecks: ['primary'],
+        healthChecks: ['lnd'],
         kind: 'running',
-        versionRange: '>=0.20.0-beta:1-beta.2',
+        versionRange: '>=28.3:0-beta.0',
       },
     }
   } else if (configuredLnImplementation === 'CoreLightningWallet') {

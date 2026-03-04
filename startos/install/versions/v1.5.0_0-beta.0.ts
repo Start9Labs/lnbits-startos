@@ -1,11 +1,17 @@
 import { VersionInfo, IMPOSSIBLE, YAML } from '@start9labs/start-sdk'
 import { envFile } from '../../fileModels/env'
-import { envDefaults } from '../../utils'
 import { readFile, rm } from 'fs/promises'
+import { sdk } from '../../sdk'
 
-export const v1_4_2_1 = VersionInfo.of({
-  version: '1.4.2:1-beta.0',
-  releaseNotes: 'Revamped for StartOS 0.4.0',
+export const v1_5_0_0 = VersionInfo.of({
+  version: '1.5.0:0-beta.0',
+  releaseNotes: {
+    en_US: 'Revamped for StartOS 0.4.0',
+    es_ES: 'Renovado para StartOS 0.4.0',
+    de_DE: 'Überarbeitet für StartOS 0.4.0',
+    pl_PL: 'Przeprojektowany dla StartOS 0.4.0',
+    fr_FR: 'Refait pour StartOS 0.4.0',
+  },
   migrations: {
     up: async ({ effects }) => {
       // get old config.yaml
@@ -13,10 +19,10 @@ export const v1_4_2_1 = VersionInfo.of({
         | {
             implementation: 'LndRestWallet' | 'CLightningWallet'
           }
-        | undefined = await readFile(
-        '/media/startos/volumes/main/start9/config.yaml',
-        'utf-8',
-      ).then(YAML.parse, () => undefined)
+        | undefined = await sdk.volumes.main
+        .readFile('start9/config.yaml', 'utf-8')
+        .then((c) => c.toString('utf-8'))
+        .then(YAML.parse, () => undefined)
 
       if (configYaml) {
         const configuredImplementation =
@@ -24,8 +30,7 @@ export const v1_4_2_1 = VersionInfo.of({
             ? 'CoreLightningWallet'
             : 'LndRestWallet'
 
-        await envFile.write(effects, {
-          ...envDefaults,
+        await envFile.merge(effects, {
           LNBITS_BACKEND_WALLET_CLASS: configuredImplementation,
           LNBITS_ALLOWED_FUNDING_SOURCES: configuredImplementation,
         })

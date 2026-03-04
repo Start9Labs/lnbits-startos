@@ -8,7 +8,7 @@ export const resetPassword = sdk.Action.withoutInput(
   'reset-password',
 
   // metadata
-  async ({ effects }) => ({
+  {
     name: i18n('Reset Password'),
     description: i18n(
       'Reset Password for the super_user in the event of a lost or forgotten password',
@@ -17,7 +17,7 @@ export const resetPassword = sdk.Action.withoutInput(
     allowedStatuses: 'only-running',
     group: null,
     visibility: 'enabled',
-  }),
+  },
 
   // the execution function
   async ({ effects }) => {

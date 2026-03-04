@@ -1,17 +1,22 @@
 import { setupManifest } from '@start9labs/start-sdk'
-import { short, long, depClnTitle, depLndTitle } from './i18n'
+import {
+  short,
+  long,
+  depClnTitle,
+  depClnDescription,
+  depLndTitle,
+  depLndDescription,
+} from './i18n'
 
 export const manifest = setupManifest({
   id: 'lnbits',
   title: 'LNbits',
   license: 'mit',
-  wrapperRepo: 'https://github.com/Start9Labs/lnbits-startos',
+  packageRepo: 'https://github.com/Start9Labs/lnbits-startos',
   upstreamRepo: 'https://github.com/lnbits/lnbits',
-  supportSite: 'https://github.com/lnbits/lnbits/issues',
-  marketingSite: 'https://lnbits.com/',
+  marketingUrl: 'https://lnbits.com/',
   donationUrl: 'https://demo.lnbits.com/tipjar/DwaUiE4kBX6mUW6pj3X5Kg',
-  docsUrl:
-    'https://docs.lnbits.org/',
+  docsUrls: ['https://docs.lnbits.org/'],
   description: { short, long },
   volumes: ['main'],
   images: {
@@ -20,24 +25,24 @@ export const manifest = setupManifest({
         dockerBuild: {},
       },
       arch: ['aarch64', 'x86_64'],
-      emulateMissingAs: 'aarch64'
+      emulateMissingAs: 'aarch64',
     },
   },
   dependencies: {
     'c-lightning': {
-      description: 'Optionally connect RTL to your CLN node.',
+      description: depClnDescription,
       optional: true,
       metadata: {
         title: depClnTitle,
-        icon: 'https://github.com/Start9Labs/cln-startos/blob/master/icon.png?raw=true',
+        icon: 'https://raw.githubusercontent.com/Start9Labs/cln-startos/refs/heads/update/040/icon.svg',
       },
     },
     lnd: {
-      description: 'Optionally connect RTL to your LND node.',
+      description: depLndDescription,
       optional: true,
       metadata: {
         title: depLndTitle,
-        icon: 'https://github.com/Start9Labs/lnd-startos/blob/master/icon.png?raw=true',
+        icon: 'https://raw.githubusercontent.com/Start9Labs/lnd-startos/refs/heads/update/040/icon.svg',
       },
     },
   },
