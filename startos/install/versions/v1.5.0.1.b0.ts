@@ -3,14 +3,14 @@ import { rm } from 'fs/promises'
 import { envFile } from '../../fileModels/env'
 import { sdk } from '../../sdk'
 
-export const v1_5_0_0 = VersionInfo.of({
-  version: '1.5.0:0-beta.0',
+export const v_1_5_0_1_b0 = VersionInfo.of({
+  version: '1.5.0:1-beta.0',
   releaseNotes: {
-    en_US: 'Revamped for StartOS 0.4.0',
-    es_ES: 'Renovado para StartOS 0.4.0',
-    de_DE: 'Überarbeitet für StartOS 0.4.0',
-    pl_PL: 'Przeprojektowany dla StartOS 0.4.0',
-    fr_FR: 'Refait pour StartOS 0.4.0',
+    en_US: 'Update to StartOS SDK beta.59',
+    es_ES: 'Actualización a StartOS SDK beta.59',
+    de_DE: 'Update auf StartOS SDK beta.59',
+    pl_PL: 'Aktualizacja do StartOS SDK beta.59',
+    fr_FR: 'Mise à jour vers StartOS SDK beta.59',
   },
   migrations: {
     up: async ({ effects }) => {
