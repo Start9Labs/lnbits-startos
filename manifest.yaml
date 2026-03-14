@@ -1,9 +1,13 @@
 id: lnbits
 title: "LNBits"
-version: 1.4.2
+version: 1.5.0
 release-notes: |
-  * Update to v1.4.2 [release notes](https://github.com/lnbits/lnbits/releases/tag/v1.4.2)
-  * Bump max CLN version
+  * Update to v1.5.0 [release notes](https://github.com/lnbits/lnbits/releases/tag/v1.5.0)
+  * New: Spark L2 funding source, admin impersonate user, user activation workflow, invitation codes
+  * New: FIRST_INSTALL_TOKEN, optional exchange providers, persisted UI customization, modern theme
+  * Fixes: Timestamp timezone, validation errors, DB migration conflicts, rate limit select
+  * Security dependency bumps: cryptography, werkzeug, urllib3, aiohttp, axios, pillow
+  * Refactoring: Removed windowMixin, restructured settings, refactored payment check
 license: MIT
 wrapper-repo: "https://github.com/Start9Labs/lnbits-startos"
 upstream-repo: "https://github.com/lnbits/lnbits"
