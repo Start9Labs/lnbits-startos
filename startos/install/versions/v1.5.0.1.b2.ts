@@ -3,8 +3,8 @@ import { rm } from 'fs/promises'
 import { envFile } from '../../fileModels/env'
 import { sdk } from '../../sdk'
 
-export const v_1_5_0_1_b1 = VersionInfo.of({
-  version: '1.5.0:1-beta.1',
+export const v_1_5_0_1_b2 = VersionInfo.of({
+  version: '1.5.0:1-beta.2',
   releaseNotes: {
     en_US: 'Update to StartOS SDK beta.60',
     es_ES: 'Actualización a StartOS SDK beta.60',
