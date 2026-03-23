@@ -7,7 +7,7 @@
 > **Upstream docs:** <https://docs.lnbits.org/>
 >
 > Everything not listed in this document should behave the same as upstream
-> LNbits v1.4.2. If a feature, setting, or behavior is not mentioned
+> LNbits. If a feature, setting, or behavior is not mentioned
 > here, the upstream documentation is accurate and fully applicable.
 
 A free and open-source lightning-network wallet/accounts system. See the [upstream repo](https://github.com/lnbits/lnbits) for general LNbits documentation.
@@ -36,7 +36,7 @@ A free and open-source lightning-network wallet/accounts system. See the [upstre
 
 | Property | Value |
 |----------|-------|
-| Image | Custom Dockerfile based on `lnbits/lnbits:v1.4.2` |
+| Image | Custom Dockerfile based on `lnbits/lnbits` |
 | Architectures | x86_64, aarch64 |
 | Entrypoint | `uv run lnbits` |
 
@@ -53,7 +53,7 @@ StartOS-specific files on the `main` volume:
 | File | Purpose |
 |------|---------|
 | `.env` | LNbits environment configuration (managed by StartOS) |
-| `store.json` | Not used (no store.json in this package) |
+| `store.json` | StartOS persistent settings |
 
 The Lightning node volume is mounted read-only depending on the configured backend:
 
@@ -122,10 +122,10 @@ Settings **not** managed by StartOS (hardcoded):
 
 ## Dependencies
 
-| Dependency | Required | Version | Purpose |
-|------------|----------|---------|---------|
-| Core Lightning | Optional | `>=25.12:1-beta.1` | Lightning backend (if selected) |
-| LND | Optional | `>=0.20.0-beta:1-beta.2` | Lightning backend (if selected) |
+| Dependency | Required | Purpose |
+|------------|----------|---------|
+| Core Lightning | Optional | Lightning backend (if selected) |
+| LND | Optional | Lightning backend (if selected) |
 
 One of the two Lightning implementations must be selected and running. The dependency is determined at runtime based on the configured `LNBITS_BACKEND_WALLET_CLASS`.
 
@@ -157,16 +157,15 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for build instructions and development wo
 
 ```yaml
 package_id: lnbits
-upstream_version: 1.4.2
-image: custom Dockerfile (based on lnbits/lnbits:v1.4.2)
+image: custom Dockerfile (based on lnbits/lnbits)
 architectures: [x86_64, aarch64]
 volumes:
   main: /app/data
 ports:
   ui: 5000
 dependencies:
-  - c-lightning (optional, >=25.12:1-beta.1)
-  - lnd (optional, >=0.20.0-beta:1-beta.2)
+  - c-lightning (optional)
+  - lnd (optional)
 startos_managed_env_vars:
   - LNBITS_BACKEND_WALLET_CLASS
   - LNBITS_ALLOWED_FUNDING_SOURCES
