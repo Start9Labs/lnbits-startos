@@ -8,9 +8,9 @@ import { seedFiles } from './seedFiles'
 import { taskSetLnImplementation } from './taskSetLnImplementation'
 
 export const init = sdk.setupInit(
-  seedFiles,
   restoreInit,
   versionGraph,
+  seedFiles,
   setInterfaces,
   setDependencies,
   actions,
