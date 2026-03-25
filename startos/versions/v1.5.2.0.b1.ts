@@ -1,10 +1,10 @@
 import { IMPOSSIBLE, VersionInfo, YAML } from '@start9labs/start-sdk'
 import { rm } from 'fs/promises'
-import { envFile } from '../../fileModels/env'
-import { sdk } from '../../sdk'
+import { envFile } from '../fileModels/env'
+import { sdk } from '../sdk'
 
-export const v_1_5_2_0_b0 = VersionInfo.of({
-  version: '1.5.2:0-beta.0',
+export const v_1_5_2_0_b1 = VersionInfo.of({
+  version: '1.5.2:0-beta.1',
   releaseNotes: {
     en_US: 'Update LNbits to v1.5.2',
     es_ES: 'Actualización de LNbits a v1.5.2',
