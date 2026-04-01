@@ -21,7 +21,7 @@ A free and open-source lightning-network wallet/accounts system. See the [upstre
 - [Installation and First-Run Flow](#installation-and-first-run-flow)
 - [Configuration Management](#configuration-management)
 - [Network Access and Interfaces](#network-access-and-interfaces)
-- [Actions](#actions-startos-ui)
+- [Actions (StartOS UI)](#actions-startos-ui)
 - [Backups and Restore](#backups-and-restore)
 - [Health Checks](#health-checks)
 - [Dependencies](#dependencies)
@@ -53,7 +53,6 @@ StartOS-specific files on the `main` volume:
 | File | Purpose |
 |------|---------|
 | `.env` | LNbits environment configuration (managed by StartOS) |
-| `store.json` | StartOS persistent settings |
 
 The Lightning node volume is mounted read-only depending on the configured backend:
 
@@ -101,12 +100,25 @@ Settings **not** managed by StartOS (hardcoded):
 
 ## Actions (StartOS UI)
 
-| Action | Purpose | Availability | Inputs |
-|--------|---------|-------------|--------|
-| **Lightning Implementation** | Select LND or Core Lightning as the backend | Any | Select: LND or CLN |
-| **Reset Password** | Reset the super user password to a random value | Running only | None |
+### Lightning Implementation
 
-**Warning:** Changing the Lightning implementation after initial use **deletes the LNbits database** (all accounts and wallets). Funds remain on the underlying Lightning node.
+- **Name:** Lightning Implementation
+- **Purpose:** Select LND or Core Lightning as the funding backend
+- **Visibility:** Enabled (always visible)
+- **Availability:** Any status
+- **Inputs:** Select one of: LND, Core Lightning
+- **Outputs:** None
+
+> **Warning:** Changing the Lightning implementation after initial use **deletes the LNbits database** (all accounts and wallets). Funds remain on the underlying Lightning node.
+
+### Reset Password
+
+- **Name:** Reset Password
+- **Purpose:** Reset the super user password to a random value
+- **Visibility:** Enabled (always visible)
+- **Availability:** Running only
+- **Inputs:** None
+- **Outputs:** The new password (masked, copyable)
 
 ## Backups and Restore
 
@@ -116,18 +128,20 @@ Settings **not** managed by StartOS (hardcoded):
 
 ## Health Checks
 
-| Check | Method | Messages |
-|-------|--------|----------|
-| **Web Interface** | Port listening (5000), 75s grace period | Ready: "The web interface is ready" |
+| Check | Method | Grace Period | Messages |
+|-------|--------|--------------|----------|
+| Web Interface | Port listening on 5000 | 75 seconds | Success: "The web interface is ready" / Error: "The web interface is not ready" |
 
 ## Dependencies
 
-| Dependency | Required | Purpose |
-|------------|----------|---------|
-| Core Lightning | Optional | Lightning backend (if selected) |
-| LND | Optional | Lightning backend (if selected) |
+| Dependency       | Required | Mounted Volume                      | Purpose                          |
+| ---------------- | -------- | ----------------------------------- | -------------------------------- |
+| Core Lightning   | Optional | `main` → `/mnt/cln` (read-only)    | Lightning backend (if selected)  |
+| LND              | Optional | `main` → `/mnt/lnd` (read-only)    | Lightning backend (if selected)  |
 
 One of the two Lightning implementations must be selected and running. The dependency is determined at runtime based on the configured `LNBITS_BACKEND_WALLET_CLASS`.
+
+LND files used: `tls.cert`, `data/chain/bitcoin/mainnet/admin.macaroon`. Core Lightning files used: `bitcoin/lightning-rpc` (Unix socket).
 
 ## Limitations and Differences
 
@@ -157,6 +171,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for build instructions and development wo
 
 ```yaml
 package_id: lnbits
+upstream_version: see Dockerfile
 image: custom Dockerfile (based on lnbits/lnbits)
 architectures: [x86_64, aarch64]
 volumes:
