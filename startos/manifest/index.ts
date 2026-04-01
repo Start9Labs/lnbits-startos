@@ -5,7 +5,7 @@ export const manifest = setupManifest({
   id: 'lnbits',
   title: 'LNbits',
   license: 'mit',
-  packageRepo: 'https://github.com/Start9Labs/lnbits-startos/tree/update/040',
+  packageRepo: 'https://github.com/Start9Labs/lnbits-startos',
   upstreamRepo: 'https://github.com/lnbits/lnbits',
   marketingUrl: 'https://lnbits.com/',
   donationUrl: 'https://demo.lnbits.com/tipjar/DwaUiE4kBX6mUW6pj3X5Kg',
@@ -26,7 +26,7 @@ export const manifest = setupManifest({
       optional: true,
       metadata: {
         title: 'Core Lightning',
-        icon: 'https://raw.githubusercontent.com/Start9Labs/cln-startos/refs/heads/update/040/icon.svg',
+        icon: 'https://raw.githubusercontent.com/Start9Labs/cln-startos/refs/heads/master/icon.svg',
       },
     },
     lnd: {
@@ -34,7 +34,7 @@ export const manifest = setupManifest({
       optional: true,
       metadata: {
         title: 'LND',
-        icon: 'https://raw.githubusercontent.com/Start9Labs/lnd-startos/refs/heads/update/040/icon.svg',
+        icon: 'https://raw.githubusercontent.com/Start9Labs/lnd-startos/refs/heads/master/icon.svg',
       },
     },
   },
