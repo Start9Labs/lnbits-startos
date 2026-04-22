@@ -1,3 +1,5 @@
+import { manifest as clnManifest } from 'cln-startos/startos/manifest'
+import { manifest as lndManifest } from 'lnd-startos/startos/manifest'
 import { envFile } from './fileModels/env'
 import { i18n } from './i18n'
 import { sdk } from './sdk'
@@ -15,20 +17,27 @@ export const main = sdk.setupMain(async ({ effects }) => {
     .read((e) => e.LNBITS_BACKEND_WALLET_CLASS)
     .const(effects)
 
+  const mounts =
+    configuredLnImplementation === 'LndRestWallet'
+      ? mainMounts.mountDependency<typeof lndManifest>({
+          dependencyId: 'lnd',
+          mountpoint: lndMountpoint,
+          readonly: true,
+          subpath: null,
+          volumeId: 'main',
+        })
+      : mainMounts.mountDependency<typeof clnManifest>({
+          dependencyId: 'c-lightning',
+          mountpoint: clnMountpoint,
+          readonly: true,
+          subpath: null,
+          volumeId: 'main',
+        })
+
   const lnbitsSub = await sdk.SubContainer.of(
     effects,
     { imageId: 'lnbits' },
-    mainMounts.mountDependency({
-      dependencyId:
-        configuredLnImplementation === 'LndRestWallet' ? 'lnd' : 'c-lightning',
-      mountpoint:
-        configuredLnImplementation === 'LndRestWallet'
-          ? lndMountpoint
-          : clnMountpoint,
-      readonly: true,
-      subpath: null,
-      volumeId: 'main',
-    }),
+    mounts,
     'lnbits-sub',
   )
 

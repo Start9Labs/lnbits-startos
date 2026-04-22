@@ -3,14 +3,14 @@ import { rm } from 'fs/promises'
 import { envFile } from '../fileModels/env'
 import { sdk } from '../sdk'
 
-export const v_1_5_3_0 = VersionInfo.of({
-  version: '1.5.3:0',
+export const v_1_5_3_1 = VersionInfo.of({
+  version: '1.5.3:1',
   releaseNotes: {
-    en_US: 'Update LNbits to v1.5.3',
-    es_ES: 'Actualización de LNbits a v1.5.3',
-    de_DE: 'Update von LNbits auf v1.5.3',
-    pl_PL: 'Aktualizacja LNbits do v1.5.3',
-    fr_FR: 'Mise à jour de LNbits vers v1.5.3',
+    en_US: 'Internal updates (start-sdk 1.2.0)',
+    es_ES: 'Actualizaciones internas (start-sdk 1.2.0)',
+    de_DE: 'Interne Aktualisierungen (start-sdk 1.2.0)',
+    pl_PL: 'Aktualizacje wewnętrzne (start-sdk 1.2.0)',
+    fr_FR: 'Mises à jour internes (start-sdk 1.2.0)',
   },
   migrations: {
     up: async ({ effects }) => {
