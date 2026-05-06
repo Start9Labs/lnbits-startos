@@ -30,7 +30,7 @@ export const setLnImplementation = sdk.Action.withInput(
       'Select the Lightning Implementation for LNbits to utilize',
     ),
     warning: i18n(
-      'If the LN implementation is changed after using LNBits this will delete all LNBits accounts and wallets related to the previously configured LN implementation! All LN funds will still be available on the underlying LN implementation.',
+      'If the LN implementation is changed after using LNbits this will delete all LNbits accounts and wallets related to the previously configured LN implementation! All LN funds will still be available on the underlying LN implementation.',
     ),
     allowedStatuses: 'any',
     group: null,

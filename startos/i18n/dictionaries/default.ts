@@ -17,7 +17,7 @@ const dict = {
   'LND': 8,
   'Core Lightning': 9,
   'Select the Lightning Implementation for LNbits to utilize': 10,
-  'If the LN implementation is changed after using LNBits this will delete all LNBits accounts and wallets related to the previously configured LN implementation! All LN funds will still be available on the underlying LN implementation.': 11,
+  'If the LN implementation is changed after using LNbits this will delete all LNbits accounts and wallets related to the previously configured LN implementation! All LN funds will still be available on the underlying LN implementation.': 11,
   'Existing LN implementation does not match input. Resetting DB...': 17,
   'DB has not been initialized': 18,
 
