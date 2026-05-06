@@ -1,12 +1,12 @@
 export const short = {
-  en_US: 'Free and open-source lightning-network wallet/accounts system.',
+  en_US: 'A Bitcoin Lightning wallet and accounts system.',
   es_ES:
-    'Sistema de billetera/cuentas de red Lightning gratuito y de código abierto.',
+    'Un sistema de monedero y cuentas Bitcoin Lightning.',
   de_DE:
-    'Kostenloses und quelloffenes Lightning-Netzwerk-Wallet-/Kontensystem.',
-  pl_PL: 'Darmowy i otwartoźródłowy system portfela/kont sieci Lightning.',
+    'Ein Bitcoin Lightning Wallet- und Kontensystem.',
+  pl_PL: 'Portfel i system kont Bitcoin Lightning.',
   fr_FR:
-    'Système de portefeuille/comptes du réseau Lightning gratuit et open-source.',
+    'Un système de portefeuille et de comptes Bitcoin Lightning.',
 }
 
 export const depClnDescription = {
@@ -27,13 +27,13 @@ export const depLndDescription = {
 
 export const long = {
   en_US:
-    'A very simple Python server that sits on top of any funding source, and can be used as an accounts system, extendable platform, development stack, fallback wallet or even instant wallet for LN demonstrations',
+    'A self-hosted Bitcoin Lightning wallet and accounts system. Manage wallets for family, friends, projects or business, make Lightning extensible with LNbits extensions, and build apps with its developer-friendly API.',
   es_ES:
-    'Un servidor Python muy simple que se ejecuta sobre cualquier fuente de financiación, y puede usarse como sistema de cuentas, plataforma extensible, pila de desarrollo, billetera de respaldo o incluso billetera instantánea para demostraciones de LN',
+    'Un sistema de monedero y cuentas Bitcoin Lightning autogestionado. Administra monederos para familiares, amigos, proyectos o empresas, amplía Lightning con extensiones LNbits y crea aplicaciones con su API intuitiva para desarrolladores.',
   de_DE:
-    'Ein sehr einfacher Python-Server, der auf jeder Finanzierungsquelle aufbaut und als Kontensystem, erweiterbare Plattform, Entwicklungsstack, Ersatz-Wallet oder sogar als Sofort-Wallet für LN-Demonstrationen verwendet werden kann',
+    'Ein selbstgehostetes Bitcoin Lightning Wallet- und Kontensystem. Verwalten Sie Wallets für Familie, Freunde, Projekte oder Ihr Unternehmen, erweitern Sie Lightning mit LNbits-Erweiterungen und entwickeln Sie Anwendungen mit der entwicklerfreundlichen API.',
   pl_PL:
-    'Bardzo prosty serwer Python, który działa na dowolnym źródle finansowania i może być używany jako system kont, rozszerzalna platforma, stos deweloperski, portfel zapasowy lub nawet portfel natychmiastowy do demonstracji LN',
+    'Samodzielnie hostowany system portfela i kont Bitcoin Lightning. Zarządzaj portfelami dla rodziny, znajomych, projektów lub firmy, rozszerzaj Lightning za pomocą rozszerzeń LNbits i twórz aplikacje z przyjaznym dla programistów API.',
   fr_FR:
-    "Un serveur Python très simple qui fonctionne au-dessus de n'importe quelle source de financement, et peut être utilisé comme système de comptes, plateforme extensible, pile de développement, portefeuille de secours ou même portefeuille instantané pour les démonstrations LN",
+    "Un système de portefeuilles et de comptes Bitcoin Lightning auto-hébergé. Gérez les portefeuilles de votre famille, de vos amis, de vos projets ou de votre entreprise, optimisez l'utilisation de Lightning grâce aux extensions LNbits et créez des applications avec son API conviviale pour les développeurs.",
 }
