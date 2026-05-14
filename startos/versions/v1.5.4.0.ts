@@ -3,18 +3,32 @@ import { rm } from 'fs/promises'
 import { envFile } from '../fileModels/env'
 import { sdk } from '../sdk'
 
-export const v_1_5_3_2 = VersionInfo.of({
-  version: '1.5.3:2',
+export const v_1_5_4_0 = VersionInfo.of({
+  version: '1.5.4:0',
   releaseNotes: {
-    en_US: 'Internal updates (start-sdk 1.3.3)',
-    es_ES: 'Actualizaciones internas (start-sdk 1.3.3)',
-    de_DE: 'Interne Aktualisierungen (start-sdk 1.3.3)',
-    pl_PL: 'Aktualizacje wewnętrzne (start-sdk 1.3.3)',
-    fr_FR: 'Mises à jour internes (start-sdk 1.3.3)',
+    en_US: `**Bumps**
+
+- LNbits → 1.5.4
+- start-sdk → 1.5.0`,
+    es_ES: `**Actualizaciones**
+
+- LNbits → 1.5.4
+- start-sdk → 1.5.0`,
+    de_DE: `**Aktualisierungen**
+
+- LNbits → 1.5.4
+- start-sdk → 1.5.0`,
+    pl_PL: `**Aktualizacje**
+
+- LNbits → 1.5.4
+- start-sdk → 1.5.0`,
+    fr_FR: `**Mises à jour**
+
+- LNbits → 1.5.4
+- start-sdk → 1.5.0`,
   },
   migrations: {
     up: async ({ effects }) => {
-      // get old config.yaml
       const configYaml:
         | {
             implementation: 'LndRestWallet' | 'CLightningWallet'

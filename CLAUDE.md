@@ -1,5 +1,3 @@
-## How the upstream version is pulled
-- `Dockerfile` FROM line: `FROM lnbits/lnbits:v<version>`
-- Image is `dockerBuild` (no dockerTag in manifest to update)
+# CLAUDE.md
 
-> Dockerfile has multiple FROM stages — check both builder and final stage versions.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the doc map and contribution workflow.

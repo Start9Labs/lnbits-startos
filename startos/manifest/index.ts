@@ -9,7 +9,6 @@ export const manifest = setupManifest({
   upstreamRepo: 'https://github.com/lnbits/lnbits',
   marketingUrl: 'https://lnbits.com/',
   donationUrl: 'https://demo.lnbits.com/tipjar/DwaUiE4kBX6mUW6pj3X5Kg',
-  docsUrls: ['https://docs.lnbits.org/'],
   description: { short, long },
   volumes: ['main'],
   images: {
