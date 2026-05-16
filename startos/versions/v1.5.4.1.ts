@@ -3,29 +3,14 @@ import { rm } from 'fs/promises'
 import { envFile } from '../fileModels/env'
 import { sdk } from '../sdk'
 
-export const v_1_5_4_0 = VersionInfo.of({
-  version: '1.5.4:0',
+export const v_1_5_4_1 = VersionInfo.of({
+  version: '1.5.4:1',
   releaseNotes: {
-    en_US: `**Bumps**
-
-- LNbits → 1.5.4
-- start-sdk → 1.5.0`,
-    es_ES: `**Actualizaciones**
-
-- LNbits → 1.5.4
-- start-sdk → 1.5.0`,
-    de_DE: `**Aktualisierungen**
-
-- LNbits → 1.5.4
-- start-sdk → 1.5.0`,
-    pl_PL: `**Aktualizacje**
-
-- LNbits → 1.5.4
-- start-sdk → 1.5.0`,
-    fr_FR: `**Mises à jour**
-
-- LNbits → 1.5.4
-- start-sdk → 1.5.0`,
+    en_US: 'Bumps start-sdk to 1.5.2.',
+    es_ES: 'Actualiza start-sdk a 1.5.2.',
+    de_DE: 'Aktualisiert start-sdk auf 1.5.2.',
+    pl_PL: 'Aktualizuje start-sdk do 1.5.2.',
+    fr_FR: 'Met à jour start-sdk vers 1.5.2.',
   },
   migrations: {
     up: async ({ effects }) => {
