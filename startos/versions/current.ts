@@ -3,7 +3,7 @@ import { rm } from 'fs/promises'
 import { envFile } from '../fileModels/env'
 import { sdk } from '../sdk'
 
-export const v_1_5_4_0 = VersionInfo.of({
+export const current = VersionInfo.of({
   version: '1.5.4:0',
   releaseNotes: {
     en_US: `**Bumps**
