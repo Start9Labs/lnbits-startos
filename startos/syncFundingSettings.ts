@@ -20,7 +20,7 @@ type ExecSub = {
  * StartOS-managed `.env`.
  *
  * With `LNBITS_ADMIN_UI=true`, LNbits persists its funding-source settings
- * (endpoint, cert, macaroon, CLN rpc path) into its own SQLite database
+ * (backend class, endpoint, cert, macaroon, CLN rpc) into its own SQLite db
  * (`system_settings`, tag `core`). On every startup those DB values OVERRIDE
  * the environment — see lnbits `check_admin_settings` -> `update_cached_settings`.
  * On StartOS these paths are not user-configurable; they point at mounted
@@ -73,6 +73,12 @@ export async function syncFundingSettings(
   } else {
     return
   }
+
+  // The selected backend is itself editable (not a readonly setting), so a
+  // stale or admin-UI-edited `lnbits_backend_wallet_class` would override the
+  // env and could point LNbits at the unmounted node. Pin it too, so the whole
+  // funding configuration is StartOS-owned.
+  upserts.lnbits_backend_wallet_class = env.LNBITS_BACKEND_WALLET_CLASS
 
   // Single-quote escape for SQL string literals (values are fixed mountpoint
   // paths today, but keep this robust against future changes).
