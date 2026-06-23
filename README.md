@@ -92,6 +92,8 @@ Settings **not** managed by StartOS (hardcoded):
 | `AUTH_ALLOWED_METHODS` | `username-password` | Only username/password auth |
 | `LNBITS_ALLOWED_FUNDING_SOURCES` | Matches selected backend | Restricted to configured implementation |
 
+> **Note on the Lightning backend connection:** With `LNBITS_ADMIN_UI=true`, LNbits persists its funding-source settings (endpoint, certificate, macaroon, CLN socket) in its own database and lets those override the `.env` on startup. Because these paths point at StartOS-mounted dependency volumes and are not user-configurable, a `sync-funding-settings` oneshot rewrites them in LNbits' database to match the `.env` on **every** start (see [`startos/syncFundingSettings.ts`](startos/syncFundingSettings.ts)). Editing the funding-source connection in the LNbits Admin UI therefore has no lasting effect — it is reset on the next restart. This also self-heals installs migrated from the legacy package, whose database still held the old `/mnt/lnd/admin.macaroon` path and silently fell back to VoidWallet.
+
 ## Network Access and Interfaces
 
 | Interface | Port | Protocol | Purpose |
@@ -150,6 +152,7 @@ LND files used: `tls.cert`, `data/chain/bitcoin/mainnet/admin.macaroon`. Core Li
 3. **Username/password auth only** — `AUTH_ALLOWED_METHODS` is set to `username-password`; other methods (e.g., Google OAuth) are not available
 4. **Switching backends deletes the database** — changing from LND to CLN (or vice versa) removes the existing LNbits database
 5. **Custom Docker image** — adds sqlite3 CLI, bcrypt, and other tools not in the upstream image
+6. **Lightning backend connection is StartOS-managed** — the endpoint, certificate, macaroon, and CLN socket are re-applied to LNbits' database on every start; editing them in the LNbits Admin UI does not persist across restarts
 
 ## What Is Unchanged from Upstream
 

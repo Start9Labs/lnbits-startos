@@ -3,6 +3,7 @@ import { manifest as lndManifest } from 'lnd-startos/startos/manifest'
 import { envFile } from './fileModels/env'
 import { i18n } from './i18n'
 import { sdk } from './sdk'
+import { syncFundingSettings } from './syncFundingSettings'
 import { clnMountpoint, lndMountpoint, mainMounts, uiPort } from './utils'
 
 export const main = sdk.setupMain(async ({ effects }) => {
@@ -50,18 +51,33 @@ export const main = sdk.setupMain(async ({ effects }) => {
    *
    * Each daemon defines its own health check, which can optionally be exposed to the user.
    */
-  return sdk.Daemons.of(effects).addDaemon('primary', {
-    subcontainer: lnbitsSub,
-    exec: { command: ['uv', 'run', 'lnbits'], env: env || {} },
-    ready: {
-      display: i18n('Web Interface'),
-      gracePeriod: 75_000,
-      fn: () =>
-        sdk.healthCheck.checkPortListening(effects, uiPort, {
-          successMessage: i18n('The web interface is ready'),
-          errorMessage: i18n('The web interface is not ready'),
-        }),
-    },
-    requires: [],
-  })
+  return sdk.Daemons.of(effects)
+    .addOneshot('sync-funding-settings', {
+      subcontainer: lnbitsSub,
+      // LNbits' Admin UI persists the backend connection settings in its own
+      // database and lets them override the `.env` on startup. Re-apply the
+      // StartOS-managed paths before LNbits starts so the configured node — not
+      // a stale/legacy value — is always used. See syncFundingSettings.ts.
+      exec: {
+        fn: async () => {
+          await syncFundingSettings(lnbitsSub, env)
+          return null
+        },
+      },
+      requires: [],
+    })
+    .addDaemon('primary', {
+      subcontainer: lnbitsSub,
+      exec: { command: ['uv', 'run', 'lnbits'], env: env || {} },
+      ready: {
+        display: i18n('Web Interface'),
+        gracePeriod: 75_000,
+        fn: () =>
+          sdk.healthCheck.checkPortListening(effects, uiPort, {
+            successMessage: i18n('The web interface is ready'),
+            errorMessage: i18n('The web interface is not ready'),
+          }),
+      },
+      requires: ['sync-funding-settings'],
+    })
 })
