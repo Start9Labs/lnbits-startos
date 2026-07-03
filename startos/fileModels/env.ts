@@ -3,7 +3,7 @@ import { sdk } from '../sdk'
 import { clnMountpoint, lndMountpoint } from '../utils'
 
 export const shape = z.object({
-  HOST: z.literal('lnbits.startos').catch('lnbits.startos'),
+  HOST: z.string().catch('0.0.0.0'),
   PORT: z.literal('5000').catch('5000'),
   FORWARDED_ALLOW_IPS: z.literal('*').catch('*'),
   DEBUG: z.enum(['true', 'false']).optional().catch('false'),
@@ -42,9 +42,7 @@ export const shape = z.object({
   CLIGHTNING_RPC: z
     .literal(`${clnMountpoint}/bitcoin/lightning-rpc`)
     .catch(`${clnMountpoint}/bitcoin/lightning-rpc`),
-  LND_REST_ENDPOINT: z
-    .literal('https://lnd.startos:8080/')
-    .catch('https://lnd.startos:8080/'),
+  LND_REST_ENDPOINT: z.string().catch('https://lnd.startos:8080/'),
   LND_REST_CERT: z
     .literal(`${lndMountpoint}/tls.cert`)
     .catch(`${lndMountpoint}/tls.cert`),

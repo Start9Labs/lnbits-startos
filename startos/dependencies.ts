@@ -10,7 +10,7 @@ export const setDependencies = sdk.setupDependencies(async ({ effects }) => {
     return {
       lnd: {
         kind: 'running',
-        versionRange: '>=0.20.1-beta:2',
+        versionRange: '>=0.21.1-beta:0',
         healthChecks: ['lnd'],
       },
     }
@@ -19,7 +19,7 @@ export const setDependencies = sdk.setupDependencies(async ({ effects }) => {
       'c-lightning': {
         healthChecks: ['lightningd'],
         kind: 'running',
-        versionRange: '>=25.12.1:8',
+        versionRange: '>=26.6.1:2',
       },
     }
   }

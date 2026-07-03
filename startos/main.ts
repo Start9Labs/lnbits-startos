@@ -1,4 +1,8 @@
 import { manifest as clnManifest } from 'cln-startos/startos/manifest'
+import {
+  controlHostId as lndControlHostId,
+  lndconnectRestId,
+} from 'lnd-startos/startos/interfaces'
 import { manifest as lndManifest } from 'lnd-startos/startos/manifest'
 import { envFile } from './fileModels/env'
 import { i18n } from './i18n'
@@ -35,7 +39,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
           volumeId: 'main',
         })
 
-  const lnbitsSub = await sdk.SubContainer.of(
+  const lnbitsSub = sdk.SubContainer.of(
     effects,
     { imageId: 'lnbits' },
     mounts,
@@ -43,6 +47,43 @@ export const main = sdk.setupMain(async ({ effects }) => {
   )
 
   const env = await envFile.read().const(effects)
+
+  if (env) {
+    // `.startos` DNS is retired in StartOS 0.4.x; containers reach the network
+    // over the LXC bridge. Bind uvicorn to all interfaces, and resolve LND's
+    // REST endpoint to its bridge address rather than the dead `lnd.startos`.
+    env.HOST = '0.0.0.0'
+
+    if (configuredLnImplementation === 'LndRestWallet') {
+      const lndRestUrl = await sdk.host
+        .get(
+          effects,
+          { hostId: lndControlHostId, packageId: 'lnd' },
+          (host) => {
+            const iface =
+              host &&
+              Object.values(host.bindings)
+                .flatMap((b) => Object.values(b.interfaces))
+                .find((i) => i.id === lndconnectRestId)
+            const h = iface?.addressInfo
+              .filter({
+                kind: 'bridge',
+                predicate: (h) => h.ssl && h.metadata.kind === 'ipv4',
+              })
+              .hostnames[0]
+            return h && `https://${h.hostname}:${h.port}/`
+          },
+        )
+        .const()
+      if (!lndRestUrl)
+        throw new Error(
+          i18n(
+            'LND is not yet reachable on the internal network. It may still be starting.',
+          ),
+        )
+      env.LND_REST_ENDPOINT = lndRestUrl
+    }
+  }
 
   /**
    * ======================== Daemons ========================

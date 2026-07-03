@@ -82,11 +82,11 @@ Settings **not** managed by StartOS (hardcoded):
 
 | Setting | Value | Reason |
 |---------|-------|--------|
-| `HOST` | `lnbits.startos` | StartOS service networking |
+| `HOST` | `0.0.0.0` | Binds all container interfaces so the StartOS proxy can reach LNbits over the LXC bridge |
 | `PORT` | `5000` | Fixed internal port |
 | `FORWARDED_ALLOW_IPS` | `*` | Required for HTTPS behind StartOS proxy |
 | `LNBITS_DATA_FOLDER` | `./data` | Maps to the mounted volume |
-| `LND_REST_ENDPOINT` | `https://lnd.startos:8080/` | StartOS service networking |
+| `LND_REST_ENDPOINT` | LND's LXC-bridge REST address | Resolved at runtime from LND's `control` host; replaces the retired `lnd.startos` DNS name |
 | `LND_REST_CERT` / `LND_REST_MACAROON` | Paths in `/mnt/lnd` | Mounted dependency volume |
 | `CLIGHTNING_RPC` | `/mnt/cln/bitcoin/lightning-rpc` | Mounted dependency volume |
 | `AUTH_ALLOWED_METHODS` | `username-password` | Only username/password auth |
