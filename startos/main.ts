@@ -63,15 +63,21 @@ export const main = sdk.setupMain(async ({ effects }) => {
     if (configuredLnImplementation === 'LndRestWallet') {
       // LND's REST binding (host `control`, internal `restPort`) is published
       // at wallet unlock; its assignedPort then persists across lock/unlock, so
-      // this `.const()` resolves the loopback placeholder until the first
-      // unlock (one healing restart), then stays stable. A dead placeholder is
-      // just connection-refused — LNbits retries — so it's safe to start with.
+      // this `.const()` resolves once LND is installed and first unlocked (one
+      // healing restart), then stays stable. While the address is unresolved
+      // (LND absent or not yet unlocked) the endpoint stays unset — LNbits
+      // fails its backend connection and the health check goes red until LND
+      // appears, rather than dialing a fabricated address.
       const lndRest = await bridgeAddress(effects, {
         packageId: 'lnd',
         hostId: lndControlHostId,
         internalPort: lndRestPort,
       }).const()
-      env.LND_REST_ENDPOINT = `https://${lndRest ?? `127.0.0.1:${lndRestPort}`}/`
+      if (lndRest) {
+        env.LND_REST_ENDPOINT = `https://${lndRest}/`
+      } else {
+        delete env.LND_REST_ENDPOINT
+      }
     }
   }
 

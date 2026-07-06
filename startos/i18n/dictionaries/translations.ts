@@ -21,7 +21,6 @@ export default {
     16: '¡LNbits requiere un nodo Lightning subyacente!',
     17: 'La implementación LN existente no coincide con la entrada. Restableciendo BD...',
     18: 'La BD no ha sido inicializada',
-    19: 'LND aún no está accesible en la red interna. Es posible que todavía se esté iniciando.',
   } satisfies LangDict,
   de_DE: {
     0: 'LNbits wird gestartet!',
@@ -43,7 +42,6 @@ export default {
     16: 'LNbits benötigt einen zugrunde liegenden Lightning-Knoten!',
     17: 'Bestehende LN-Implementierung stimmt nicht mit der Eingabe überein. Datenbank wird zurückgesetzt...',
     18: 'Datenbank wurde nicht initialisiert',
-    19: 'LND ist im internen Netzwerk noch nicht erreichbar. Möglicherweise wird es noch gestartet.',
   } satisfies LangDict,
   pl_PL: {
     0: 'Uruchamianie LNbits!',
@@ -65,7 +63,6 @@ export default {
     16: 'LNbits wymaga podstawowego węzła Lightning!',
     17: 'Istniejąca implementacja LN nie pasuje do danych wejściowych. Resetowanie bazy danych...',
     18: 'Baza danych nie została zainicjalizowana',
-    19: 'LND nie jest jeszcze osiągalny w sieci wewnętrznej. Może się nadal uruchamiać.',
   } satisfies LangDict,
   fr_FR: {
     0: 'Démarrage de LNbits !',
@@ -81,12 +78,11 @@ export default {
     10: "Sélectionnez l'implémentation Lightning que LNbits utilisera",
     11: "Si l'implémentation LN est modifiée après l'utilisation de LNbits, tous les comptes et portefeuilles LNbits liés à l'implémentation LN précédemment configurée seront supprimés ! Tous les fonds LN resteront disponibles sur l'implémentation LN sous-jacente.",
     12: 'Réinitialiser le mot de passe',
-    13: "Réinitialiser le mot de passe du super_utilisateur en cas de mot de passe perdu ou oublié",
+    13: 'Réinitialiser le mot de passe du super_utilisateur en cas de mot de passe perdu ou oublié',
     14: 'Succès',
     15: 'Le nouveau mot de passe du Super Utilisateur est affiché ci-dessous',
     16: 'LNbits nécessite un nœud Lightning sous-jacent !',
     17: "L'implémentation LN existante ne correspond pas à l'entrée. Réinitialisation de la BD...",
     18: "La BD n'a pas été initialisée",
-    19: "LND n'est pas encore joignable sur le réseau interne. Il est peut-être encore en cours de démarrage.",
   } satisfies LangDict,
 } as Record<string, LangDict>

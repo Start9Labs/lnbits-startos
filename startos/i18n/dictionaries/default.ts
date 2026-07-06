@@ -6,7 +6,6 @@ const dict = {
   'Web Interface': 1,
   'The web interface is ready': 2,
   'The web interface is not ready': 3,
-  'LND is not yet reachable on the internal network. It may still be starting.': 19,
 
   // interfaces.ts
   'Web UI': 4,
@@ -15,7 +14,7 @@ const dict = {
   // actions/lightningImplementation.ts
   'Lightning Implementation': 6,
   'The underlying Lightning implementation, currently LND or Core Lightning (CLN)': 7,
-  'LND': 8,
+  LND: 8,
   'Core Lightning': 9,
   'Select the Lightning Implementation for LNbits to utilize': 10,
   'If the LN implementation is changed after using LNbits this will delete all LNbits accounts and wallets related to the previously configured LN implementation! All LN funds will still be available on the underlying LN implementation.': 11,
@@ -25,7 +24,7 @@ const dict = {
   // actions/resetPassword.ts
   'Reset Password': 12,
   'Reset Password for the super_user in the event of a lost or forgotten password': 13,
-  'Success': 14,
+  Success: 14,
   'The new Super User password is below': 15,
 
   // init/taskSetLnImplementation.ts

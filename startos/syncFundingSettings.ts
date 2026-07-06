@@ -60,7 +60,9 @@ export async function syncFundingSettings(
   const deletes: string[] = []
 
   if (env.LNBITS_BACKEND_WALLET_CLASS === 'LndRestWallet') {
-    upserts.lnd_rest_endpoint = env.LND_REST_ENDPOINT
+    // The endpoint is only known once LND's bridge address resolves; while it's
+    // unresolved, leave the stored row alone rather than writing a dead address.
+    if (env.LND_REST_ENDPOINT) upserts.lnd_rest_endpoint = env.LND_REST_ENDPOINT
     upserts.lnd_rest_cert = env.LND_REST_CERT
     upserts.lnd_rest_macaroon = env.LND_REST_MACAROON
     // A stale encrypted macaroon would be tried alongside the plain path; clear
