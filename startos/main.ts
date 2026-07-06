@@ -1,14 +1,20 @@
 import { manifest as clnManifest } from 'cln-startos/startos/manifest'
 import {
   controlHostId as lndControlHostId,
-  lndconnectRestId,
+  restPort as lndRestPort,
 } from 'lnd-startos/startos/interfaces'
 import { manifest as lndManifest } from 'lnd-startos/startos/manifest'
 import { envFile } from './fileModels/env'
 import { i18n } from './i18n'
 import { sdk } from './sdk'
 import { syncFundingSettings } from './syncFundingSettings'
-import { clnMountpoint, lndMountpoint, mainMounts, uiPort } from './utils'
+import {
+  bridgeAddress,
+  clnMountpoint,
+  lndMountpoint,
+  mainMounts,
+  uiPort,
+} from './utils'
 
 export const main = sdk.setupMain(async ({ effects }) => {
   /**
@@ -55,33 +61,17 @@ export const main = sdk.setupMain(async ({ effects }) => {
     env.HOST = '0.0.0.0'
 
     if (configuredLnImplementation === 'LndRestWallet') {
-      const lndRestUrl = await sdk.host
-        .get(
-          effects,
-          { hostId: lndControlHostId, packageId: 'lnd' },
-          (host) => {
-            const iface =
-              host &&
-              Object.values(host.bindings)
-                .flatMap((b) => Object.values(b.interfaces))
-                .find((i) => i.id === lndconnectRestId)
-            const h = iface?.addressInfo
-              .filter({
-                kind: 'bridge',
-                predicate: (h) => h.ssl && h.metadata.kind === 'ipv4',
-              })
-              .hostnames[0]
-            return h && `https://${h.hostname}:${h.port}/`
-          },
-        )
-        .const()
-      if (!lndRestUrl)
-        throw new Error(
-          i18n(
-            'LND is not yet reachable on the internal network. It may still be starting.',
-          ),
-        )
-      env.LND_REST_ENDPOINT = lndRestUrl
+      // LND's REST binding (host `control`, internal `restPort`) is published
+      // at wallet unlock; its assignedPort then persists across lock/unlock, so
+      // this `.const()` resolves the loopback placeholder until the first
+      // unlock (one healing restart), then stays stable. A dead placeholder is
+      // just connection-refused — LNbits retries — so it's safe to start with.
+      const lndRest = await bridgeAddress(effects, {
+        packageId: 'lnd',
+        hostId: lndControlHostId,
+        internalPort: lndRestPort,
+      }).const()
+      env.LND_REST_ENDPOINT = `https://${lndRest ?? `127.0.0.1:${lndRestPort}`}/`
     }
   }
 

@@ -6,11 +6,16 @@ import { sdk } from '../sdk'
 export const current = VersionInfo.of({
   version: '1.5.4:2',
   releaseNotes: {
-    en_US: 'Internal updates (start-sdk 2.0.x)',
-    es_ES: 'Actualizaciones internas (start-sdk 2.0.x)',
-    de_DE: 'Interne Aktualisierungen (start-sdk 2.0.x)',
-    pl_PL: 'Aktualizacje wewnętrzne (start-sdk 2.0.x)',
-    fr_FR: 'Mises à jour internes (start-sdk 2.0.x)',
+    en_US:
+      'Internal updates (start-sdk 2.0.x); LNbits now starts even while LND is still starting or locked and reconnects to it automatically instead of failing to start',
+    es_ES:
+      'Actualizaciones internas (start-sdk 2.0.x); LNbits ahora se inicia incluso mientras LND aún se está iniciando o está bloqueado y se reconecta automáticamente en lugar de fallar al iniciarse',
+    de_DE:
+      'Interne Aktualisierungen (start-sdk 2.0.x); LNbits startet jetzt auch, während LND noch startet oder gesperrt ist, und verbindet sich automatisch wieder, anstatt den Start abzubrechen',
+    pl_PL:
+      'Aktualizacje wewnętrzne (start-sdk 2.0.x); LNbits uruchamia się teraz nawet gdy LND wciąż się uruchamia lub jest zablokowany i łączy się z nim automatycznie, zamiast nie wystartować',
+    fr_FR:
+      'Mises à jour internes (start-sdk 2.0.x); LNbits démarre désormais même pendant que LND démarre encore ou est verrouillé et s’y reconnecte automatiquement au lieu d’échouer au démarrage',
   },
   migrations: {
     up: async ({ effects }) => {
