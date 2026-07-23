@@ -1,54 +1,33 @@
-import { IMPOSSIBLE, VersionInfo, YAML } from '@start9labs/start-sdk'
-import { rm } from 'fs/promises'
-import { envFile } from '../fileModels/env'
-import { sdk } from '../sdk'
+import { VersionInfo } from '@start9labs/start-sdk'
 
 export const current = VersionInfo.of({
-  version: '1.5.4:1',
+  version: '1.5.6:0',
   releaseNotes: {
-    en_US: `**Fixes**
+    en_US: `Updated LNbits to 1.5.6.
 
-- Reconcile LNbits' saved Lightning backend connection (endpoint, certificate, macaroon / CLN socket) with the StartOS-managed configuration on every start. Fixes installs that fell back to VoidWallet because LNbits' database still pointed at a stale macaroon path.`,
-    es_ES: `**Correcciones**
+This release also migrates the package to start-sdk 2.0 (requires StartOS 0.4.0-beta.10 or later).
 
-- Reconcilia la conexión del backend Lightning guardada por LNbits (endpoint, certificado, macaroon / socket de CLN) con la configuración gestionada por StartOS en cada arranque. Soluciona las instalaciones que recurrían a VoidWallet porque la base de datos de LNbits apuntaba a una ruta de macaroon obsoleta.`,
-    de_DE: `**Korrekturen**
+Full release notes: https://github.com/lnbits/lnbits/releases/tag/v1.5.6`,
+    es_ES: `Actualiza LNbits a 1.5.6.
 
-- Gleicht die von LNbits gespeicherte Lightning-Backend-Verbindung (Endpoint, Zertifikat, Macaroon / CLN-Socket) bei jedem Start mit der von StartOS verwalteten Konfiguration ab. Behebt Installationen, die auf VoidWallet zurückfielen, weil die LNbits-Datenbank noch auf einen veralteten Macaroon-Pfad verwies.`,
-    pl_PL: `**Poprawki**
+Esta versión también migra el paquete a start-sdk 2.0 (requiere StartOS 0.4.0-beta.10 o posterior).
 
-- Uzgadnia zapisane przez LNbits połączenie z backendem Lightning (endpoint, certyfikat, macaroon / gniazdo CLN) z konfiguracją zarządzaną przez StartOS przy każdym uruchomieniu. Naprawia instalacje, które przełączały się na VoidWallet, ponieważ baza danych LNbits wskazywała nieaktualną ścieżkę macaroon.`,
-    fr_FR: `**Corrections**
+Notas de la versión completas: https://github.com/lnbits/lnbits/releases/tag/v1.5.6`,
+    de_DE: `Aktualisiert LNbits auf 1.5.6.
 
-- Réaligne la connexion au backend Lightning enregistrée par LNbits (endpoint, certificat, macaroon / socket CLN) avec la configuration gérée par StartOS à chaque démarrage. Corrige les installations qui basculaient sur VoidWallet parce que la base de données de LNbits pointait encore vers un chemin de macaroon obsolète.`,
+Diese Version stellt das Paket außerdem auf start-sdk 2.0 um (erfordert StartOS 0.4.0-beta.10 oder neuer).
+
+Vollständige Versionshinweise: https://github.com/lnbits/lnbits/releases/tag/v1.5.6`,
+    pl_PL: `Aktualizuje LNbits do 1.5.6.
+
+Ta wersja przenosi też pakiet na start-sdk 2.0 (wymaga StartOS 0.4.0-beta.10 lub nowszego).
+
+Pełne informacje o wydaniu: https://github.com/lnbits/lnbits/releases/tag/v1.5.6`,
+    fr_FR: `Met à jour LNbits vers 1.5.6.
+
+Cette version fait également passer le paquet à start-sdk 2.0 (nécessite StartOS 0.4.0-beta.10 ou une version ultérieure).
+
+Notes de version complètes : https://github.com/lnbits/lnbits/releases/tag/v1.5.6`,
   },
-  migrations: {
-    up: async ({ effects }) => {
-      const configYaml:
-        | {
-            implementation: 'LndRestWallet' | 'CLightningWallet'
-          }
-        | undefined = await sdk.volumes.main
-        .readFile('start9/config.yaml', 'utf-8')
-        .then((c) => c.toString('utf-8'))
-        .then(YAML.parse, () => undefined)
-
-      if (configYaml) {
-        const configuredImplementation =
-          configYaml.implementation === 'CLightningWallet'
-            ? 'CoreLightningWallet'
-            : 'LndRestWallet'
-
-        await envFile.merge(effects, {
-          LNBITS_BACKEND_WALLET_CLASS: configuredImplementation,
-          LNBITS_ALLOWED_FUNDING_SOURCES: configuredImplementation,
-        })
-
-        rm('/media/startos/volumes/main/start9', {
-          recursive: true,
-        }).catch(console.error)
-      }
-    },
-    down: IMPOSSIBLE,
-  },
+  migrations: {},
 })

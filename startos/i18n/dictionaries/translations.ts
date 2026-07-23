@@ -78,7 +78,7 @@ export default {
     10: "Sélectionnez l'implémentation Lightning que LNbits utilisera",
     11: "Si l'implémentation LN est modifiée après l'utilisation de LNbits, tous les comptes et portefeuilles LNbits liés à l'implémentation LN précédemment configurée seront supprimés ! Tous les fonds LN resteront disponibles sur l'implémentation LN sous-jacente.",
     12: 'Réinitialiser le mot de passe',
-    13: "Réinitialiser le mot de passe du super_utilisateur en cas de mot de passe perdu ou oublié",
+    13: 'Réinitialiser le mot de passe du super_utilisateur en cas de mot de passe perdu ou oublié',
     14: 'Succès',
     15: 'Le nouveau mot de passe du Super Utilisateur est affiché ci-dessous',
     16: 'LNbits nécessite un nœud Lightning sous-jacent !',

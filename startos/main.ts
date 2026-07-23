@@ -1,10 +1,20 @@
 import { manifest as clnManifest } from 'cln-startos/startos/manifest'
+import {
+  controlHostId as lndControlHostId,
+  restPort as lndRestPort,
+} from 'lnd-startos/startos/interfaces'
 import { manifest as lndManifest } from 'lnd-startos/startos/manifest'
 import { envFile } from './fileModels/env'
 import { i18n } from './i18n'
 import { sdk } from './sdk'
 import { syncFundingSettings } from './syncFundingSettings'
-import { clnMountpoint, lndMountpoint, mainMounts, uiPort } from './utils'
+import {
+  bridgeAddress,
+  clnMountpoint,
+  lndMountpoint,
+  mainMounts,
+  uiPort,
+} from './utils'
 
 export const main = sdk.setupMain(async ({ effects }) => {
   /**
@@ -35,7 +45,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
           volumeId: 'main',
         })
 
-  const lnbitsSub = await sdk.SubContainer.of(
+  const lnbitsSub = sdk.SubContainer.of(
     effects,
     { imageId: 'lnbits' },
     mounts,
@@ -43,6 +53,33 @@ export const main = sdk.setupMain(async ({ effects }) => {
   )
 
   const env = await envFile.read().const(effects)
+
+  if (env) {
+    // `.startos` DNS is retired in StartOS 0.4.x; containers reach the network
+    // over the LXC bridge. Bind uvicorn to all interfaces, and resolve LND's
+    // REST endpoint to its bridge address rather than the dead `lnd.startos`.
+    env.HOST = '0.0.0.0'
+
+    if (configuredLnImplementation === 'LndRestWallet') {
+      // LND's REST binding (host `control`, internal `restPort`) is published
+      // at wallet unlock; its assignedPort then persists across lock/unlock, so
+      // this `.const()` resolves once LND is installed and first unlocked (one
+      // healing restart), then stays stable. While the address is unresolved
+      // (LND absent or not yet unlocked) the endpoint stays unset — LNbits
+      // fails its backend connection and the health check goes red until LND
+      // appears, rather than dialing a fabricated address.
+      const lndRest = await bridgeAddress(effects, {
+        packageId: 'lnd',
+        hostId: lndControlHostId,
+        internalPort: lndRestPort,
+      }).const()
+      if (lndRest) {
+        env.LND_REST_ENDPOINT = `https://${lndRest}/`
+      } else {
+        delete env.LND_REST_ENDPOINT
+      }
+    }
+  }
 
   /**
    * ======================== Daemons ========================

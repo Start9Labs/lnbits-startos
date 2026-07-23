@@ -1,12 +1,9 @@
 export const short = {
   en_US: 'A Bitcoin Lightning wallet and accounts system.',
-  es_ES:
-    'Un sistema de monedero y cuentas Bitcoin Lightning.',
-  de_DE:
-    'Ein Bitcoin Lightning Wallet- und Kontensystem.',
+  es_ES: 'Un sistema de monedero y cuentas Bitcoin Lightning.',
+  de_DE: 'Ein Bitcoin Lightning Wallet- und Kontensystem.',
   pl_PL: 'Portfel i system kont Bitcoin Lightning.',
-  fr_FR:
-    'Un système de portefeuille et de comptes Bitcoin Lightning.',
+  fr_FR: 'Un système de portefeuille et de comptes Bitcoin Lightning.',
 }
 
 export const depClnDescription = {
