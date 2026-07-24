@@ -1,7 +1,7 @@
 import { VersionInfo } from '@start9labs/start-sdk'
 
 export const current = VersionInfo.of({
-  version: '1.5.6:0',
+  version: '1.5.6:1',
   releaseNotes: {
     en_US: `Updated LNbits to 1.5.6.
 
