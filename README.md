@@ -34,32 +34,32 @@ A free and open-source lightning-network wallet/accounts system. See the [upstre
 
 ## Image and Container Runtime
 
-| Property | Value |
-|----------|-------|
-| Image | Custom Dockerfile based on `lnbits/lnbits` |
-| Architectures | x86_64, aarch64 |
-| Entrypoint | `uv run lnbits` |
+| Property      | Value                                      |
+| ------------- | ------------------------------------------ |
+| Image         | Custom Dockerfile based on `lnbits/lnbits` |
+| Architectures | x86_64, aarch64                            |
+| Entrypoint    | `uv run lnbits`                            |
 
 The custom Dockerfile adds `sqlite3`, `tini`, `yq`, `xxd`, `curl`, `jq`, and `bcrypt` (Python) on top of the upstream image. These are used for the reset password action and other utilities.
 
 ## Volume and Data Layout
 
-| Volume | Mount Point | Purpose |
-|--------|-------------|---------|
+| Volume | Mount Point | Purpose                                   |
+| ------ | ----------- | ----------------------------------------- |
 | `main` | `/app/data` | All LNbits data (database, configuration) |
 
 StartOS-specific files on the `main` volume:
 
-| File | Purpose |
-|------|---------|
+| File   | Purpose                                               |
+| ------ | ----------------------------------------------------- |
 | `.env` | LNbits environment configuration (managed by StartOS) |
 
 The Lightning node volume is mounted read-only depending on the configured backend:
 
-| Backend | Mount Point | Files Used |
-|---------|-------------|------------|
-| LND | `/mnt/lnd` | `tls.cert`, `data/chain/bitcoin/mainnet/admin.macaroon` |
-| CLN | `/mnt/cln` | `bitcoin/lightning-rpc` (Unix socket) |
+| Backend | Mount Point | Files Used                                              |
+| ------- | ----------- | ------------------------------------------------------- |
+| LND     | `/mnt/lnd`  | `tls.cert`, `data/chain/bitcoin/mainnet/admin.macaroon` |
+| CLN     | `/mnt/cln`  | `bitcoin/lightning-rpc` (Unix socket)                   |
 
 ## Installation and First-Run Flow
 
@@ -72,33 +72,33 @@ The Lightning node volume is mounted read-only depending on the configured backe
 
 LNbits is configured via environment variables in the `.env` file, managed by StartOS.
 
-| StartOS-Managed | Details |
-|-----------------|---------|
+| StartOS-Managed   | Details                                    |
+| ----------------- | ------------------------------------------ |
 | Lightning backend | LND (REST) or Core Lightning (Unix socket) |
 
 Most LNbits settings are configurable through the **Admin UI** within LNbits itself (`LNBITS_ADMIN_UI=true`). StartOS manages the backend connection; everything else is configured through the LNbits web interface.
 
 Settings **not** managed by StartOS (hardcoded):
 
-| Setting | Value | Reason |
-|---------|-------|--------|
-| `HOST` | `0.0.0.0` | Binds all container interfaces so the StartOS proxy can reach LNbits over the LXC bridge |
-| `PORT` | `5000` | Fixed internal port |
-| `FORWARDED_ALLOW_IPS` | `*` | Required for HTTPS behind StartOS proxy |
-| `LNBITS_DATA_FOLDER` | `./data` | Maps to the mounted volume |
-| `LND_REST_ENDPOINT` | LND's LXC-bridge REST address | Resolved at runtime from LND's `control` host; replaces the retired `lnd.startos` DNS name |
-| `LND_REST_CERT` / `LND_REST_MACAROON` | Paths in `/mnt/lnd` | Mounted dependency volume |
-| `CLIGHTNING_RPC` | `/mnt/cln/bitcoin/lightning-rpc` | Mounted dependency volume |
-| `AUTH_ALLOWED_METHODS` | `username-password` | Only username/password auth |
-| `LNBITS_ALLOWED_FUNDING_SOURCES` | Matches selected backend | Restricted to configured implementation |
+| Setting                               | Value                            | Reason                                                                                     |
+| ------------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------ |
+| `HOST`                                | `0.0.0.0`                        | Binds all container interfaces so the StartOS proxy can reach LNbits over the LXC bridge   |
+| `PORT`                                | `5000`                           | Fixed internal port                                                                        |
+| `FORWARDED_ALLOW_IPS`                 | `*`                              | Required for HTTPS behind StartOS proxy                                                    |
+| `LNBITS_DATA_FOLDER`                  | `./data`                         | Maps to the mounted volume                                                                 |
+| `LND_REST_ENDPOINT`                   | LND's LXC-bridge REST address    | Resolved at runtime from LND's `control` host; replaces the retired `lnd.startos` DNS name |
+| `LND_REST_CERT` / `LND_REST_MACAROON` | Paths in `/mnt/lnd`              | Mounted dependency volume                                                                  |
+| `CLIGHTNING_RPC`                      | `/mnt/cln/bitcoin/lightning-rpc` | Mounted dependency volume                                                                  |
+| `AUTH_ALLOWED_METHODS`                | `username-password`              | Only username/password auth                                                                |
+| `LNBITS_ALLOWED_FUNDING_SOURCES`      | Matches selected backend         | Restricted to configured implementation                                                    |
 
 > **Note on the Lightning backend connection:** With `LNBITS_ADMIN_UI=true`, LNbits persists its funding-source settings (endpoint, certificate, macaroon, CLN socket) in its own database and lets those override the `.env` on startup. Because these paths point at StartOS-mounted dependency volumes and are not user-configurable, a `sync-funding-settings` oneshot rewrites them in LNbits' database to match the `.env` on **every** start (see [`startos/syncFundingSettings.ts`](startos/syncFundingSettings.ts)). Editing the funding-source connection in the LNbits Admin UI therefore has no lasting effect — it is reset on the next restart. This also self-heals installs migrated from the legacy package, whose database still held the old `/mnt/lnd/admin.macaroon` path and silently fell back to VoidWallet.
 
 ## Network Access and Interfaces
 
-| Interface | Port | Protocol | Purpose |
-|-----------|------|----------|---------|
-| Web UI | 5000 | HTTP | LNbits web interface and API |
+| Interface | Port | Protocol | Purpose                      |
+| --------- | ---- | -------- | ---------------------------- |
+| Web UI    | 5000 | HTTP     | LNbits web interface and API |
 
 ## Actions (StartOS UI)
 
@@ -130,16 +130,16 @@ Settings **not** managed by StartOS (hardcoded):
 
 ## Health Checks
 
-| Check | Method | Grace Period | Messages |
-|-------|--------|--------------|----------|
-| Web Interface | Port listening on 5000 | 75 seconds | Success: "The web interface is ready" / Error: "The web interface is not ready" |
+| Check         | Method                 | Grace Period | Messages                                                                        |
+| ------------- | ---------------------- | ------------ | ------------------------------------------------------------------------------- |
+| Web Interface | Port listening on 5000 | 75 seconds   | Success: "The web interface is ready" / Error: "The web interface is not ready" |
 
 ## Dependencies
 
-| Dependency       | Required | Mounted Volume                      | Purpose                          |
-| ---------------- | -------- | ----------------------------------- | -------------------------------- |
-| Core Lightning   | Optional | `main` → `/mnt/cln` (read-only)    | Lightning backend (if selected)  |
-| LND              | Optional | `main` → `/mnt/lnd` (read-only)    | Lightning backend (if selected)  |
+| Dependency     | Required | Mounted Volume                  | Purpose                         |
+| -------------- | -------- | ------------------------------- | ------------------------------- |
+| Core Lightning | Optional | `main` → `/mnt/cln` (read-only) | Lightning backend (if selected) |
+| LND            | Optional | `main` → `/mnt/lnd` (read-only) | Lightning backend (if selected) |
 
 One of the two Lightning implementations must be selected and running. The dependency is determined at runtime based on the configured `LNBITS_BACKEND_WALLET_CLASS`.
 
