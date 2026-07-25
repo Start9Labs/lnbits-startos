@@ -8,13 +8,7 @@ import { envFile } from './fileModels/env'
 import { i18n } from './i18n'
 import { sdk } from './sdk'
 import { syncFundingSettings } from './syncFundingSettings'
-import {
-  bridgeAddress,
-  clnMountpoint,
-  lndMountpoint,
-  mainMounts,
-  uiPort,
-} from './utils'
+import { clnMountpoint, lndMountpoint, mainMounts, uiPort } from './utils'
 
 export const main = sdk.setupMain(async ({ effects }) => {
   /**
@@ -62,17 +56,19 @@ export const main = sdk.setupMain(async ({ effects }) => {
 
     if (configuredLnImplementation === 'LndRestWallet') {
       // LND's REST binding (host `control`, internal `restPort`) is published
-      // at wallet unlock; its assignedPort then persists across lock/unlock, so
-      // this `.const()` resolves once LND is installed and first unlocked (one
-      // healing restart), then stays stable. While the address is unresolved
-      // (LND absent or not yet unlocked) the endpoint stays unset — LNbits
-      // fails its backend connection and the health check goes red until LND
-      // appears, rather than dialing a fabricated address.
-      const lndRest = await bridgeAddress(effects, {
-        packageId: 'lnd',
-        hostId: lndControlHostId,
-        internalPort: lndRestPort,
-      }).const()
+      // at wallet unlock; its bridge address then persists across lock/unlock,
+      // so this `.const()` resolves once LND is installed and first unlocked
+      // (one healing restart), then stays stable. While the address is
+      // unresolved (LND absent or not yet unlocked) the endpoint stays unset —
+      // LNbits fails its backend connection and the health check goes red until
+      // LND appears, rather than dialing a fabricated address.
+      const lndRest = await sdk.host
+        .getBridgeAddress(effects, {
+          packageId: 'lnd',
+          hostId: lndControlHostId,
+          internalPort: lndRestPort,
+        })
+        .const()
       if (lndRest) {
         env.LND_REST_ENDPOINT = `https://${lndRest}/`
       } else {

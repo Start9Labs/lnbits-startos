@@ -1,33 +1,23 @@
 import { VersionInfo } from '@start9labs/start-sdk'
 
 export const current = VersionInfo.of({
-  version: '1.5.6:1',
+  version: '1.5.6:2',
   releaseNotes: {
-    en_US: `Updated LNbits to 1.5.6.
+    en_US: `Keeps the LND connection working when LND changes how it serves TLS.
 
-This release also migrates the package to start-sdk 2.0 (requires StartOS 0.4.0-beta.10 or later).
+LNbits resolved LND's address from a field that is only populated for one of the two ways a service can publish a port. It now reads the address itself, which is correct either way — so the connection survives LND's next update instead of going unreachable.`,
+    es_ES: `Mantiene la conexión con LND cuando LND cambia su forma de servir TLS.
 
-Full release notes: https://github.com/lnbits/lnbits/releases/tag/v1.5.6`,
-    es_ES: `Actualiza LNbits a 1.5.6.
+LNbits resolvía la dirección de LND a partir de un campo que solo se rellena en una de las dos formas en que un servicio puede publicar un puerto. Ahora lee la dirección en sí, que es correcta en ambos casos, así que la conexión sobrevive a la próxima actualización de LND en lugar de quedar inaccesible.`,
+    de_DE: `Hält die LND-Verbindung aufrecht, wenn LND die Art der TLS-Bereitstellung ändert.
 
-Esta versión también migra el paquete a start-sdk 2.0 (requiere StartOS 0.4.0-beta.10 o posterior).
+LNbits ermittelte die Adresse von LND aus einem Feld, das nur bei einer der beiden Arten gefüllt ist, auf die ein Dienst einen Port veröffentlichen kann. Jetzt wird die Adresse selbst gelesen, die in beiden Fällen stimmt — die Verbindung übersteht damit das nächste LND-Update, statt unerreichbar zu werden.`,
+    pl_PL: `Utrzymuje połączenie z LND, gdy LND zmienia sposób udostępniania TLS.
 
-Notas de la versión completas: https://github.com/lnbits/lnbits/releases/tag/v1.5.6`,
-    de_DE: `Aktualisiert LNbits auf 1.5.6.
+LNbits ustalał adres LND na podstawie pola wypełnianego tylko przy jednym z dwóch sposobów publikowania portu przez usługę. Teraz odczytuje sam adres, poprawny w obu przypadkach — dzięki temu połączenie przetrwa kolejną aktualizację LND, zamiast stać się nieosiągalne.`,
+    fr_FR: `Maintient la connexion à LND lorsque LND change sa façon de servir TLS.
 
-Diese Version stellt das Paket außerdem auf start-sdk 2.0 um (erfordert StartOS 0.4.0-beta.10 oder neuer).
-
-Vollständige Versionshinweise: https://github.com/lnbits/lnbits/releases/tag/v1.5.6`,
-    pl_PL: `Aktualizuje LNbits do 1.5.6.
-
-Ta wersja przenosi też pakiet na start-sdk 2.0 (wymaga StartOS 0.4.0-beta.10 lub nowszego).
-
-Pełne informacje o wydaniu: https://github.com/lnbits/lnbits/releases/tag/v1.5.6`,
-    fr_FR: `Met à jour LNbits vers 1.5.6.
-
-Cette version fait également passer le paquet à start-sdk 2.0 (nécessite StartOS 0.4.0-beta.10 ou une version ultérieure).
-
-Notes de version complètes : https://github.com/lnbits/lnbits/releases/tag/v1.5.6`,
+LNbits déterminait l'adresse de LND à partir d'un champ renseigné dans un seul des deux modes de publication d'un port par un service. Il lit désormais l'adresse elle-même, correcte dans les deux cas — la connexion survit donc à la prochaine mise à jour de LND au lieu de devenir injoignable.`,
   },
   migrations: {},
 })
