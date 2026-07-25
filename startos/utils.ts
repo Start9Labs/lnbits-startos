@@ -1,4 +1,3 @@
-import { T } from '@start9labs/start-sdk'
 import { sdk } from './sdk'
 
 export const uiPort = 5000
