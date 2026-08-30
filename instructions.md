@@ -2,6 +2,7 @@
 
 ## Documentation
 
+- [Start9 Bitcoin Guides](https://docs.start9.com/bitcoin-guides/) — connecting wallets and dashboards to a Lightning node on StartOS.
 - [LNbits documentation](https://docs.lnbits.org/) — the upstream user and operator guide, including the API reference and extension catalogue.
 
 ## What you get on StartOS
