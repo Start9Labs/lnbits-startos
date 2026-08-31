@@ -22,6 +22,14 @@ export const setDependencies = sdk.setupDependencies(async ({ effects }) => {
         versionRange: '>=26.6.6:1',
       },
     }
+  } else if (configuredLnImplementation === 'PhoenixdWallet') {
+    return {
+      phoenixd: {
+        healthChecks: ['primary'],
+        kind: 'running',
+        versionRange: '>=0.8.0:1',
+      },
+    }
   }
   return {}
 })

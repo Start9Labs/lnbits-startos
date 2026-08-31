@@ -5,6 +5,7 @@ export const db = '/app/data/database.sqlite3'
 
 export const lndMountpoint = '/mnt/lnd'
 export const clnMountpoint = '/mnt/cln'
+export const phoenixdMountpoint = '/mnt/phoenixd'
 
 export const mainMounts = sdk.Mounts.of().mountVolume({
   volumeId: 'main',

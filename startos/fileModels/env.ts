@@ -34,11 +34,14 @@ export const shape = z.object({
     .catch('classic, bitcoin, freedom, mint, autumn, monochrome, salvador'),
   LNBITS_CUSTOM_LOGO: z.string().optional().catch(''),
   LNBITS_BACKEND_WALLET_CLASS: z
-    .enum(['VoidWallet', 'LndRestWallet', 'CoreLightningWallet'])
+    .enum([
+      'VoidWallet',
+      'LndRestWallet',
+      'CoreLightningWallet',
+      'PhoenixdWallet',
+    ])
     .catch('LndRestWallet'),
-  LNBITS_ALLOWED_FUNDING_SOURCES: z
-    .enum(['LndRestWallet', 'CoreLightningWallet'])
-    .catch('LndRestWallet'),
+  LNBITS_ALLOWED_FUNDING_SOURCES: z.string().optional().catch(undefined),
   CLIGHTNING_RPC: z
     .literal(`${clnMountpoint}/bitcoin/lightning-rpc`)
     .catch(`${clnMountpoint}/bitcoin/lightning-rpc`),
@@ -49,6 +52,8 @@ export const shape = z.object({
   LND_REST_MACAROON: z
     .literal(`${lndMountpoint}/data/chain/bitcoin/mainnet/admin.macaroon`)
     .catch(`${lndMountpoint}/data/chain/bitcoin/mainnet/admin.macaroon`),
+  PHOENIXD_API_ENDPOINT: z.string().optional().catch(undefined),
+  PHOENIXD_API_PASSWORD: z.string().optional().catch(undefined),
 })
 
 export const envFile = FileHelper.env(
