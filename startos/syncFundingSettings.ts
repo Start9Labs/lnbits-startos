@@ -75,6 +75,9 @@ export async function syncFundingSettings(
     // LNbits reads `corelightning_rpc` first, then `clightning_rpc`; set both.
     upserts.corelightning_rpc = env.CLIGHTNING_RPC
     upserts.clightning_rpc = env.CLIGHTNING_RPC
+  } else if (env.LNBITS_BACKEND_WALLET_CLASS === 'EclairWallet') {
+    if (env.ECLAIR_URL) upserts.eclair_url = env.ECLAIR_URL
+    if (env.ECLAIR_PASS) upserts.eclair_pass = env.ECLAIR_PASS
   } else if (env.LNBITS_BACKEND_WALLET_CLASS === 'PhoenixdWallet') {
     if (env.PHOENIXD_API_ENDPOINT)
       upserts.phoenixd_api_endpoint = env.PHOENIXD_API_ENDPOINT

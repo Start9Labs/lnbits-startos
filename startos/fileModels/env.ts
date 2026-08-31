@@ -39,6 +39,7 @@ export const shape = z.object({
       'LndRestWallet',
       'CoreLightningWallet',
       'PhoenixdWallet',
+      'EclairWallet',
     ])
     .catch('LndRestWallet'),
   LNBITS_ALLOWED_FUNDING_SOURCES: z.string().optional().catch(undefined),
@@ -54,6 +55,8 @@ export const shape = z.object({
     .catch(`${lndMountpoint}/data/chain/bitcoin/mainnet/admin.macaroon`),
   PHOENIXD_API_ENDPOINT: z.string().optional().catch(undefined),
   PHOENIXD_API_PASSWORD: z.string().optional().catch(undefined),
+  ECLAIR_URL: z.string().optional().catch(undefined),
+  ECLAIR_PASS: z.string().optional().catch(undefined),
 })
 
 export const envFile = FileHelper.env(

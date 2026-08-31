@@ -22,6 +22,14 @@ export const setDependencies = sdk.setupDependencies(async ({ effects }) => {
         versionRange: '>=26.6.6:1',
       },
     }
+  } else if (configuredLnImplementation === 'EclairWallet') {
+    return {
+      eclair: {
+        healthChecks: ['eclair'],
+        kind: 'running',
+        versionRange: '>=0.14.2:0',
+      },
+    }
   } else if (configuredLnImplementation === 'PhoenixdWallet') {
     return {
       phoenixd: {

@@ -9,7 +9,7 @@
 > upstream documentation is accurate and fully applicable — see the
 > Documentation section of `instructions.md` for links.
 
-[LNbits](https://github.com/lnbits/lnbits) is an account system and extension platform built on top of a Lightning node. On StartOS it runs against the LND, Core Lightning or phoenixd already on this server, with the connection to that node managed by the package rather than typed in — or, at the user's choice, against a funding source they configure themselves in LNbits' own admin UI.
+[LNbits](https://github.com/lnbits/lnbits) is an account system and extension platform built on top of a Lightning node. On StartOS it runs against the LND, Core Lightning, phoenixd or Eclair already on this server, with the connection to that node managed by the package rather than typed in — or, at the user's choice, against a funding source they configure themselves in LNbits' own admin UI.
 
 - **Upstream repo:** <https://github.com/lnbits/lnbits>
 - **Wrapper repo:** <https://github.com/Start9Labs/lnbits-startos>
@@ -56,7 +56,7 @@ One volume, plus a read-only view of the chosen Lightning node's.
 | ------ | ----------- | ----------------------------------- |
 | `main` | `/app/data` | `.env`, and LNbits' SQLite database |
 
-The selected node's data directory is mounted **read-only** — `/mnt/lnd`, `/mnt/cln` or `/mnt/phoenixd` — which is how LNbits reads LND's macaroon and TLS certificate, Core Lightning's RPC socket, or phoenixd's HTTP password. Nothing is mounted when the funding source is external. No credential is stored in this package.
+The selected node's data directory is mounted **read-only** — `/mnt/lnd`, `/mnt/cln`, `/mnt/phoenixd` or `/mnt/eclair` — which is how LNbits reads LND's macaroon and TLS certificate, Core Lightning's RPC socket, phoenixd's HTTP password, or Eclair's API password. Nothing is mounted when the funding source is external. No credential is stored in this package.
 
 ## File Models
 
@@ -72,9 +72,9 @@ One model, and a second store the package has to reconcile against it.
 
 `HOST` is additionally forced to all interfaces on every start, so the server is reachable over the service bridge.
 
-**Derived:** `LND_REST_ENDPOINT` is written by `main` from LND's own binding when LND is the backend, and `PHOENIXD_API_ENDPOINT` / `PHOENIXD_API_PASSWORD` from phoenixd's binding and the `phoenix.conf` on its mount. None of the three is persisted to the file; all are computed on every start.
+**Derived:** `LND_REST_ENDPOINT` is written by `main` from LND's own binding when LND is the backend, `PHOENIXD_API_ENDPOINT` / `PHOENIXD_API_PASSWORD` from phoenixd's binding and the `phoenix.conf` on its mount, and `ECLAIR_URL` / `ECLAIR_PASS` from Eclair's binding and the `eclair.conf` on its mount. None of them is persisted to the file; all are computed on every start.
 
-The two backends fail differently on purpose. LND's REST binding legitimately does not exist until its wallet is first unlocked, so an unresolved address there **deletes** the key rather than leaving it stale, and LNbits fails its backend connection honestly instead of dialling something that no longer exists. phoenixd's API binding exists from the moment it is installed, so the same condition is a real fault and `main` **throws** — which surfaces as a service error rather than a silent void wallet.
+The backends fail differently on purpose. LND's REST binding legitimately does not exist until its wallet is first unlocked, so an unresolved address there **deletes** the key rather than leaving it stale, and LNbits fails its backend connection honestly instead of dialling something that no longer exists. phoenixd's and Eclair's API bindings exist from the moment they are installed, so the same condition is a real fault and `main` **throws** — which surfaces as a service error rather than a silent void wallet. Eclair throws for a second reason too: it has no API password until its **Set API Password** action has been run, and LNbits cannot authenticate without one.
 
 **Yours:** everything else the file can carry — site title and tagline, themes, the reserve-fee settings, which extensions are disabled, the admin UI toggle. The package models them so they round-trip, but writes none of them, so an untouched install has no line for any of them and LNbits applies its own defaults.
 
@@ -97,12 +97,13 @@ One at a time, decided by which backend you chose.
 | LND      | `lnd`         | `running` | `lnd`        | `/mnt/lnd`, read-only      |
 | CLN      | `c-lightning` | `running` | `lightningd` | `/mnt/cln`, read-only      |
 | phoenixd | `phoenixd`    | `running` | `primary`    | `/mnt/phoenixd`, read-only |
+| Eclair   | `eclair`      | `running` | `eclair`     | `/mnt/eclair`, read-only   |
 
 All three are optional in the manifest, since any of them may be the one in use. Before a backend is chosen, and whenever the funding source is external, there is no dependency at all and the package's own configuration records a void wallet.
 
 **With LND, the REST binding does not exist until its wallet is first unlocked.** Until then the endpoint stays unset and LNbits' health check is red; once the binding appears the package heals with one restart, and the address then survives later lock and unlock cycles.
 
-**With phoenixd, the HTTP password is read from `phoenix.conf` on its mount** on every start, so a password phoenixd regenerates is picked up without any action here.
+**With phoenixd, the HTTP password is read from `phoenix.conf` on its mount** on every start, so a password phoenixd regenerates is picked up without any action here. **With Eclair, the API password is read from `eclair.conf` the same way**, so rotating it there reaches LNbits on the next start.
 
 ## Network Access and Interfaces
 
@@ -208,6 +209,7 @@ dependencies: # at most one, decided by the chosen backend; none when external
   - lnd # /mnt/lnd, read-only
   - c-lightning # /mnt/cln, read-only
   - phoenixd # /mnt/phoenixd, read-only
+  - eclair # /mnt/eclair, read-only
 interfaces:
   ui: { type: ui, port: 5000 }
 actions:

@@ -9,12 +9,13 @@ export const inputSpec = InputSpec.of({
   implementation: Value.select({
     name: i18n('Lightning Implementation'),
     description: i18n(
-      'The Lightning node LNbits draws on for funds. LND, Core Lightning and phoenixd are the nodes StartOS packages, and the package wires the connection up for you. "None / External" leaves the funding source to you: pick and configure it from LNbits\' own Admin UI, including nodes elsewhere and third-party custodial services.',
+      'The Lightning node LNbits draws on for funds. LND, Core Lightning, phoenixd and Eclair are the nodes StartOS packages, and the package wires the connection up for you. "None / External" leaves the funding source to you: pick and configure it from LNbits\' own Admin UI, including nodes elsewhere and third-party custodial services.',
     ),
     values: {
       LndRestWallet: i18n('LND'),
       CoreLightningWallet: i18n('Core Lightning'),
       PhoenixdWallet: i18n('phoenixd'),
+      EclairWallet: i18n('Eclair'),
       VoidWallet: i18n('None / External'),
     },
     default: undefined as any,
