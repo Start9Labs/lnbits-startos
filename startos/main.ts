@@ -5,6 +5,12 @@ import {
   restPort as lndRestPort,
 } from 'lnd-startos/startos/interfaces'
 import { manifest as lndManifest } from 'lnd-startos/startos/manifest'
+import {
+  apiHostId as eclairApiHostId,
+  apiPort as eclairApiPort,
+} from 'eclair-startos/startos/utils'
+import { eclairConf } from 'eclair-startos/startos/fileModels/eclair.conf'
+import { manifest as eclairManifest } from 'eclair-startos/startos/manifest'
 import { apiHostId as phoenixdApiHostId } from 'phoenixd-startos/startos/interfaces'
 import { manifest as phoenixdManifest } from 'phoenixd-startos/startos/manifest'
 import { port as phoenixdPort } from 'phoenixd-startos/startos/utils'
@@ -14,6 +20,7 @@ import { sdk } from './sdk'
 import { syncFundingSettings } from './syncFundingSettings'
 import {
   clnMountpoint,
+  eclairMountpoint,
   lndMountpoint,
   mainMounts,
   phoenixdMountpoint,
@@ -46,6 +53,14 @@ export const main = sdk.setupMain(async ({ effects }) => {
     mounts = mounts.mountDependency<typeof clnManifest>({
       dependencyId: 'c-lightning',
       mountpoint: clnMountpoint,
+      readonly: true,
+      subpath: null,
+      volumeId: 'main',
+    })
+  } else if (configuredLnImplementation === 'EclairWallet') {
+    mounts = mounts.mountDependency<typeof eclairManifest>({
+      dependencyId: 'eclair',
+      mountpoint: eclairMountpoint,
       readonly: true,
       subpath: null,
       volumeId: 'main',
@@ -119,6 +134,41 @@ export const main = sdk.setupMain(async ({ effects }) => {
       env.PHOENIXD_API_PASSWORD = await readPhoenixdHttpPassword(
         await lnbitsSub.rootfs,
       )
+    } else if (configuredLnImplementation === 'EclairWallet') {
+      // Eclair's API binding exists from install, so an unresolved address is a
+      // real fault rather than a stage to wait through.
+      const eclair = await sdk.host
+        .getBridgeAddress(effects, {
+          packageId: 'eclair',
+          hostId: eclairApiHostId,
+          internalPort: eclairApiPort,
+          ssl: false,
+        })
+        .const()
+      if (!eclair) {
+        throw new Error(
+          i18n(
+            'Eclair is not yet reachable on the internal network. Ensure Eclair is installed and running.',
+          ),
+        )
+      }
+
+      // Read on every start out of Eclair's own config, so rotating the
+      // password there reaches LNbits without the user retyping it.
+      const password = await eclairConf
+        .withPath(`${await lnbitsSub.rootfs}${eclairMountpoint}/eclair.conf`)
+        .read((c) => c['api.password'])
+        .const(effects)
+      if (!password) {
+        throw new Error(
+          i18n(
+            'Eclair has no API password set. Run its Set API Password action first.',
+          ),
+        )
+      }
+
+      env.ECLAIR_URL = `http://${eclair}`
+      env.ECLAIR_PASS = password
     }
   }
 

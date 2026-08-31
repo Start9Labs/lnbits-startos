@@ -8,7 +8,7 @@
 ## What you get on StartOS
 
 - A **Web UI** interface running LNbits, the wallet and accounts system itself plus its built-in admin panel and API.
-- An LNbits instance backed by **your own Lightning node** — LND, Core Lightning or phoenixd on this server, mounted read-only as the funding source and wired up for you.
+- An LNbits instance backed by **your own Lightning node** — LND, Core Lightning, phoenixd or Eclair on this server, mounted read-only as the funding source and wired up for you.
 - The option to point LNbits somewhere else entirely, and configure that yourself from its Admin UI.
 - Local SQLite storage on the `main` volume — no separate database to provision.
 
@@ -16,7 +16,7 @@
 
 LNbits posts a critical task after install. You can't start the service until it's done.
 
-1. Install **LND**, **Core Lightning** or **phoenixd** first and wait for it to be running and synced. With LND, unlock its wallet at least once — LNbits cannot reach it before that.
+1. Install **LND**, **Core Lightning**, **phoenixd** or **Eclair** first and wait for it to be running and synced. With LND, unlock its wallet at least once — LNbits cannot reach it before that. With Eclair, run its **Set API Password** action first — LNbits authenticates with that password.
 2. Run the **Lightning Implementation** task and pick the node you installed. LNbits records the choice in its environment and starts depending on that node.
 3. Start LNbits. Open the **Web UI** interface, then create an account through the LNbits sign-up screen. **The first account you create becomes the super user** (admin) — do this from a trusted device and save the credentials somewhere safe.
 
@@ -43,12 +43,12 @@ What that means in practice:
 
 ### Actions
 
-- **Lightning Implementation** — choose which node funds LNbits: LND, Core Lightning or phoenixd on this server, or None / External. **Changing this after LNbits has been used wipes the LNbits database**, removing every account and wallet stored on this instance. Funds on the underlying Lightning node are unaffected, but anything that lived only in LNbits (extension data, internal wallets, invoices) is gone. Only use this when you really mean to start over.
+- **Lightning Implementation** — choose which node funds LNbits: LND, Core Lightning, phoenixd or Eclair on this server, or None / External. **Changing this after LNbits has been used wipes the LNbits database**, removing every account and wallet stored on this instance. Funds on the underlying Lightning node are unaffected, but anything that lived only in LNbits (extension data, internal wallets, invoices) is gone. Only use this when you really mean to start over.
 - **Reset Password** — generates a new random password for the super user and returns it once, masked and copyable. Use it if you've lost the super user password.
 
 ## Limitations
 
-- **Three Lightning nodes are supported as managed funding backends.** LND, Core Lightning and phoenixd are the ones StartOS packages and can wire up for you. Everything else upstream LNbits supports is reachable only through **None / External**, where the connection is yours to configure and maintain.
+- **Four Lightning nodes are supported as managed funding backends.** LND, Core Lightning, phoenixd and Eclair are the ones StartOS packages and can wire up for you. Everything else upstream LNbits supports is reachable only through **None / External**, where the connection is yours to configure and maintain.
 - **SQLite only.** Upstream supports PostgreSQL and CockroachDB as alternative databases; the StartOS package uses the embedded SQLite database and does not expose that switch.
 - **Username and password sign-in only.** Other LNbits auth methods (Google OAuth, etc.) are disabled in this package.
 - **With a node on this server, the connection is managed by StartOS.** The funding source endpoint, certificate, macaroon and password are set for you and re-applied on every start, so editing them in the LNbits Admin UI has no lasting effect. Only **None / External** lifts this.
