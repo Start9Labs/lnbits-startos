@@ -6,6 +6,8 @@ const dict = {
   'Web Interface': 1,
   'The web interface is ready': 2,
   'The web interface is not ready': 3,
+  'phoenixd is not yet reachable on the internal network. Ensure phoenixd is installed and running.': 21,
+  'Could not read the phoenixd http-password': 22,
 
   // interfaces.ts
   'Web UI': 4,
@@ -13,9 +15,11 @@ const dict = {
 
   // actions/lightningImplementation.ts
   'Lightning Implementation': 6,
-  'The underlying Lightning implementation, currently LND or Core Lightning (CLN)': 7,
+  'The Lightning node LNbits draws on for funds. LND, Core Lightning and phoenixd are the nodes StartOS packages, and the package wires the connection up for you. "None / External" leaves the funding source to you: pick and configure it from LNbits\' own Admin UI, including nodes elsewhere and third-party custodial services.': 7,
   LND: 8,
   'Core Lightning': 9,
+  phoenixd: 19,
+  'None / External': 20,
   'Select the Lightning Implementation for LNbits to utilize': 10,
   'If the LN implementation is changed after using LNbits this will delete all LNbits accounts and wallets related to the previously configured LN implementation! All LN funds will still be available on the underlying LN implementation.': 11,
   'Existing LN implementation does not match input. Resetting DB...': 17,
@@ -28,7 +32,7 @@ const dict = {
   'The new Super User password is below': 15,
 
   // init/taskSetLnImplementation.ts
-  'LNbits requires an underlying Lightning node!': 16,
+  'LNbits needs a funding source before it can start!': 16,
 } as const
 
 /**

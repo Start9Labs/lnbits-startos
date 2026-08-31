@@ -19,6 +19,9 @@ type ExecSub = {
  * Force LNbits' stored Lightning-backend connection settings to match the
  * StartOS-managed `.env`.
  *
+ * `VoidWallet` returns early, which is what leaves the Admin UI in charge of an
+ * external funding source.
+ *
  * With `LNBITS_ADMIN_UI=true`, LNbits persists its funding-source settings
  * (backend class, endpoint, cert, macaroon, CLN rpc) into its own SQLite db
  * (`system_settings`, tag `core`). On every startup those DB values OVERRIDE
@@ -72,6 +75,11 @@ export async function syncFundingSettings(
     // LNbits reads `corelightning_rpc` first, then `clightning_rpc`; set both.
     upserts.corelightning_rpc = env.CLIGHTNING_RPC
     upserts.clightning_rpc = env.CLIGHTNING_RPC
+  } else if (env.LNBITS_BACKEND_WALLET_CLASS === 'PhoenixdWallet') {
+    if (env.PHOENIXD_API_ENDPOINT)
+      upserts.phoenixd_api_endpoint = env.PHOENIXD_API_ENDPOINT
+    if (env.PHOENIXD_API_PASSWORD)
+      upserts.phoenixd_api_password = env.PHOENIXD_API_PASSWORD
   } else {
     return
   }

@@ -1,5 +1,11 @@
 import { setupManifest } from '@start9labs/start-sdk'
-import { depClnDescription, depLndDescription, long, short } from './i18n'
+import {
+  depClnDescription,
+  depLndDescription,
+  depPhoenixdDescription,
+  long,
+  short,
+} from './i18n'
 
 export const manifest = setupManifest({
   id: 'lnbits',
@@ -34,6 +40,14 @@ export const manifest = setupManifest({
       metadata: {
         title: 'LND',
         icon: 'https://raw.githubusercontent.com/Start9Labs/lnd-startos/refs/heads/master/icon.svg',
+      },
+    },
+    phoenixd: {
+      description: depPhoenixdDescription,
+      optional: true,
+      metadata: {
+        title: 'phoenixd',
+        icon: 'https://raw.githubusercontent.com/Start9-Community/phoenixd-startos/refs/heads/master/icon.svg',
       },
     },
   },

@@ -9,11 +9,13 @@ export const inputSpec = InputSpec.of({
   implementation: Value.select({
     name: i18n('Lightning Implementation'),
     description: i18n(
-      'The underlying Lightning implementation, currently LND or Core Lightning (CLN)',
+      'The Lightning node LNbits draws on for funds. LND, Core Lightning and phoenixd are the nodes StartOS packages, and the package wires the connection up for you. "None / External" leaves the funding source to you: pick and configure it from LNbits\' own Admin UI, including nodes elsewhere and third-party custodial services.',
     ),
     values: {
       LndRestWallet: i18n('LND'),
       CoreLightningWallet: i18n('Core Lightning'),
+      PhoenixdWallet: i18n('phoenixd'),
+      VoidWallet: i18n('None / External'),
     },
     default: undefined as any,
   }),
@@ -46,7 +48,7 @@ export const setLnImplementation = sdk.Action.withInput(
       .read((e) => e.LNBITS_BACKEND_WALLET_CLASS)
       .const(effects)
 
-    if (!imp || imp === 'VoidWallet') return
+    if (!imp) return
 
     return {
       implementation: imp,
@@ -75,7 +77,20 @@ export const setLnImplementation = sdk.Action.withInput(
 
     await envFile.merge(effects, {
       LNBITS_BACKEND_WALLET_CLASS: input.implementation,
-      LNBITS_ALLOWED_FUNDING_SOURCES: input.implementation,
     })
+
+    // Pinning the allowed list locks the Admin UI to the managed node; removing it
+    // hands the choice back, LNbits falling through to its own set of every funding
+    // source it supports. Removal takes a rewrite because `merge` cannot drop a key,
+    // and blanking would not do: LNbits reads an empty list as nothing allowed.
+    const env = await envFile.read().const(effects)
+    if (env) {
+      if (input.implementation === 'VoidWallet') {
+        delete env.LNBITS_ALLOWED_FUNDING_SOURCES
+      } else {
+        env.LNBITS_ALLOWED_FUNDING_SOURCES = input.implementation
+      }
+      await envFile.write(effects, env)
+    }
   },
 )

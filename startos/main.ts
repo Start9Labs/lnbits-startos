@@ -1,14 +1,24 @@
 import { manifest as clnManifest } from 'cln-startos/startos/manifest'
+import { readFile } from 'fs/promises'
 import {
   controlHostId as lndControlHostId,
   restPort as lndRestPort,
 } from 'lnd-startos/startos/interfaces'
 import { manifest as lndManifest } from 'lnd-startos/startos/manifest'
+import { apiHostId as phoenixdApiHostId } from 'phoenixd-startos/startos/interfaces'
+import { manifest as phoenixdManifest } from 'phoenixd-startos/startos/manifest'
+import { port as phoenixdPort } from 'phoenixd-startos/startos/utils'
 import { envFile } from './fileModels/env'
 import { i18n } from './i18n'
 import { sdk } from './sdk'
 import { syncFundingSettings } from './syncFundingSettings'
-import { clnMountpoint, lndMountpoint, mainMounts, uiPort } from './utils'
+import {
+  clnMountpoint,
+  lndMountpoint,
+  mainMounts,
+  phoenixdMountpoint,
+  uiPort,
+} from './utils'
 
 export const main = sdk.setupMain(async ({ effects }) => {
   /**
@@ -22,22 +32,33 @@ export const main = sdk.setupMain(async ({ effects }) => {
     .read((e) => e.LNBITS_BACKEND_WALLET_CLASS)
     .const(effects)
 
-  const mounts =
-    configuredLnImplementation === 'LndRestWallet'
-      ? mainMounts.mountDependency<typeof lndManifest>({
-          dependencyId: 'lnd',
-          mountpoint: lndMountpoint,
-          readonly: true,
-          subpath: null,
-          volumeId: 'main',
-        })
-      : mainMounts.mountDependency<typeof clnManifest>({
-          dependencyId: 'c-lightning',
-          mountpoint: clnMountpoint,
-          readonly: true,
-          subpath: null,
-          volumeId: 'main',
-        })
+  let mounts = mainMounts
+
+  if (configuredLnImplementation === 'LndRestWallet') {
+    mounts = mounts.mountDependency<typeof lndManifest>({
+      dependencyId: 'lnd',
+      mountpoint: lndMountpoint,
+      readonly: true,
+      subpath: null,
+      volumeId: 'main',
+    })
+  } else if (configuredLnImplementation === 'CoreLightningWallet') {
+    mounts = mounts.mountDependency<typeof clnManifest>({
+      dependencyId: 'c-lightning',
+      mountpoint: clnMountpoint,
+      readonly: true,
+      subpath: null,
+      volumeId: 'main',
+    })
+  } else if (configuredLnImplementation === 'PhoenixdWallet') {
+    mounts = mounts.mountDependency<typeof phoenixdManifest>({
+      dependencyId: 'phoenixd',
+      mountpoint: phoenixdMountpoint,
+      readonly: true,
+      subpath: null,
+      volumeId: 'main',
+    })
+  }
 
   const lnbitsSub = sdk.SubContainer.of(
     effects,
@@ -74,6 +95,30 @@ export const main = sdk.setupMain(async ({ effects }) => {
       } else {
         delete env.LND_REST_ENDPOINT
       }
+    } else if (configuredLnImplementation === 'PhoenixdWallet') {
+      // Unlike LND's, phoenixd's API binding exists from the moment it is
+      // installed, so an unresolved address here is a real fault rather than a
+      // stage LNbits should wait through.
+      const phoenixd = await sdk.host
+        .getBridgeAddress(effects, {
+          packageId: 'phoenixd',
+          hostId: phoenixdApiHostId,
+          internalPort: phoenixdPort,
+          ssl: false,
+        })
+        .const()
+      if (!phoenixd) {
+        throw new Error(
+          i18n(
+            'phoenixd is not yet reachable on the internal network. Ensure phoenixd is installed and running.',
+          ),
+        )
+      }
+
+      env.PHOENIXD_API_ENDPOINT = `http://${phoenixd}/`
+      env.PHOENIXD_API_PASSWORD = await readPhoenixdHttpPassword(
+        await lnbitsSub.rootfs,
+      )
     }
   }
 
@@ -114,3 +159,15 @@ export const main = sdk.setupMain(async ({ effects }) => {
       requires: ['sync-funding-settings'],
     })
 })
+
+async function readPhoenixdHttpPassword(rootfs: string): Promise<string> {
+  const conf = await readFile(
+    `${rootfs}${phoenixdMountpoint}/phoenix.conf`,
+    'utf-8',
+  )
+  const password = conf.match(/^http-password=(.*)$/m)?.[1]?.trim()
+  if (!password) {
+    throw new Error(i18n('Could not read the phoenixd http-password'))
+  }
+  return password
+}

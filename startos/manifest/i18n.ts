@@ -22,6 +22,14 @@ export const depLndDescription = {
   fr_FR: 'Connectez optionnellement LNbits à votre nœud LND.',
 }
 
+export const depPhoenixdDescription = {
+  en_US: 'Optionally connect LNbits to your phoenixd node.',
+  es_ES: 'Opcionalmente conecte LNbits a su nodo phoenixd.',
+  de_DE: 'Optional LNbits mit Ihrem phoenixd-Knoten verbinden.',
+  pl_PL: 'Opcjonalnie połącz LNbits ze swoim węzłem phoenixd.',
+  fr_FR: 'Connectez optionnellement LNbits à votre nœud phoenixd.',
+}
+
 export const long = {
   en_US:
     'A self-hosted Bitcoin Lightning wallet and accounts system. Manage wallets for family, friends, projects or business, make Lightning extensible with LNbits extensions, and build apps with its developer-friendly API.',
