@@ -14,6 +14,14 @@ export const depClnDescription = {
   fr_FR: 'Connectez optionnellement LNbits à votre nœud CLN.',
 }
 
+export const depEclairDescription = {
+  en_US: 'Optionally connect LNbits to your Eclair node.',
+  es_ES: 'Opcionalmente conecte LNbits a su nodo Eclair.',
+  de_DE: 'Optional LNbits mit Ihrem Eclair-Knoten verbinden.',
+  pl_PL: 'Opcjonalnie połącz LNbits ze swoim węzłem Eclair.',
+  fr_FR: 'Connectez optionnellement LNbits à votre nœud Eclair.',
+}
+
 export const depLndDescription = {
   en_US: 'Optionally connect LNbits to your LND node.',
   es_ES: 'Opcionalmente conecte LNbits a su nodo LND.',

@@ -1,6 +1,7 @@
 import { setupManifest } from '@start9labs/start-sdk'
 import {
   depClnDescription,
+  depEclairDescription,
   depLndDescription,
   depPhoenixdDescription,
   long,
@@ -32,6 +33,14 @@ export const manifest = setupManifest({
       metadata: {
         title: 'Core Lightning',
         icon: 'https://raw.githubusercontent.com/Start9Labs/cln-startos/refs/heads/master/icon.svg',
+      },
+    },
+    eclair: {
+      description: depEclairDescription,
+      optional: true,
+      metadata: {
+        title: 'Eclair',
+        icon: 'https://raw.githubusercontent.com/Start9Labs/eclair-startos/refs/heads/master/icon.png',
       },
     },
     lnd: {
