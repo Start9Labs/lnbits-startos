@@ -196,7 +196,10 @@ export const main = sdk.setupMain(async ({ effects }) => {
     })
     .addDaemon('primary', {
       subcontainer: lnbitsSub,
-      exec: { command: ['uv', 'run', 'lnbits'], env: env || {} },
+      exec: {
+        command: ['uv', '--offline', 'run', '--no-sync', 'lnbits'],
+        env: env || {},
+      },
       ready: {
         display: i18n('Web Interface'),
         gracePeriod: 75_000,
