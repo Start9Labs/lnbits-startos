@@ -41,7 +41,7 @@ The image is upstream's with a handful of command-line tools added, since the pa
 | ------------- | --------------------------------------------------------------- |
 | Image         | Built from `Dockerfile`, `FROM lnbits/lnbits`                   |
 | Architectures | x86_64, aarch64                                                 |
-| Command       | `uv run lnbits`                                                 |
+| Command       | `uv --offline run --no-sync lnbits`                             |
 | Subcontainer  | `lnbits-sub` — the `primary` daemon, and the one to `attach` to |
 
 The additions are `sqlite3`, `python3`'s bcrypt, `jq`, `yq`, `xxd`, `curl` and `tini`. A short-lived `reset-pass` subcontainer uses the first two for the password action.
