@@ -18,7 +18,7 @@ const dict = {
   'Select the Lightning Implementation for LNbits to utilize': 14,
   'Starting LNbits!': 15,
   Success: 16,
-  'The Lightning node LNbits draws on for funds. LND, Core Lightning, phoenixd and Eclair are the nodes StartOS packages, and the package wires the connection up for you. "None / External" leaves the funding source to you: pick and configure it from LNbits\' own Admin UI, including nodes elsewhere and third-party custodial services.': 17,
+  "The Lightning node LNbits draws on for funds. For a node on this server, StartOS manages the connection.\n- LND: LND on this server. Its wallet must have been unlocked at least once.\n- Core Lightning: Core Lightning on this server.\n- phoenixd: phoenixd on this server.\n- Eclair: Eclair on this server. Run its Set API Password action first.\n- None / External: no node on this server. You choose and configure the funding source in LNbits' own Admin UI, including nodes elsewhere and third-party custodial services.": 17,
   'The new Super User password is below': 18,
   'The web interface is not ready': 19,
   'The web interface is ready': 20,
@@ -27,6 +27,7 @@ const dict = {
   'Web UI': 23,
   phoenixd: 24,
   'phoenixd is not yet reachable on the internal network. Ensure phoenixd is installed and running.': 25,
+  "The super user's current password stops working. The new password is shown once and cannot be recovered afterwards.": 26,
 } as const
 
 /**

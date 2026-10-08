@@ -13,7 +13,9 @@ export const resetPassword = sdk.Action.withoutInput(
     description: i18n(
       'Reset Password for the super_user in the event of a lost or forgotten password',
     ),
-    warning: null,
+    warning: i18n(
+      "The super user's current password stops working. The new password is shown once and cannot be recovered afterwards.",
+    ),
     allowedStatuses: 'only-running',
     group: null,
     visibility: 'enabled',
