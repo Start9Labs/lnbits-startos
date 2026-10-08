@@ -99,7 +99,7 @@ One at a time, decided by which backend you chose.
 | phoenixd | `phoenixd`    | `running` | `primary`    | `/mnt/phoenixd`, read-only |
 | Eclair   | `eclair`      | `running` | `eclair`     | `/mnt/eclair`, read-only   |
 
-All three are optional in the manifest, since any of them may be the one in use. Before a backend is chosen, and whenever the funding source is external, there is no dependency at all and the package's own configuration records a void wallet.
+All four are declared optional in `startos/dependencies.ts`, each enabled only while it is the chosen backend. Before a backend is chosen, and whenever the funding source is external, none is enabled and the package's own configuration records a void wallet.
 
 **With LND, the REST binding does not exist until its wallet is first unlocked.** Until then the endpoint stays unset and LNbits' health check is red; once the binding appears the package heals with one restart, and the address then survives later lock and unlock cycles.
 
@@ -119,7 +119,7 @@ The port is bound on the `main` MultiHost and is not masked.
 
 Install writes a `.env` configured for a **void wallet** — a deliberate placeholder — and raises a `critical` task to choose a backend.
 
-The order that matters: install and start LND, Core Lightning or phoenixd first, and with LND, unlock its wallet. Then run [Lightning Implementation](#actions). Choosing **None / External** needs none of that, and leaves the void wallet in the file while LNbits' own database carries whatever the user configures.
+The order that matters: install and start LND, Core Lightning, phoenixd or Eclair first; with LND, unlock its wallet, and with Eclair, run its **Set API Password** action. Then run [Lightning Implementation](#actions). Choosing **None / External** needs none of that, and leaves the void wallet in the file while LNbits' own database carries whatever the user configures.
 
 The super-user account is created by LNbits itself on first visit, not by this package.
 
@@ -129,7 +129,7 @@ Two actions, both user-facing.
 
 ### Lightning Implementation
 
-Chooses which Lightning node LNbits uses — LND, Core Lightning, phoenixd, or None / External.
+Chooses which Lightning node LNbits uses — LND, Core Lightning, phoenixd, Eclair, or None / External. The field's description lists what each choice means.
 
 - **What it changes:** the backend class and allowed funding sources in `.env`, and through them the package's dependency, its mount, and whether `sync-funding-settings` asserts anything at all.
 - **None / External** writes the void-wallet class and opens the allowed set to everything the image supports, which is what makes LNbits' own "Funding" page editable. The package then holds no dependency and mounts no node.
@@ -143,6 +143,7 @@ Generates a new password for the LNbits super user. Run it when locked out.
 
 - **What it changes:** that account's password hash, written directly into LNbits' database.
 - **Availability:** only while the service is running.
+- **Confirmation:** asks before it runs, since the current password stops working.
 - **Repeat safety:** safe to re-run; each run generates a fresh password.
 - **Outputs:** the new password, masked and copyable. It is not recoverable afterwards.
 

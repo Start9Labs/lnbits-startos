@@ -9,7 +9,7 @@ export const inputSpec = InputSpec.of({
   implementation: Value.select({
     name: i18n('Lightning Implementation'),
     description: i18n(
-      'The Lightning node LNbits draws on for funds. LND, Core Lightning, phoenixd and Eclair are the nodes StartOS packages, and the package wires the connection up for you. "None / External" leaves the funding source to you: pick and configure it from LNbits\' own Admin UI, including nodes elsewhere and third-party custodial services.',
+      "The Lightning node LNbits draws on for funds. For a node on this server, StartOS manages the connection.\n- LND: LND on this server. Its wallet must have been unlocked at least once.\n- Core Lightning: Core Lightning on this server.\n- phoenixd: phoenixd on this server.\n- Eclair: Eclair on this server. Run its Set API Password action first.\n- None / External: no node on this server. You choose and configure the funding source in LNbits' own Admin UI, including nodes elsewhere and third-party custodial services.",
     ),
     values: {
       LndRestWallet: i18n('LND'),
@@ -18,7 +18,7 @@ export const inputSpec = InputSpec.of({
       EclairWallet: i18n('Eclair'),
       VoidWallet: i18n('None / External'),
     },
-    default: undefined as any,
+    default: null,
   }),
 })
 

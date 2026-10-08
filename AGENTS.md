@@ -18,16 +18,23 @@ Freshly scaffolded? Work the
 guide page, not a file in this repo — read it, don't copy it in.
 
 Keep `README.md` (technical reference for an AI support or administering agent) and
-`instructions.md` (end-user docs) in sync with your changes.
+`instructions.md` (end-user docs) in sync with your changes. This file restates neither:
+whoever changes the package has both, so it carries only what they don't — repo mechanics,
+a change that looks right and is not, where the next thing gets added, a naming trap, a
+build or test invocation particular to this repo.
 
-**Bugs and feature requests are GitHub issues on this repo** — file them as you find them.
+**Fix a defect you spot rather than reporting it** — you have the package open and the
+context to be sure. File **a GitHub issue on this repo** only when the call isn't yours to
+make: you can't pin the cause down, two defensible fixes exist, or it's too large to ride on
+the work in hand. An open issue is a report, not a queue — implement one when you're asked
+to or when it's labelled `Approved`, then close it with `Closes #<n>`.
+
 Don't record work in the repo instead: no `TODO.md`, no `NOTES.md`, no `PLAN.md`. What you
 verified, tried, and decided belongs in the commit message and the PR body.
 
 ## This repo
 
-- **It must overwrite the rows, never delete them.** `check_admin_settings` passes every field of `settings_db.dict()` — defaults included — into the live config, so a missing row resolves to `None` rather than falling back to the env value.
-- **It must bail before touching the path when no database exists.** Otherwise `sqlite3` creates a stray empty database on the volume during a fresh install.
-- **`LND_REST_ENDPOINT` is deleted, not left stale, when LND's address is unresolved.** That binding only appears at LND's first wallet unlock; a stale or fabricated endpoint makes LNbits dial something that does not exist instead of failing its health check honestly.
-- **The implementation action deletes the database on a real change, and that is intended.** Wallets are balances against a specific node; carrying them across backends would show funds that are not reachable. Don't soften it into a merge — but don't let it fire when the selection is unchanged either.
-- **`HOST` is forced to `0.0.0.0` in `main`, not just seeded**, because the service is reached over the bridge.
+- **`sync-funding-settings` overwrites the funding rows and never deletes them**, since LNbits resolves a missing row to its default rather than to the `.env` value; it returns before touching the path when no database exists, or `sqlite3` creates an empty one.
+- **Delete `LND_REST_ENDPOINT` when LND's address is unresolved; never leave it stale or fabricate one**, so LNbits fails its backend connection instead of dialing an address that does not exist.
+- **Lightning Implementation deletes the database on a real change only.** Don't soften it into a merge, and don't let it fire when the selection is unchanged.
+- **Force `HOST` to `0.0.0.0` in `main`, not only in the seed**, because the service is reached over the bridge.
