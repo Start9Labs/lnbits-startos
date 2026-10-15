@@ -21,10 +21,15 @@ import { syncFundingSettings } from './syncFundingSettings'
 import {
   clnMountpoint,
   eclairMountpoint,
+  fundingNodes,
+  fundingSourceMaxRetries,
   lndMountpoint,
   mainMounts,
+  nodeConnectMs,
+  nodeIsReady,
   phoenixdMountpoint,
   uiPort,
+  waitingRestartMs,
 } from './utils'
 
 export const main = sdk.setupMain(async ({ effects }) => {
@@ -38,6 +43,11 @@ export const main = sdk.setupMain(async ({ effects }) => {
   const configuredLnImplementation = await envFile
     .read((e) => e.LNBITS_BACKEND_WALLET_CLASS)
     .const(effects)
+  const node =
+    configuredLnImplementation && configuredLnImplementation !== 'VoidWallet'
+      ? fundingNodes[configuredLnImplementation]
+      : null
+  let nodeAddressPending = false
 
   let mounts = mainMounts
 
@@ -89,15 +99,10 @@ export const main = sdk.setupMain(async ({ effects }) => {
     // over the LXC bridge. Bind uvicorn to all interfaces, and resolve LND's
     // REST endpoint to its bridge address rather than the dead `lnd.startos`.
     env.HOST = '0.0.0.0'
+    if (node) env.FUNDING_SOURCE_MAX_RETRIES = String(fundingSourceMaxRetries)
 
     if (configuredLnImplementation === 'LndRestWallet') {
-      // LND's REST binding (host `control`, internal `restPort`) is published
-      // at wallet unlock; its bridge address then persists across lock/unlock,
-      // so this `.const()` resolves once LND is installed and first unlocked
-      // (one healing restart), then stays stable. While the address is
-      // unresolved (LND absent or not yet unlocked) the endpoint stays unset —
-      // LNbits fails its backend connection and the health check goes red until
-      // LND appears, rather than dialing a fabricated address.
+      // Resolves at LND's first unlock and survives later lock and unlock.
       const lndRest = await sdk.host
         .getBridgeAddress(effects, {
           packageId: 'lnd',
@@ -109,6 +114,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
         env.LND_REST_ENDPOINT = `https://${lndRest}/`
       } else {
         delete env.LND_REST_ENDPOINT
+        nodeAddressPending = true
       }
     } else if (configuredLnImplementation === 'PhoenixdWallet') {
       // Unlike LND's, phoenixd's API binding exists from the moment it is
@@ -179,6 +185,10 @@ export const main = sdk.setupMain(async ({ effects }) => {
    *
    * Each daemon defines its own health check, which can optionally be exposed to the user.
    */
+  const gracePeriod = 75_000
+  let closedSince: number | null = null
+  let nodeReadySince: number | null = null
+
   return sdk.Daemons.of(effects)
     .addOneshot('sync-funding-settings', {
       subcontainer: lnbitsSub,
@@ -202,12 +212,39 @@ export const main = sdk.setupMain(async ({ effects }) => {
       },
       ready: {
         display: i18n('Web Interface'),
-        gracePeriod: 75_000,
-        fn: () =>
-          sdk.healthCheck.checkPortListening(effects, uiPort, {
-            successMessage: i18n('The web interface is ready'),
-            errorMessage: i18n('The web interface is not ready'),
-          }),
+        gracePeriod,
+        fn: async () => {
+          const web = await sdk.healthCheck.checkPortListening(
+            effects,
+            uiPort,
+            {
+              successMessage: i18n('The web interface is ready'),
+              errorMessage: i18n('The web interface is not ready'),
+            },
+          )
+          if (!node) return web
+          const waiting = {
+            result: 'loading' as const,
+            message: i18n('Waiting for ${node}', { node: i18n(node.name) }),
+          }
+          if (web.result === 'success') {
+            closedSince = nodeReadySince = null
+            return nodeAddressPending ? waiting : web
+          }
+          const now = Date.now()
+          closedSince ??= now
+          if (now - closedSince < gracePeriod) return web
+          if (now - closedSince > waitingRestartMs) {
+            closedSince = now
+            sdk.restart(effects).catch(console.error)
+          }
+          if (!(await nodeIsReady(effects, node))) {
+            nodeReadySince = null
+            return waiting
+          }
+          nodeReadySince ??= now
+          return now - nodeReadySince < nodeConnectMs ? waiting : web
+        },
       },
       requires: ['sync-funding-settings'],
     })

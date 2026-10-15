@@ -30,6 +30,8 @@ Day-to-day use happens inside the LNbits Web UI: create wallets, share or invite
 
 > One exception: when you've picked a node on this server, the **funding source connection** (the node endpoint, certificate, and macaroon under the Admin UI's "Funding" page) is managed by StartOS and re-applied every time the service starts. You don't need to set it, and any change you make there will revert on the next restart. Use the **Lightning Implementation** action to choose your backend instead.
 
+If your node isn't ready when LNbits starts, after a server restart for instance, LNbits waits for it. Its **Web Interface** health check shows **Waiting for LND** (or your node) and the Web UI stays closed until the node responds. LNbits then opens on its own.
+
 ### Using an external funding source
 
 Choosing **None / External** hands the "Funding" page back to you. LNbits' own list of backends opens up there — a node running somewhere other than this server, a phone-friendly service over Nostr Wallet Connect, a third-party custodial account, or the fake wallet for testing — and StartOS stops managing the connection.
