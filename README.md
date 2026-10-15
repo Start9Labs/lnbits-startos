@@ -72,9 +72,9 @@ One model, and a second store the package has to reconcile against it.
 
 `HOST` is additionally forced to all interfaces on every start, so the server is reachable over the service bridge.
 
-**Derived:** `LND_REST_ENDPOINT` is written by `main` from LND's own binding when LND is the backend, `PHOENIXD_API_ENDPOINT` / `PHOENIXD_API_PASSWORD` from phoenixd's binding and the `phoenix.conf` on its mount, and `ECLAIR_URL` / `ECLAIR_PASS` from Eclair's binding and the `eclair.conf` on its mount. None of them is persisted to the file; all are computed on every start.
+**Derived:** `LND_REST_ENDPOINT` is written by `main` from LND's own binding when LND is the backend, `PHOENIXD_API_ENDPOINT` / `PHOENIXD_API_PASSWORD` from phoenixd's binding and the `phoenix.conf` on its mount, and `ECLAIR_URL` / `ECLAIR_PASS` from Eclair's binding and the `eclair.conf` on its mount. With any managed node, `FUNDING_SOURCE_MAX_RETRIES` is set to 1023 (see [Health Checks](#health-checks)). None of them is persisted to the file; all are computed on every start.
 
-The backends fail differently on purpose. LND's REST binding legitimately does not exist until its wallet is first unlocked, so an unresolved address there **deletes** the key rather than leaving it stale, and LNbits fails its backend connection honestly instead of dialling something that no longer exists. phoenixd's and Eclair's API bindings exist from the moment they are installed, so the same condition is a real fault and `main` **throws** — which surfaces as a service error rather than a silent void wallet. Eclair throws for a second reason too: it has no API password until its **Set API Password** action has been run, and LNbits cannot authenticate without one.
+The backends fail differently on purpose. LND's REST binding legitimately does not exist until its wallet is first unlocked, so an unresolved address there **deletes** the key rather than leaving it stale, and the health check reads **Waiting for LND** until the binding appears, instead of LNbits dialling something that no longer exists. phoenixd's and Eclair's API bindings exist from the moment they are installed, so the same condition is a real fault and `main` **throws** — which surfaces as a service error rather than a silent void wallet. Eclair throws for a second reason too: it has no API password until its **Set API Password** action has been run, and LNbits cannot authenticate without one.
 
 **Yours:** everything else the file can carry — site title and tagline, themes, the reserve-fee settings, which extensions are disabled, the admin UI toggle. The package models them so they round-trip, but writes none of them, so an untouched install has no line for any of them and LNbits applies its own defaults.
 
@@ -101,7 +101,7 @@ One at a time, decided by which backend you chose.
 
 All four are declared optional in `startos/dependencies.ts`, each enabled only while it is the chosen backend. Before a backend is chosen, and whenever the funding source is external, none is enabled and the package's own configuration records a void wallet.
 
-**With LND, the REST binding does not exist until its wallet is first unlocked.** Until then the endpoint stays unset and LNbits' health check is red; once the binding appears the package heals with one restart, and the address then survives later lock and unlock cycles.
+**With LND, the REST binding does not exist until its wallet is first unlocked.** Until then the endpoint stays unset and LNbits' health check reads **Waiting for LND**; once the binding appears the package heals with one restart, and the address then survives later lock and unlock cycles.
 
 **With phoenixd, the HTTP password is read from `phoenix.conf` on its mount** on every start, so a password phoenixd regenerates is picked up without any action here. **With Eclair, the API password is read from `eclair.conf` the same way**, so rotating it there reaches LNbits on the next start.
 
@@ -161,13 +161,17 @@ One task, raised at install.
 
 One check, on the daemon.
 
-| Check                     | Method                 | Grace Period |
-| ------------------------- | ---------------------- | ------------ |
-| `primary` "Web Interface" | Port 5000 is listening | 75 seconds   |
+| Check                     | Method                                                          | Grace Period |
+| ------------------------- | --------------------------------------------------------------- | ------------ |
+| `primary` "Web Interface" | Port 5000 is listening; with a managed node, that node's health | 75 seconds   |
 
-The grace period covers LNbits' startup, which loads its extensions before binding. A failure after that most often means the Lightning backend could not be reached — LND not running, or its wallet never unlocked so there is no REST address. The service logs distinguish those.
+The grace period covers LNbits' startup, which loads its extensions before binding.
 
-**The check does not cover the funding source.** LNbits falls back to a void wallet when its backend cannot be reached and keeps serving, so a green check means the web interface is up, not that payments work. With an external source that is the only outcome available, since nothing here knows what the source is meant to be.
+**With a managed node, LNbits waits for it.** LNbits tests its funding source while it starts and binds port 5000 only after the test passes or its retries run out, when it falls back to a void wallet. It retries about once a minute, and the package sets its retry budget, `FUNDING_SOURCE_MAX_RETRIES`, to 1023 — the most its back-off arithmetic survives, about 17 hours — so LNbits keeps waiting rather than falling back. LNbits reads that budget from its environment alone: the **Max Retries** field on its admin Funding page is saved but has no effect. While the port is still closed after the grace period and the node's own package reports it not ready (LND's `sync-progress` still `starting`; Core Lightning's `lightningd`, Eclair's `eclair` or phoenixd's `primary` not passing), the check reports `loading` with **Waiting for <node>**, so StartOS shows the service running. LNbits opens by itself within about a minute of the node answering. If the node reports ready and the port is still closed three minutes later, the check fails with **The web interface is not ready**, and the service log shows what LNbits is retrying. After 12 hours of waiting the package restarts LNbits, before its retries can run out.
+
+**Once LNbits has connected, the check stops following the node.** LNbits keeps its backend through a node outage and reconnects by itself, so the check stays green while the node is away.
+
+**With an external source, LNbits falls back to a void wallet** after its own few seconds of retries and keeps serving, so the admin UI stays reachable to fix the source. A green check there means the web interface is up, not that payments work.
 
 ## Backups and Restore
 
@@ -185,8 +189,9 @@ The `main` volume is copied wholesale — `sdk.Backups.ofVolumes('main')`. No du
 4. **A node using a self-signed certificate cannot be reached externally.** LNbits verifies against a certificate file, and there is no way to place one on the volume; a remote node needs a publicly issued certificate or a connection method that uses none.
 5. **The embedded funding sources keep their seed in LNbits' database.** Breez's two classes run a wallet inside LNbits rather than talking to a node, storing their seed in its settings and their state on the `main` volume — so the LNbits backup carries the keys to those funds, and restoring it elsewhere restores the wallet.
 6. **With LND, nothing works until its wallet has been unlocked at least once**, because the REST binding does not exist before then.
-7. **A void wallet is the install-time default**, which is why the backend task is `critical`.
-8. **No riscv64 build.** x86_64 and aarch64 only.
+7. **While LNbits waits for a managed node, its web interface is closed.** It opens by itself once the node answers.
+8. **A void wallet is the install-time default**, which is why the backend task is `critical`.
+9. **No riscv64 build.** x86_64 and aarch64 only.
 
 ---
 
@@ -205,7 +210,14 @@ volumes:
   main: /app/data
 file_models:
   - /app/data/.env
-startos_managed_env_vars: [] # LNbits is configured by its .env, not by container env
+startos_managed_env_vars: # set by main on the daemon, on top of .env
+  - HOST
+  - LND_REST_ENDPOINT
+  - PHOENIXD_API_ENDPOINT
+  - PHOENIXD_API_PASSWORD
+  - ECLAIR_URL
+  - ECLAIR_PASS
+  - FUNDING_SOURCE_MAX_RETRIES
 dependencies: # at most one, decided by the chosen backend; none when external
   - lnd # /mnt/lnd, read-only
   - c-lightning # /mnt/cln, read-only
@@ -219,5 +231,5 @@ actions:
 tasks:
   - { action: set-lightning-implementation, severity: critical }
 health_checks:
-  - primary # the daemon's ready check, displayed "Web Interface"
+  - primary # the daemon's ready check, displayed "Web Interface"; "Waiting for <node>" while LNbits waits
 ```
