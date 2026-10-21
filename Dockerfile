@@ -14,6 +14,7 @@ COPY --from=builder /root/.local/bin/yq /usr/local/bin/yq
 
 RUN apt-get update && \
   apt-get install -y \
+  ca-certificates \
   xxd \
   curl \
   jq && \
@@ -21,5 +22,6 @@ RUN apt-get update && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN pip3 install bcrypt
+RUN uv pip install --python /app/.venv/bin/python --upgrade 'certifi>=2026.10.19'
 
 WORKDIR /app/
