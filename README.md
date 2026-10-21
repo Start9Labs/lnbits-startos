@@ -46,6 +46,8 @@ The image is upstream's with a handful of command-line tools added, since the pa
 
 The additions are `sqlite3`, `python3`'s bcrypt, `jq`, `yq`, `xxd`, `curl` and `tini`. A short-lived `reset-pass` subcontainer uses the first two for the password action.
 
+The build upgrades Debian's `ca-certificates` and the application's venv `certifi` (at least `2026.10.19`) to distrust the compromised eMudhra certificate chains. The certifi upgrade bypasses upstream's one-week package-age cutoff; the offline `--no-sync` launch preserves that upgrade.
+
 One oneshot, `sync-funding-settings`, runs before the daemon — see [File Models](#file-models).
 
 ## Volume and Data Layout
