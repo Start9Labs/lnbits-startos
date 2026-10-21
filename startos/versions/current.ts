@@ -1,18 +1,17 @@
 import { VersionInfo } from '@start9labs/start-sdk'
 
 export const current = VersionInfo.of({
-  version: '1.6.2:3',
+  version: '1.6.2:4',
   releaseNotes: {
     en_US:
-      'If its Lightning node is not ready, LNbits waits for it and opens on its own once the node responds.',
+      'Stops trusting certificates from a compromised certificate authority (eMudhra).',
     es_ES:
-      'Si su nodo Lightning no está listo, LNbits lo espera y se abre por sí solo en cuanto el nodo responde.',
+      'Deja de confiar en los certificados de una autoridad de certificación comprometida (eMudhra).',
     de_DE:
-      'Ist sein Lightning-Knoten nicht bereit, wartet LNbits auf ihn und öffnet sich von selbst, sobald der Knoten antwortet.',
+      'Vertraut Zertifikaten einer kompromittierten Zertifizierungsstelle (eMudhra) nicht mehr.',
     pl_PL:
-      'Jeśli jego węzeł Lightning nie jest gotowy, LNbits czeka na niego i otwiera się sam, gdy tylko węzeł odpowie.',
-    fr_FR:
-      "Si son nœud Lightning n'est pas prêt, LNbits l'attend et s'ouvre de lui-même dès que le nœud répond.",
+      'Przestaje ufać certyfikatom przejętego urzędu certyfikacji (eMudhra).',
+    fr_FR: `Ne fait plus confiance aux certificats d'une autorité de certification compromise (eMudhra).`,
   },
   migrations: {},
 })
