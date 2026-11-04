@@ -204,6 +204,29 @@ export const main = sdk.setupMain(async ({ effects }) => {
       },
       requires: [],
     })
+    .addHealthCheck('core-lightning', () =>
+      configuredLnImplementation === 'CoreLightningWallet'
+        ? {
+            ready: {
+              // Core Lightning's RPC refusing LNbits sends it to VoidWallet, unretried.
+              display: i18n('Core Lightning'),
+              fn: async () =>
+                (await nodeIsReady(effects, fundingNodes.CoreLightningWallet))
+                  ? {
+                      result: 'success' as const,
+                      message: i18n('The RPC interface is ready'),
+                    }
+                  : {
+                      result: 'loading' as const,
+                      message: i18n('Waiting for ${node}', {
+                        node: i18n('Core Lightning'),
+                      }),
+                    },
+            },
+            requires: [],
+          }
+        : null,
+    )
     .addDaemon('primary', {
       subcontainer: lnbitsSub,
       exec: {
@@ -246,7 +269,10 @@ export const main = sdk.setupMain(async ({ effects }) => {
           return now - nodeReadySince < nodeConnectMs ? waiting : web
         },
       },
-      requires: ['sync-funding-settings'],
+      requires:
+        configuredLnImplementation === 'CoreLightningWallet'
+          ? ['sync-funding-settings', 'core-lightning']
+          : ['sync-funding-settings'],
     })
 })
 

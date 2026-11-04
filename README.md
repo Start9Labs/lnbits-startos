@@ -161,17 +161,20 @@ One task, raised at install.
 
 ## Health Checks
 
-One check, on the daemon.
+One check on the daemon, and a second while Core Lightning is the backend.
 
-| Check                     | Method                                                          | Grace Period |
-| ------------------------- | --------------------------------------------------------------- | ------------ |
-| `primary` "Web Interface" | Port 5000 is listening; with a managed node, that node's health | 75 seconds   |
+| Check                             | Method                                                                                        | Grace Period |
+| --------------------------------- | --------------------------------------------------------------------------------------------- | ------------ |
+| `primary` "Web Interface"         | Port 5000 is listening; with a managed node, that node's health                               | 75 seconds   |
+| `core-lightning` "Core Lightning" | Core Lightning's `lightningd` check passes; declared only while Core Lightning is the backend | none         |
 
 The grace period covers LNbits' startup, which loads its extensions before binding.
 
 **With a managed node, LNbits waits for it.** LNbits tests its funding source while it starts and binds port 5000 only after the test passes or its retries run out, when it falls back to a void wallet. It retries about once a minute, and the package sets its retry budget, `FUNDING_SOURCE_MAX_RETRIES`, to 1023 — the most its back-off arithmetic survives, about 17 hours — so LNbits keeps waiting rather than falling back. LNbits reads that budget from its environment alone: the **Max Retries** field on its admin Funding page is saved but has no effect. While the port is still closed after the grace period and the node's own package reports it not ready (LND's `sync-progress` still `starting`; Core Lightning's `lightningd`, Eclair's `eclair` or phoenixd's `primary` not passing), the check reports `loading` with **Waiting for <node>**, so StartOS shows the service running. LNbits opens by itself within about a minute of the node answering. If the node reports ready and the port is still closed three minutes later, the check fails with **The web interface is not ready**, and the service log shows what LNbits is retrying. After 12 hours of waiting the package restarts LNbits, before its retries can run out.
 
-**Once LNbits has connected, the check stops following the node.** LNbits keeps its backend through a node outage and reconnects by itself, so the check stays green while the node is away.
+**With Core Lightning, LNbits does not start until Core Lightning answers.** LNbits builds its Core Lightning wallet by calling the RPC socket, and a refused call sends it straight to a void wallet without spending any of its retries. `primary` therefore requires `core-lightning`, which passes only while Core Lightning's `lightningd` check (a `lightning-cli getinfo`) does; until then it reads **Waiting for Core Lightning** and the Web Interface reads waiting. The requirement holds for the life of the service: if Core Lightning stops answering, StartOS stops LNbits, and starts it again once Core Lightning is back.
+
+**Once LNbits has connected, the check stops following the node.** LNbits keeps its backend through a node outage and reconnects by itself, so the check stays green while LND, Eclair or phoenixd is away.
 
 **With an external source, LNbits falls back to a void wallet** after its own few seconds of retries and keeps serving, so the admin UI stays reachable to fix the source. A green check there means the web interface is up, not that payments work.
 
@@ -234,4 +237,5 @@ tasks:
   - { action: set-lightning-implementation, severity: critical }
 health_checks:
   - primary # the daemon's ready check, displayed "Web Interface"; "Waiting for <node>" while LNbits waits
+  - core-lightning # only with Core Lightning; primary requires it
 ```
