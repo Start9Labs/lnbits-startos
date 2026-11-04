@@ -29,7 +29,6 @@ const dict = {
   'phoenixd is not yet reachable on the internal network. Ensure phoenixd is installed and running.': 25,
   "The super user's current password stops working. The new password is shown once and cannot be recovered afterwards.": 26,
   'Waiting for ${node}': 27,
-  'The RPC interface is ready': 28,
 } as const
 
 /**
