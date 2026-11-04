@@ -30,7 +30,6 @@ export default {
     25: 'phoenixd aún no es accesible en la red interna. Asegúrese de que phoenixd esté instalado y en ejecución.',
     26: 'La contraseña actual del Super Usuario deja de funcionar. La nueva contraseña se muestra una sola vez y no se puede recuperar después.',
     27: 'Esperando a ${node}',
-    28: 'La interfaz RPC está lista',
   },
   de_DE: {
     0: 'Core Lightning',
@@ -61,7 +60,6 @@ export default {
     25: 'phoenixd ist im internen Netzwerk noch nicht erreichbar. Stellen Sie sicher, dass phoenixd installiert ist und läuft.',
     26: 'Das aktuelle Passwort des Super-Users funktioniert nicht mehr. Das neue Passwort wird nur einmal angezeigt und kann danach nicht wiederhergestellt werden.',
     27: 'Warte auf ${node}',
-    28: 'Die RPC-Schnittstelle ist bereit',
   },
   pl_PL: {
     0: 'Core Lightning',
@@ -92,7 +90,6 @@ export default {
     25: 'phoenixd nie jest jeszcze osiągalny w sieci wewnętrznej. Upewnij się, że phoenixd jest zainstalowany i uruchomiony.',
     26: 'Obecne hasło Super Użytkownika przestaje działać. Nowe hasło jest wyświetlane tylko raz i nie można go później odzyskać.',
     27: 'Oczekiwanie na ${node}',
-    28: 'Interfejs RPC jest gotowy',
   },
   fr_FR: {
     0: 'Core Lightning',
@@ -123,6 +120,5 @@ export default {
     25: "phoenixd n'est pas encore joignable sur le réseau interne. Assurez-vous que phoenixd est installé et en cours d'exécution.",
     26: "Le mot de passe actuel du Super Utilisateur cesse de fonctionner. Le nouveau mot de passe n'est affiché qu'une fois et ne peut pas être récupéré ensuite.",
     27: 'En attente de ${node}',
-    28: "L'interface RPC est prête",
   },
 } satisfies Record<string, LangDict>

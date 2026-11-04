@@ -204,34 +204,22 @@ export const main = sdk.setupMain(async ({ effects }) => {
       },
       requires: [],
     })
-    .addHealthCheck('core-lightning', () =>
-      configuredLnImplementation === 'CoreLightningWallet'
-        ? {
-            ready: {
-              // Core Lightning's RPC refusing LNbits sends it to VoidWallet, unretried.
-              display: i18n('Core Lightning'),
-              fn: async () =>
-                (await nodeIsReady(effects, fundingNodes.CoreLightningWallet))
-                  ? {
-                      result: 'success' as const,
-                      message: i18n('The RPC interface is ready'),
-                    }
-                  : {
-                      result: 'loading' as const,
-                      message: i18n('Waiting for ${node}', {
-                        node: i18n('Core Lightning'),
-                      }),
-                    },
-            },
-            requires: [],
-          }
-        : null,
-    )
     .addDaemon('primary', {
       subcontainer: lnbitsSub,
       exec: {
-        command: ['uv', '--offline', 'run', '--no-sync', 'lnbits'],
-        env: env || {},
+        fn: async (_, abort) => {
+          // Core Lightning's RPC refusing LNbits sends it to VoidWallet, unretried.
+          while (
+            configuredLnImplementation === 'CoreLightningWallet' &&
+            !abort.aborted &&
+            !(await nodeIsReady(effects, fundingNodes.CoreLightningWallet))
+          )
+            await new Promise((r) => setTimeout(r, 5_000))
+          return {
+            command: ['uv', '--offline', 'run', '--no-sync', 'lnbits'],
+            env: env || {},
+          }
+        },
       },
       ready: {
         display: i18n('Web Interface'),
@@ -269,10 +257,7 @@ export const main = sdk.setupMain(async ({ effects }) => {
           return now - nodeReadySince < nodeConnectMs ? waiting : web
         },
       },
-      requires:
-        configuredLnImplementation === 'CoreLightningWallet'
-          ? ['sync-funding-settings', 'core-lightning']
-          : ['sync-funding-settings'],
+      requires: ['sync-funding-settings'],
     })
 })
 
