@@ -1,12 +1,13 @@
 import { FileHelper, z } from '@start9labs/start-sdk'
 import { sdk } from '../sdk'
-import { clnMountpoint, lndMountpoint } from '../utils'
+import { clnMountpoint, lndMountpoint, proxyIps } from '../utils'
 
 export const shape = z
   .object({
     HOST: z.string().catch('0.0.0.0'),
     PORT: z.literal('5000').catch('5000'),
-    FORWARDED_ALLOW_IPS: z.literal('*').catch('*'),
+    // StartOS's proxy, on the container bridge; other containers can reach LNbits directly.
+    FORWARDED_ALLOW_IPS: z.literal(proxyIps).catch(proxyIps),
     DEBUG: z.enum(['true', 'false']).optional().catch('false'),
     AUTH_ALLOWED_METHODS: z.string().catch('username-password'),
     LNBITS_ALLOWED_USERS: z.string().optional().catch(''),
