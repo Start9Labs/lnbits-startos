@@ -2,6 +2,7 @@ import { T } from '@start9labs/start-sdk'
 import { sdk } from './sdk'
 
 export const uiPort = 5000
+export const proxyIps = '10.0.3.1,fd00:3::1'
 export const db = '/app/data/database.sqlite3'
 
 export const lndMountpoint = '/mnt/lnd'
