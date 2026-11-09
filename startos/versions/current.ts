@@ -1,37 +1,18 @@
-import { IMPOSSIBLE, VersionInfo } from '@start9labs/start-sdk'
-import { readFile, writeFile } from 'fs/promises'
-import { sdk } from '../sdk'
+import { VersionInfo } from '@start9labs/start-sdk'
 
 export const current = VersionInfo.of({
-  version: '1.6.2:7',
+  version: '1.6.2:8',
   releaseNotes: {
     en_US:
-      "With LND or Core Lightning as its funding source, LNbits now uses a credential that can only create invoices and make Lightning payments, and can no longer read the node's seed or other files. Requires LND 0.21.6-beta:2 or Core Lightning 26.6.10:2.",
+      "With Eclair or phoenixd as its funding source, LNbits now receives only the node's API password and can no longer read its seed or other files. Requires Eclair 0.14.6:2 or phoenixd 0.9.2:4.",
     es_ES:
-      'Con LND o Core Lightning como fuente de fondos, LNbits ahora usa una credencial que solo puede crear facturas y realizar pagos Lightning, y ya no puede leer la semilla del nodo ni sus demás archivos. Requiere LND 0.21.6-beta:2 o Core Lightning 26.6.10:2.',
+      'Con Eclair o phoenixd como fuente de fondos, LNbits ahora solo recibe la contraseña de API del nodo y ya no puede leer su semilla ni sus demás archivos. Requiere Eclair 0.14.6:2 o phoenixd 0.9.2:4.',
     de_DE:
-      'Mit LND oder Core Lightning als Finanzierungsquelle verwendet LNbits jetzt eine Berechtigung, die nur Rechnungen erstellen und Lightning-Zahlungen ausführen kann, und kann den Seed des Knotens und dessen übrige Dateien nicht mehr lesen. Erfordert LND 0.21.6-beta:2 oder Core Lightning 26.6.10:2.',
+      'Mit Eclair oder phoenixd als Finanzierungsquelle erhält LNbits jetzt nur noch das API-Passwort des Knotens und kann dessen Seed und übrige Dateien nicht mehr lesen. Erfordert Eclair 0.14.6:2 oder phoenixd 0.9.2:4.',
     pl_PL:
-      'Gdy źródłem środków jest LND lub Core Lightning, LNbits używa teraz poświadczenia, które może tylko tworzyć faktury i wykonywać płatności Lightning, i nie może już odczytać seeda węzła ani innych jego plików. Wymaga LND 0.21.6-beta:2 lub Core Lightning 26.6.10:2.',
+      'Gdy źródłem środków jest Eclair lub phoenixd, LNbits otrzymuje teraz tylko hasło API węzła i nie może już odczytać jego seeda ani innych plików. Wymaga Eclair 0.14.6:2 lub phoenixd 0.9.2:4.',
     fr_FR:
-      'Avec LND ou Core Lightning comme source de financement, LNbits utilise désormais un identifiant qui ne peut que créer des factures et effectuer des paiements Lightning, et ne peut plus lire la seed du nœud ni ses autres fichiers. Nécessite LND 0.21.6-beta:2 ou Core Lightning 26.6.10:2.',
+      "Avec Eclair ou phoenixd comme source de financement, LNbits ne reçoit plus que le mot de passe d'API du nœud et ne peut plus lire sa seed ni ses autres fichiers. Nécessite Eclair 0.14.6:2 ou phoenixd 0.9.2:4.",
   },
-  migrations: {
-    up: async () => {
-      // Read raw: the env model maps the retired class to its fallback.
-      const path = sdk.volumes.main.subpath('.env')
-      const env = await readFile(path, 'utf-8').catch(() => null)
-      if (env === null) return
-      await writeFile(
-        path,
-        env
-          .replace(
-            /^(LNBITS_BACKEND_WALLET_CLASS|LNBITS_ALLOWED_FUNDING_SOURCES)=("?)CoreLightningWallet\2$/gm,
-            '$1=$2CLNRestWallet$2',
-          )
-          .replace(/^CLIGHTNING_RPC=.*\n?/m, ''),
-      )
-    },
-    down: IMPOSSIBLE,
-  },
+  migrations: {},
 })

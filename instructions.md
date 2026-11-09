@@ -8,7 +8,7 @@
 ## What you get on StartOS
 
 - A **Web UI** interface running LNbits, the wallet and accounts system itself plus its built-in admin panel and API.
-- An LNbits instance backed by **your own Lightning node** — LND, Core Lightning, phoenixd or Eclair on this server, connected as the funding source and wired up for you. With LND or Core Lightning, LNbits gets a credential that can only create invoices and make payments, never one that can close channels or move on-chain funds.
+- An LNbits instance backed by **your own Lightning node** — LND, Core Lightning, phoenixd or Eclair on this server, connected as the funding source and wired up for you. With LND or Core Lightning, LNbits gets a credential that can only create invoices and make payments, never one that can close channels or move on-chain funds. It never sees the node's seed.
 - The option to point LNbits somewhere else entirely, and configure that yourself from its Admin UI.
 - Local SQLite storage on the `main` volume — no separate database to provision.
 
