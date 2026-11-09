@@ -7,6 +7,8 @@ export const db = '/app/data/database.sqlite3'
 
 export const lndMountpoint = '/mnt/lnd'
 export const clnMountpoint = '/mnt/cln'
+export const clnrestHostId = 'clnrest'
+export const rootCaFile = '/app/data/startos-root-ca.pem'
 export const phoenixdMountpoint = '/mnt/phoenixd'
 export const eclairMountpoint = '/mnt/eclair'
 
@@ -25,7 +27,7 @@ export const fundingNodes = {
     check: 'sync-progress',
     ready: ['success', 'loading'],
   },
-  CoreLightningWallet: {
+  CLNRestWallet: {
     packageId: 'c-lightning',
     name: 'Core Lightning',
     check: 'lightningd',

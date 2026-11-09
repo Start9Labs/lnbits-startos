@@ -71,10 +71,15 @@ export async function syncFundingSettings(
     // A stale encrypted macaroon would be tried alongside the plain path; clear
     // it so only the StartOS-managed macaroon file is used.
     deletes.push('lnd_rest_macaroon_encrypted')
-  } else if (env.LNBITS_BACKEND_WALLET_CLASS === 'CoreLightningWallet') {
-    // LNbits reads `corelightning_rpc` first, then `clightning_rpc`; set both.
-    upserts.corelightning_rpc = env.CLIGHTNING_RPC
-    upserts.clightning_rpc = env.CLIGHTNING_RPC
+  } else if (env.LNBITS_BACKEND_WALLET_CLASS === 'CLNRestWallet') {
+    if (env.CLNREST_URL) upserts.clnrest_url = env.CLNREST_URL
+    upserts.clnrest_ca = env.CLNREST_CA
+    for (const tier of ['readonly', 'invoice', 'pay'] as const) {
+      const rune = env[`CLNREST_${tier.toUpperCase()}_RUNE`]
+      if (rune) upserts[`clnrest_${tier}_rune`] = rune
+    }
+    // A renepay rune would take precedence over the pay rune.
+    deletes.push('clnrest_renepay_rune')
   } else if (env.LNBITS_BACKEND_WALLET_CLASS === 'EclairWallet') {
     if (env.ECLAIR_URL) upserts.eclair_url = env.ECLAIR_URL
     if (env.ECLAIR_PASS) upserts.eclair_pass = env.ECLAIR_PASS

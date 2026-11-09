@@ -1,5 +1,7 @@
 import { manifest as clnManifest } from 'cln-startos/startos/manifest'
-import { readFile } from 'fs/promises'
+import { FileHelper } from '@start9labs/start-sdk'
+import { clnrestPort } from 'cln-startos/startos/utils'
+import { readFile, writeFile } from 'fs/promises'
 import {
   controlHostId as lndControlHostId,
   restPort as lndRestPort,
@@ -20,6 +22,7 @@ import { sdk } from './sdk'
 import { syncFundingSettings } from './syncFundingSettings'
 import {
   clnMountpoint,
+  clnrestHostId,
   eclairMountpoint,
   fundingNodes,
   fundingSourceMaxRetries,
@@ -56,16 +59,16 @@ export const main = sdk.setupMain(async ({ effects }) => {
       dependencyId: 'lnd',
       mountpoint: lndMountpoint,
       readonly: true,
-      subpath: null,
-      volumeId: 'main',
+      subpath: 'payments',
+      volumeId: 'public',
     })
-  } else if (configuredLnImplementation === 'CoreLightningWallet') {
+  } else if (configuredLnImplementation === 'CLNRestWallet') {
     mounts = mounts.mountDependency<typeof clnManifest>({
       dependencyId: 'c-lightning',
       mountpoint: clnMountpoint,
       readonly: true,
-      subpath: null,
-      volumeId: 'main',
+      subpath: 'payments',
+      volumeId: 'public',
     })
   } else if (configuredLnImplementation === 'EclairWallet') {
     mounts = mounts.mountDependency<typeof eclairManifest>({
@@ -114,6 +117,35 @@ export const main = sdk.setupMain(async ({ effects }) => {
         env.LND_REST_ENDPOINT = `https://${lndRest}/`
       } else {
         delete env.LND_REST_ENDPOINT
+        nodeAddressPending = true
+      }
+    } else if (configuredLnImplementation === 'CLNRestWallet') {
+      // Absent until Core Lightning enables CLNRest and mints the rune; each appearing restarts main.
+      const clnrest = await sdk.host
+        .getBridgeAddress(effects, {
+          packageId: 'c-lightning',
+          hostId: clnrestHostId,
+          internalPort: clnrestPort,
+          ssl: true,
+        })
+        .const()
+      const rune = (
+        await FileHelper.string(
+          `${await lnbitsSub.rootfs}${clnMountpoint}/rune`,
+        )
+          .read()
+          .const(effects)
+      )?.trim()
+      await writeFile(
+        sdk.volumes.main.subpath('startos-root-ca.pem'),
+        await sdk.getRootCa(effects),
+      )
+      if (clnrest && rune) {
+        env.CLNREST_URL = `https://${clnrest}`
+        env.CLNREST_READONLY_RUNE = rune
+        env.CLNREST_INVOICE_RUNE = rune
+        env.CLNREST_PAY_RUNE = rune
+      } else {
         nodeAddressPending = true
       }
     } else if (configuredLnImplementation === 'PhoenixdWallet') {
@@ -208,11 +240,12 @@ export const main = sdk.setupMain(async ({ effects }) => {
       subcontainer: lnbitsSub,
       exec: {
         fn: async (_, abort) => {
-          // Core Lightning's RPC refusing LNbits sends it to VoidWallet, unretried.
+          // Core Lightning refusing LNbits sends it to VoidWallet, unretried.
           while (
-            configuredLnImplementation === 'CoreLightningWallet' &&
+            configuredLnImplementation === 'CLNRestWallet' &&
             !abort.aborted &&
-            !(await nodeIsReady(effects, fundingNodes.CoreLightningWallet))
+            (nodeAddressPending ||
+              !(await nodeIsReady(effects, fundingNodes.CLNRestWallet)))
           )
             await new Promise((r) => setTimeout(r, 5_000))
           return {

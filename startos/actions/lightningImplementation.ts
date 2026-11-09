@@ -13,7 +13,7 @@ export const inputSpec = InputSpec.of({
     ),
     values: {
       LndRestWallet: i18n('LND'),
-      CoreLightningWallet: i18n('Core Lightning'),
+      CLNRestWallet: i18n('Core Lightning'),
       PhoenixdWallet: i18n('phoenixd'),
       EclairWallet: i18n('Eclair'),
       VoidWallet: i18n('None / External'),

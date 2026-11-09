@@ -1,5 +1,7 @@
 import { T } from '@start9labs/start-sdk'
+import { plugins as clnPlugins } from 'cln-startos/startos/actions/config/plugins'
 import { envFile } from './fileModels/env'
+import { i18n } from './i18n'
 import {
   depClnDescription,
   depEclairDescription,
@@ -12,7 +14,7 @@ const configured =
   (
     backend:
       | 'LndRestWallet'
-      | 'CoreLightningWallet'
+      | 'CLNRestWallet'
       | 'EclairWallet'
       | 'PhoenixdWallet',
   ) =>
@@ -29,7 +31,7 @@ export const dependencies = sdk.Dependencies.of()
         title: 'LND',
         icon: 'https://raw.githubusercontent.com/Start9Labs/lnd-startos/refs/heads/master/icon.svg',
       },
-      versionRange: '>=0.21.1-beta:4',
+      versionRange: '>=0.21.6-beta:2',
       kind: 'running',
       healthChecks: ['lnd'],
       enabled: configured('LndRestWallet'),
@@ -42,10 +44,26 @@ export const dependencies = sdk.Dependencies.of()
         title: 'Core Lightning',
         icon: 'https://raw.githubusercontent.com/Start9Labs/cln-startos/refs/heads/master/icon.svg',
       },
-      versionRange: '>=26.6.6:1',
+      versionRange: '>=26.6.10:2',
       kind: 'running',
       healthChecks: ['lightningd'],
-      enabled: configured('CoreLightningWallet'),
+      enabled: configured('CLNRestWallet'),
+    }).withInit(async (effects) => {
+      await sdk.action.createTask(
+        effects,
+        'c-lightning',
+        clnPlugins,
+        'critical',
+        {
+          input: {
+            kind: 'partial',
+            accept: [{ clnrest: true }],
+            set: { clnrest: true },
+          },
+          reason: i18n('LNbits requires CLNRest enabled in Core Lightning'),
+          when: { condition: 'input-not-matches', once: false },
+        },
+      )
     }),
   )
   .addDependency(
