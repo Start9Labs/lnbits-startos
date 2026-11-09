@@ -11,7 +11,6 @@ import {
   apiHostId as eclairApiHostId,
   apiPort as eclairApiPort,
 } from 'eclair-startos/startos/utils'
-import { eclairConf } from 'eclair-startos/startos/fileModels/eclair.conf'
 import { manifest as eclairManifest } from 'eclair-startos/startos/manifest'
 import { apiHostId as phoenixdApiHostId } from 'phoenixd-startos/startos/interfaces'
 import { manifest as phoenixdManifest } from 'phoenixd-startos/startos/manifest'
@@ -75,16 +74,16 @@ export const main = sdk.setupMain(async ({ effects }) => {
       dependencyId: 'eclair',
       mountpoint: eclairMountpoint,
       readonly: true,
-      subpath: null,
-      volumeId: 'main',
+      subpath: 'api',
+      volumeId: 'public',
     })
   } else if (configuredLnImplementation === 'PhoenixdWallet') {
     mounts = mounts.mountDependency<typeof phoenixdManifest>({
       dependencyId: 'phoenixd',
       mountpoint: phoenixdMountpoint,
       readonly: true,
-      subpath: null,
-      volumeId: 'main',
+      subpath: 'full',
+      volumeId: 'public',
     })
   }
 
@@ -191,12 +190,13 @@ export const main = sdk.setupMain(async ({ effects }) => {
         )
       }
 
-      // Read on every start out of Eclair's own config, so rotating the
-      // password there reaches LNbits without the user retyping it.
-      const password = await eclairConf
-        .withPath(`${await lnbitsSub.rootfs}${eclairMountpoint}/eclair.conf`)
-        .read((c) => c['api.password'])
-        .const(effects)
+      const password = (
+        await FileHelper.string(
+          `${await lnbitsSub.rootfs}${eclairMountpoint}/password`,
+        )
+          .read()
+          .const(effects)
+      )?.trim()
       if (!password) {
         throw new Error(
           i18n(
@@ -295,11 +295,9 @@ export const main = sdk.setupMain(async ({ effects }) => {
 })
 
 async function readPhoenixdHttpPassword(rootfs: string): Promise<string> {
-  const conf = await readFile(
-    `${rootfs}${phoenixdMountpoint}/phoenix.conf`,
-    'utf-8',
-  )
-  const password = conf.match(/^http-password=(.*)$/m)?.[1]?.trim()
+  const password = (
+    await readFile(`${rootfs}${phoenixdMountpoint}/http-password`, 'utf-8')
+  ).trim()
   if (!password) {
     throw new Error(i18n('Could not read the phoenixd http-password'))
   }
