@@ -58,7 +58,12 @@ One volume, plus a read-only view of the chosen Lightning node's.
 | ------ | ----------- | ----------------------------------- |
 | `main` | `/app/data` | `.env`, and LNbits' SQLite database |
 
-The selected node's data directory is mounted **read-only** — `/mnt/lnd`, `/mnt/cln`, `/mnt/phoenixd` or `/mnt/eclair` — which is how LNbits reads LND's macaroon and TLS certificate, Core Lightning's RPC socket, phoenixd's HTTP password, or Eclair's API password. Nothing is mounted when the funding source is external. No credential is stored in this package.
+The selected node's credentials are mounted **read-only**. LND and Core Lightning each export a restricted credential to their own `public` volume, and LNbits mounts only that tier, never the node's data directory:
+
+- **LND:** `public/payments` at `/mnt/lnd` — `payments.macaroon` (an allowlist of the invoice and payment RPCs LNbits calls) and `tls.cert`.
+- **Core Lightning:** `public/payments` at `/mnt/cln` — a `rune` limited to `listfunds`, `invoice`, `pay`, `listinvoices`, `listpays` and `waitanyinvoice`. LNbits uses it over CLNRest (`CLNRestWallet`), at CLNRest's TLS bridge address, trusting the StartOS root CA it writes to `startos-root-ca.pem` on each start.
+
+phoenixd's and Eclair's whole data directories are still mounted at `/mnt/phoenixd` and `/mnt/eclair`, for their HTTP and API passwords. Nothing is mounted when the funding source is external. LNbits' database holds the CLN rune, as its funding settings.
 
 ## File Models
 
@@ -68,7 +73,7 @@ One model, and a second store the package has to reconcile against it.
 | ------ | ------ | ---------------------- | ------------------------------------------- |
 | `.env` | env    | Yes — `FileHelper.env` | Install, every init, and the backend action |
 
-**Enforced** — rewritten to a fixed value whenever the package writes the file: `PORT`, `FORWARDED_ALLOW_IPS`, `LNBITS_DATA_FOLDER`, the Core Lightning RPC path, and LND's certificate and macaroon paths. Those last three point into the read-only dependency mounts and are not yours to change.
+**Enforced** — rewritten to a fixed value whenever the package writes the file: `PORT`, `FORWARDED_ALLOW_IPS`, `LNBITS_DATA_FOLDER`, `CLNREST_CA`, and LND's certificate and macaroon paths. The CLNRest URL and rune are set in memory on each start, from CLN's bridge address and its mounted rune, and never written to `.env`.
 
 `LNBITS_ALLOWED_FUNDING_SOURCES` is LNbits' own restriction on what its admin UI may select, and the backend action owns it: set to the single chosen class for a managed node, and **removed** when the source is external, so LNbits falls through to its own set of every funding source it supports rather than a list this package would have to keep current. Removal is why that action rewrites the file instead of merging — a merge cannot drop a key — and why it does not blank the value instead, which LNbits reads as nothing allowed. LNbits treats the key as read-only: it comes from the environment and cannot be edited from inside the app.
 
@@ -96,8 +101,8 @@ One at a time, decided by which backend you chose.
 
 | Backend  | Dependency    | Kind      | Health check | Mount                      |
 | -------- | ------------- | --------- | ------------ | -------------------------- |
-| LND      | `lnd`         | `running` | `lnd`        | `/mnt/lnd`, read-only      |
-| CLN      | `c-lightning` | `running` | `lightningd` | `/mnt/cln`, read-only      |
+| LND      | `lnd`         | `running` | `lnd`        | `public/payments` at `/mnt/lnd`, read-only |
+| CLN      | `c-lightning` | `running` | `lightningd` | `public/payments` at `/mnt/cln`, read-only |
 | phoenixd | `phoenixd`    | `running` | `primary`    | `/mnt/phoenixd`, read-only |
 | Eclair   | `eclair`      | `running` | `eclair`     | `/mnt/eclair`, read-only   |
 
@@ -217,14 +222,18 @@ file_models:
 startos_managed_env_vars: # set by main on the daemon, on top of .env
   - HOST
   - LND_REST_ENDPOINT
+  - CLNREST_URL
+  - CLNREST_READONLY_RUNE # the same payments rune for all three
+  - CLNREST_INVOICE_RUNE
+  - CLNREST_PAY_RUNE
   - PHOENIXD_API_ENDPOINT
   - PHOENIXD_API_PASSWORD
   - ECLAIR_URL
   - ECLAIR_PASS
   - FUNDING_SOURCE_MAX_RETRIES
 dependencies: # at most one, decided by the chosen backend; none when external
-  - lnd # /mnt/lnd, read-only
-  - c-lightning # /mnt/cln, read-only
+  - lnd # public/payments at /mnt/lnd, read-only
+  - c-lightning # public/payments at /mnt/cln, read-only; raises a task to enable CLNRest
   - phoenixd # /mnt/phoenixd, read-only
   - eclair # /mnt/eclair, read-only
 interfaces:

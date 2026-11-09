@@ -71,7 +71,7 @@ Notes de version complètes : https://github.com/lnbits/lnbits/releases/tag/v1.5
       if (configYaml) {
         const configuredImplementation =
           configYaml.implementation === 'CLightningWallet'
-            ? 'CoreLightningWallet'
+            ? 'CLNRestWallet'
             : 'LndRestWallet'
 
         await envFile.merge(effects, {

@@ -1,18 +1,37 @@
-import { VersionInfo } from '@start9labs/start-sdk'
+import { IMPOSSIBLE, VersionInfo } from '@start9labs/start-sdk'
+import { readFile, writeFile } from 'fs/promises'
+import { sdk } from '../sdk'
 
 export const current = VersionInfo.of({
-  version: '1.6.2:6',
+  version: '1.6.2:7',
   releaseNotes: {
     en_US:
-      'LNbits now trusts forwarded client addresses only from StartOS itself, so another service on this server can no longer make its requests appear to come from a different address.',
+      "With LND or Core Lightning as its funding source, LNbits now uses a credential that can only create invoices and make Lightning payments, and can no longer read the node's seed or other files. Requires LND 0.21.6-beta:2 or Core Lightning 26.6.10:2.",
     es_ES:
-      'LNbits ahora solo confía en las direcciones de cliente reenviadas por el propio StartOS, por lo que otro servicio de este servidor ya no puede hacer que sus solicitudes parezcan provenir de otra dirección.',
+      'Con LND o Core Lightning como fuente de fondos, LNbits ahora usa una credencial que solo puede crear facturas y realizar pagos Lightning, y ya no puede leer la semilla del nodo ni sus demás archivos. Requiere LND 0.21.6-beta:2 o Core Lightning 26.6.10:2.',
     de_DE:
-      'LNbits vertraut weitergeleiteten Client-Adressen jetzt nur noch, wenn sie von StartOS selbst stammen. Ein anderer Dienst auf diesem Server kann seine Anfragen daher nicht mehr so erscheinen lassen, als kämen sie von einer anderen Adresse.',
+      'Mit LND oder Core Lightning als Finanzierungsquelle verwendet LNbits jetzt eine Berechtigung, die nur Rechnungen erstellen und Lightning-Zahlungen ausführen kann, und kann den Seed des Knotens und dessen übrige Dateien nicht mehr lesen. Erfordert LND 0.21.6-beta:2 oder Core Lightning 26.6.10:2.',
     pl_PL:
-      'LNbits ufa teraz przekazanym adresom klientów tylko wtedy, gdy pochodzą od samego StartOS, więc inna usługa na tym serwerze nie może już sprawić, by jej żądania wyglądały na pochodzące z innego adresu.',
+      'Gdy źródłem środków jest LND lub Core Lightning, LNbits używa teraz poświadczenia, które może tylko tworzyć faktury i wykonywać płatności Lightning, i nie może już odczytać seeda węzła ani innych jego plików. Wymaga LND 0.21.6-beta:2 lub Core Lightning 26.6.10:2.',
     fr_FR:
-      "LNbits ne fait désormais confiance aux adresses client transmises que lorsqu'elles proviennent de StartOS lui-même : un autre service de ce serveur ne peut plus faire passer ses requêtes pour venant d'une autre adresse.",
+      'Avec LND ou Core Lightning comme source de financement, LNbits utilise désormais un identifiant qui ne peut que créer des factures et effectuer des paiements Lightning, et ne peut plus lire la seed du nœud ni ses autres fichiers. Nécessite LND 0.21.6-beta:2 ou Core Lightning 26.6.10:2.',
   },
-  migrations: {},
+  migrations: {
+    up: async () => {
+      // Read raw: the env model maps the retired class to its fallback.
+      const path = sdk.volumes.main.subpath('.env')
+      const env = await readFile(path, 'utf-8').catch(() => null)
+      if (env === null) return
+      await writeFile(
+        path,
+        env
+          .replace(
+            /^(LNBITS_BACKEND_WALLET_CLASS|LNBITS_ALLOWED_FUNDING_SOURCES)=("?)CoreLightningWallet\2$/gm,
+            '$1=$2CLNRestWallet$2',
+          )
+          .replace(/^CLIGHTNING_RPC=.*\n?/m, ''),
+      )
+    },
+    down: IMPOSSIBLE,
+  },
 })

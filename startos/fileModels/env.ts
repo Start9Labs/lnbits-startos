@@ -1,6 +1,6 @@
 import { FileHelper, z } from '@start9labs/start-sdk'
 import { sdk } from '../sdk'
-import { clnMountpoint, lndMountpoint, proxyIps } from '../utils'
+import { lndMountpoint, proxyIps, rootCaFile } from '../utils'
 
 export const shape = z
   .object({
@@ -39,22 +39,21 @@ export const shape = z
       .enum([
         'VoidWallet',
         'LndRestWallet',
-        'CoreLightningWallet',
+        'CLNRestWallet',
         'PhoenixdWallet',
         'EclairWallet',
       ])
       .catch('LndRestWallet'),
     LNBITS_ALLOWED_FUNDING_SOURCES: z.string().optional().catch(undefined),
-    CLIGHTNING_RPC: z
-      .literal(`${clnMountpoint}/bitcoin/lightning-rpc`)
-      .catch(`${clnMountpoint}/bitcoin/lightning-rpc`),
+    CLNREST_URL: z.string().optional().catch(undefined),
+    CLNREST_CA: z.literal(rootCaFile).catch(rootCaFile),
     LND_REST_ENDPOINT: z.string().optional().catch(undefined),
     LND_REST_CERT: z
       .literal(`${lndMountpoint}/tls.cert`)
       .catch(`${lndMountpoint}/tls.cert`),
     LND_REST_MACAROON: z
-      .literal(`${lndMountpoint}/data/chain/bitcoin/mainnet/admin.macaroon`)
-      .catch(`${lndMountpoint}/data/chain/bitcoin/mainnet/admin.macaroon`),
+      .literal(`${lndMountpoint}/payments.macaroon`)
+      .catch(`${lndMountpoint}/payments.macaroon`),
     PHOENIXD_API_ENDPOINT: z.string().optional().catch(undefined),
     PHOENIXD_API_PASSWORD: z.string().optional().catch(undefined),
     ECLAIR_URL: z.string().optional().catch(undefined),
