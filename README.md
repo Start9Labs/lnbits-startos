@@ -46,7 +46,7 @@ The image is upstream's with a handful of command-line tools added, since the pa
 
 The additions are `sqlite3`, `python3`'s bcrypt, `jq`, `yq`, `xxd`, `curl` and `tini`. A short-lived `reset-pass` subcontainer uses the first two for the password action.
 
-The build upgrades Debian's `ca-certificates` and the application's venv `certifi` (at least `2026.10.19`) to distrust the compromised eMudhra certificate chains. The certifi upgrade bypasses upstream's one-week package-age cutoff; the offline `--no-sync` launch preserves that upgrade.
+The build upgrades Debian's `ca-certificates` to distrust the compromised eMudhra certificate chains.
 
 One oneshot, `sync-funding-settings`, runs before the daemon — see [File Models](#file-models).
 
@@ -130,7 +130,7 @@ Install writes a `.env` configured for a **void wallet** — a deliberate placeh
 
 The order that matters: install and start LND, Core Lightning, phoenixd or Eclair first; with LND, unlock its wallet, and with Eclair, run its **Set API Password** action. Then run [Lightning Implementation](#actions). Choosing **None / External** needs none of that, and leaves the void wallet in the file while LNbits' own database carries whatever the user configures.
 
-The super-user account is created by LNbits itself on first visit, not by this package.
+The super-user account is created by LNbits itself on first visit, not by this package. After that, public sign-up is closed (`lnbits_allow_new_accounts`, an Admin UI setting stored in the database); further accounts come from the Admin UI's **Users** page or from the super user reopening sign-up.
 
 ## Actions
 
