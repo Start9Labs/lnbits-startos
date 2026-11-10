@@ -28,6 +28,8 @@ Not using a node on this server? Pick **None / External** at step 2 instead, ski
 
 Day-to-day use happens inside the LNbits Web UI: create wallets, share or invite users to them, send and receive Lightning payments, and install LNbits extensions from the built-in marketplace. The super user manages global settings and other accounts from LNbits' own **Admin UI**, reached from inside the Web UI once you're signed in as that account.
 
+Once the super user exists, LNbits closes its sign-up screen. To give someone else an account, create it from the Admin UI's **Users** page, or turn new sign-ups back on in the Admin UI's user settings.
+
 > One exception: when you've picked a node on this server, the **funding source connection** (the node endpoint, certificate, and macaroon under the Admin UI's "Funding" page) is managed by StartOS and re-applied every time the service starts. You don't need to set it, and any change you make there will revert on the next restart. Use the **Lightning Implementation** action to choose your backend instead.
 
 If your node isn't ready when LNbits starts, after a server restart for instance, LNbits waits for it. Its **Web Interface** health check shows **Waiting for LND** (or your node) and the Web UI stays closed until the node responds. LNbits then opens on its own.
