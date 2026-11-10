@@ -85,7 +85,7 @@ One model, and a second store the package has to reconcile against it.
 
 The backends fail differently on purpose. LND's REST binding legitimately does not exist until its wallet is first unlocked, so an unresolved address there **deletes** the key rather than leaving it stale, and the health check reads **Waiting for LND** until the binding appears, instead of LNbits dialling something that no longer exists. phoenixd's and Eclair's API bindings exist from the moment they are installed, so the same condition is a real fault and `main` **throws** — which surfaces as a service error rather than a silent void wallet. Eclair throws for a second reason too: it has no API password until its **Set API Password** action has been run, and LNbits cannot authenticate without one.
 
-**Yours:** everything else the file can carry — site title and tagline, themes, the reserve-fee settings, which extensions are disabled, the admin UI toggle. The package models them so they round-trip, but writes none of them, so an untouched install has no line for any of them and LNbits applies its own defaults.
+**Yours:** everything else the file can carry — site title and tagline, themes, the reserve-fee settings, the admin UI toggle. The package models them so they round-trip, but writes none of them, so an untouched install has no line for any of them and LNbits applies its own defaults.
 
 ### The database overrides the file, which is why a oneshot exists
 
