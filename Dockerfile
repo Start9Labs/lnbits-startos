@@ -23,4 +23,6 @@ RUN apt-get update && \
 
 RUN pip3 install bcrypt
 
+RUN uv pip install --python /app/.venv/bin/python --no-cache 'pillow>=13.0.0,<14'
+
 WORKDIR /app/
