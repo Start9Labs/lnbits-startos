@@ -46,7 +46,7 @@ The image is upstream's with a handful of command-line tools added, since the pa
 
 The additions are `sqlite3`, `python3`'s bcrypt, `jq`, `yq`, `xxd`, `curl` and `tini`. A short-lived `reset-pass` subcontainer uses the first two for the password action.
 
-The build upgrades Debian's `ca-certificates` to distrust the compromised eMudhra certificate chains. It also installs Pillow 13 in LNbits' `/app/.venv` to fix CVE-2026-112900, CVE-2026-112393 and CVE-2026-112403. The daemon must retain `uv --offline run --no-sync`; syncing the upstream lock would restore the affected Pillow version.
+The build upgrades Debian's `ca-certificates` to distrust the compromised eMudhra certificate chains. It also replaces the Pillow in LNbits' `/app/.venv` with a release that fixes CVE-2026-112900, CVE-2026-112393 and CVE-2026-112403.
 
 One oneshot, `sync-funding-settings`, runs before the daemon — see [File Models](#file-models).
 

@@ -38,3 +38,4 @@ verified, tried, and decided belongs in the commit message and the PR body.
 - **Delete `LND_REST_ENDPOINT` when LND's address is unresolved; never leave it stale or fabricate one**, so LNbits fails its backend connection instead of dialing an address that does not exist.
 - **Lightning Implementation deletes the database on a real change only.** Don't soften it into a merge, and don't let it fire when the selection is unchanged.
 - **Force `HOST` to `0.0.0.0` in `main`, not only in the seed**, because the service is reached over the bridge.
+- **Keep `--no-sync` on `primary`'s `uv run`**, since a sync restores upstream's lock and removes the patched Pillow from `/app/.venv`.
