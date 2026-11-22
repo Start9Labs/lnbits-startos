@@ -48,7 +48,7 @@ What that means in practice:
 ### Actions
 
 - **Lightning Implementation** — choose which node funds LNbits: LND, Core Lightning, phoenixd or Eclair on this server, or None / External. **Changing this after LNbits has been used wipes the LNbits database**, removing every account and wallet stored on this instance. Funds on the underlying Lightning node are unaffected, but anything that lived only in LNbits (extension data, internal wallets, invoices) is gone. Only use this when you really mean to start over.
-- **Reset Password** — generates a new random password for the super user and returns it once, masked and copyable. It asks for confirmation first, since your current password stops working. Use it if you've lost the super user password.
+- **Reset Password** — generates a new random password for the super user and returns it once, masked and copyable. It asks for confirmation first, since your current password stops working. Use it if you've lost the super user password. Browsers and apps already signed in stay signed in unless you turn on **Sign Out All Sessions**, which signs out everyone and restarts LNbits; use it if you think someone else has access. Wallet API keys keep working either way, so regenerate any that may have leaked in LNbits. Turning it on breaks Zapwall receipts and Tunnel Me Out client notes made before the reset.
 
 ## Limitations
 

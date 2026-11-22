@@ -19,7 +19,7 @@ const dict = {
   'Starting LNbits!': 15,
   Success: 16,
   "The Lightning node LNbits draws on for funds. For a node on this server, StartOS manages the connection.\n- LND: LND on this server. Its wallet must have been unlocked at least once.\n- Core Lightning: Core Lightning on this server.\n- phoenixd: phoenixd on this server.\n- Eclair: Eclair on this server. Run its Set API Password action first.\n- None / External: no node on this server. You choose and configure the funding source in LNbits' own Admin UI, including nodes elsewhere and third-party custodial services.": 17,
-  'The new Super User password is below': 18,
+  'The new Super User password is below. Browsers and apps already signed in stay signed in; run this action with Sign Out All Sessions on to sign them out.': 18,
   'The web interface is not ready': 19,
   'The web interface is ready': 20,
   'The web interface of LNbits': 21,
@@ -30,6 +30,9 @@ const dict = {
   "The super user's current password stops working. The new password is shown once and cannot be recovered afterwards.": 26,
   'Waiting for ${node}': 27,
   'LNbits requires CLNRest enabled in Core Lightning': 28,
+  'Sign Out All Sessions': 29,
+  'Also sign out every browser and app signed in to LNbits by replacing the key that signs their sessions, then restart LNbits. Wallet API keys keep working; regenerate any that may have leaked in LNbits. Extensions that use this key break for data made before the change: Zapwall receipts and Tunnel Me Out client notes stop verifying.': 30,
+  'The new Super User password is below. Every session was signed out and LNbits is restarting.': 31,
 } as const
 
 /**
