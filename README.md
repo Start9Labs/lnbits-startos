@@ -101,10 +101,10 @@ The case this exists for: an install carried over from the 0.3.x package keeps t
 
 One at a time, decided by which backend you chose.
 
-| Backend  | Dependency    | Kind      | Health check | Mount                      |
-| -------- | ------------- | --------- | ------------ | -------------------------- |
-| LND      | `lnd`         | `running` | `lnd`        | `public/payments` at `/mnt/lnd`, read-only |
-| CLN      | `c-lightning` | `running` | `lightningd` | `public/payments` at `/mnt/cln`, read-only |
+| Backend  | Dependency    | Kind      | Health check | Mount                                       |
+| -------- | ------------- | --------- | ------------ | ------------------------------------------- |
+| LND      | `lnd`         | `running` | `lnd`        | `public/payments` at `/mnt/lnd`, read-only  |
+| CLN      | `c-lightning` | `running` | `lightningd` | `public/payments` at `/mnt/cln`, read-only  |
 | phoenixd | `phoenixd`    | `running` | `primary`    | `public/full` at `/mnt/phoenixd`, read-only |
 | Eclair   | `eclair`      | `running` | `eclair`     | `public/api` at `/mnt/eclair`, read-only    |
 
@@ -150,7 +150,7 @@ Chooses which Lightning node LNbits uses — LND, Core Lightning, phoenixd, Ecla
 
 Generates a new password for the LNbits super user. Run it when locked out.
 
-- **What it changes:** that account's password hash, written directly into LNbits' database.
+- **What it changes:** that account's password hash, written directly into LNbits' database. Existing sessions stay valid unless **Sign Out All Sessions** (off by default) is on: it deletes `data/.lnbits_auth_key_v1`, the key that signs every LNbits session token, and restarts the service so LNbits generates a new one. Wallet API keys are database values and are untouched either way. Extensions that derive data from that key lose it: Zapwall's receipt signatures and Tunnel Me Out's client-note hashes made before the rotation no longer verify.
 - **Availability:** only while the service is running.
 - **Confirmation:** asks before it runs, since the current password stops working.
 - **Repeat safety:** safe to re-run; each run generates a fresh password.

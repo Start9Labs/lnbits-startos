@@ -4,6 +4,7 @@ import { sdk } from './sdk'
 export const uiPort = 5000
 export const proxyIps = '10.0.3.1,fd00:3::1'
 export const db = '/app/data/database.sqlite3'
+export const authKeyFile = '/app/data/.lnbits_auth_key_v1'
 
 export const lndMountpoint = '/mnt/lnd'
 export const clnMountpoint = '/mnt/cln'
