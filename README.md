@@ -35,7 +35,7 @@
 
 ## Image and Container Runtime
 
-The image is upstream's with a handful of command-line tools added, since the package drives LNbits' own database directly for two operations.
+The image is upstream's with `sqlite3` added, since the package drives LNbits' own database directly for two operations.
 
 | Property      | Value                                                           |
 | ------------- | --------------------------------------------------------------- |
@@ -44,7 +44,7 @@ The image is upstream's with a handful of command-line tools added, since the pa
 | Command       | `uv --offline run --no-sync lnbits`                             |
 | Subcontainer  | `lnbits-sub` — the `primary` daemon, and the one to `attach` to |
 
-The additions are `sqlite3`, `python3`'s bcrypt, `jq`, `yq`, `xxd`, `curl` and `tini`. A short-lived `reset-pass` subcontainer uses the first two for the password action.
+`sync-funding-settings` and the password action's short-lived `reset-pass` subcontainer use it; the action hashes the new password with the bcrypt in LNbits' own `/app/.venv`.
 
 The build upgrades Debian's `ca-certificates` to distrust the compromised eMudhra certificate chains. It also replaces the Pillow in LNbits' `/app/.venv` with a release that fixes CVE-2026-112900, CVE-2026-112393 and CVE-2026-112403.
 
@@ -210,7 +210,7 @@ The `main` volume is copied wholesale — `sdk.Backups.ofVolumes('main')`. No du
 
 ```yaml
 package_id: lnbits
-image: ./Dockerfile # FROM lnbits/lnbits, plus sqlite3/jq/yq/xxd/curl/tini
+image: ./Dockerfile # FROM lnbits/lnbits, plus sqlite3
 architectures:
   - x86_64
   - aarch64

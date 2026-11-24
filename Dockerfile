@@ -1,27 +1,11 @@
-FROM lnbits/lnbits:v1.7.1 AS builder
-
-# arm64 or amd64
-ARG PLATFORM
-
-RUN apt-get update && apt-get install -y bash curl sqlite3 tini --no-install-recommends
-RUN curl -sS https://webi.sh/yq | sh
-
-FROM lnbits/lnbits:v1.7.1 AS final
-
-COPY --from=builder /usr/bin/tini /usr/bin/tini
-COPY --from=builder /usr/bin/sqlite3 /usr/bin/sqlite3
-COPY --from=builder /root/.local/bin/yq /usr/local/bin/yq
+FROM lnbits/lnbits:v1.7.1
 
 RUN apt-get update && \
-  apt-get install -y \
+  apt-get install -y --no-install-recommends \
   ca-certificates \
-  xxd \
-  curl \
-  jq && \
+  sqlite3 && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-RUN pip3 install bcrypt
 
 RUN uv pip install --python /app/.venv/bin/python --no-cache 'pillow>=13.0.0,<14'
 
