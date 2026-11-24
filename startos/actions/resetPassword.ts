@@ -54,7 +54,7 @@ export const resetPassword = sdk.Action.withInput(
         ])
 
         const newPasswordHash = await subc.execFail([
-          'python3',
+          '/app/.venv/bin/python',
           '-c',
           `import bcrypt; print(bcrypt.hashpw('${newPassword}'.encode('utf-8'), bcrypt.gensalt()).decode('utf-8'))`,
         ])
